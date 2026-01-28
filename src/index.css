@@ -2,95 +2,79 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&display=swap');
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 60 56% 91%;
+    --foreground: 79 41% 20%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 79 41% 20%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 79 41% 20%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 79 41% 31%;
+    --primary-foreground: 60 56% 97%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 60 56% 91%;
+    --secondary-foreground: 79 41% 20%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 60 30% 85%;
+    --muted-foreground: 79 20% 40%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 79 50% 40%;
+    --accent-foreground: 60 56% 97%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 79 20% 70%;
+    --input: 79 20% 70%;
+    --ring: 79 41% 31%;
 
-    --radius: 0.5rem;
+    --radius: 1rem;
 
-    --sidebar-background: 0 0% 98%;
+    /* Custom NutriBebê colors */
+    --olive: 79 41% 31%;
+    --olive-light: 79 35% 45%;
+    --olive-dark: 79 45% 22%;
+    --beige: 60 56% 91%;
+    --beige-light: 60 56% 96%;
+    --cream: 45 50% 95%;
+    --warm-white: 40 40% 98%;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(60 56% 96%) 0%, hsl(60 56% 91%) 100%);
+    --gradient-cta: linear-gradient(135deg, hsl(79 50% 40%) 0%, hsl(79 41% 31%) 100%);
+    --gradient-cta-hover: linear-gradient(135deg, hsl(79 41% 31%) 0%, hsl(79 45% 22%) 100%);
 
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Shadows */
+    --shadow-soft: 0 4px 20px -4px hsl(79 41% 31% / 0.15);
+    --shadow-card: 0 8px 30px -8px hsl(79 41% 31% / 0.12);
+    --shadow-cta: 0 8px 25px -5px hsl(79 41% 31% / 0.35);
+    --shadow-float: 0 6px 20px -3px hsl(79 41% 31% / 0.25);
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --background: 79 41% 10%;
+    --foreground: 60 56% 91%;
+    --card: 79 41% 15%;
+    --card-foreground: 60 56% 91%;
+    --popover: 79 41% 15%;
+    --popover-foreground: 60 56% 91%;
+    --primary: 79 41% 45%;
+    --primary-foreground: 79 41% 10%;
+    --secondary: 79 30% 20%;
+    --secondary-foreground: 60 56% 91%;
+    --muted: 79 30% 20%;
+    --muted-foreground: 60 30% 70%;
+    --accent: 79 50% 50%;
+    --accent-foreground: 79 41% 10%;
+    --border: 79 30% 25%;
+    --input: 79 30% 25%;
+    --ring: 79 41% 45%;
   }
 }
 
@@ -100,6 +84,99 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-body antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading font-bold;
+  }
+}
+
+@layer components {
+  .btn-cta {
+    @apply relative overflow-hidden rounded-full px-8 py-4 text-lg font-bold text-primary-foreground transition-all duration-300 ease-out;
+    background: var(--gradient-cta);
+    box-shadow: var(--shadow-cta);
+  }
+
+  .btn-cta:hover {
+    background: var(--gradient-cta-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 35px -8px hsl(79 41% 31% / 0.45);
+  }
+
+  .btn-cta:active {
+    transform: translateY(0);
+  }
+
+  .btn-cta-large {
+    @apply btn-cta px-10 py-5 text-xl;
+  }
+
+  .card-benefit {
+    @apply rounded-3xl bg-card p-6 transition-all duration-300 ease-out;
+    box-shadow: var(--shadow-card);
+  }
+
+  .card-benefit:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px -10px hsl(79 41% 31% / 0.2);
+  }
+
+  .section-beige {
+    background: var(--gradient-hero);
+  }
+
+  .section-white {
+    @apply bg-warm-white;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-cta);
+  }
+
+  .floating-button {
+    @apply fixed z-50 rounded-full p-4 transition-all duration-300;
+    box-shadow: var(--shadow-float);
+  }
+
+  .floating-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 10px 30px -5px hsl(142 70% 35% / 0.4);
+  }
+}
+
+@layer utilities {
+  .bg-warm-white {
+    background-color: hsl(var(--warm-white));
+  }
+
+  .bg-beige {
+    background-color: hsl(var(--beige));
+  }
+
+  .bg-beige-light {
+    background-color: hsl(var(--beige-light));
+  }
+
+  .bg-cream {
+    background-color: hsl(var(--cream));
+  }
+
+  .bg-olive {
+    background-color: hsl(var(--olive));
+  }
+
+  .text-olive {
+    color: hsl(var(--olive));
+  }
+
+  .text-olive-dark {
+    color: hsl(var(--olive-dark));
+  }
+
+  .border-olive {
+    border-color: hsl(var(--olive));
   }
 }
