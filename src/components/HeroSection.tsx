@@ -2,7 +2,7 @@ import heroBaby from "@/assets/hero-baby.jpg";
 
 const HeroSection = () => {
   const handleCTAClick = () => {
-    window.open("https://pay.kiwify.com.br/vrYjxFv", "_blank");
+    window.open("https://pay.kiwify.com.br/9j0V7DB", "_blank");
   };
 
   return (
