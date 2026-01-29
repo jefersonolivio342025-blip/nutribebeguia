@@ -5,6 +5,7 @@ import TestimonialsSection from "@/components/TestimonialsSection";
 import OfferSection from "@/components/OfferSection";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import Footer from "@/components/Footer";
+import SocialProofNotification from "@/components/SocialProofNotification";
 
 const Index = () => {
   return (
@@ -16,6 +17,7 @@ const Index = () => {
       <OfferSection />
       <Footer />
       <WhatsAppButton />
+      <SocialProofNotification />
     </div>
   );
 };
