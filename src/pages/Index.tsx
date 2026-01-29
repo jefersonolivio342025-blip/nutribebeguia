@@ -7,10 +7,12 @@ import OfferSection from "@/components/OfferSection";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import Footer from "@/components/Footer";
 import SocialProofNotification from "@/components/SocialProofNotification";
+import StickyHeader from "@/components/StickyHeader";
 
 const Index = () => {
   return (
     <div className="min-h-screen">
+      <StickyHeader />
       <HeroSection />
       <BenefitsSection />
       <TransformationSection />
