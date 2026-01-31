@@ -1,5 +1,67 @@
+import { useState, useEffect } from "react";
 import ebookMockup from "@/assets/ebook-mockup.png";
 import AnimatedSection from "./AnimatedSection";
+
+const CountdownTimer = () => {
+  const [timeLeft, setTimeLeft] = useState({
+    hours: 2,
+    minutes: 47,
+    seconds: 33,
+  });
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        let { hours, minutes, seconds } = prev;
+        
+        if (seconds > 0) {
+          seconds--;
+        } else if (minutes > 0) {
+          minutes--;
+          seconds = 59;
+        } else if (hours > 0) {
+          hours--;
+          minutes = 59;
+          seconds = 59;
+        } else {
+          // Reset to create urgency loop
+          return { hours: 2, minutes: 47, seconds: 33 };
+        }
+        
+        return { hours, minutes, seconds };
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatNumber = (num: number) => num.toString().padStart(2, "0");
+
+  return (
+    <div className="flex items-center justify-center gap-2 sm:gap-3">
+      <div className="flex flex-col items-center">
+        <div className="bg-destructive text-destructive-foreground text-2xl sm:text-3xl font-black px-3 sm:px-4 py-2 rounded-xl min-w-[60px] sm:min-w-[70px] text-center shadow-lg">
+          {formatNumber(timeLeft.hours)}
+        </div>
+        <span className="text-xs text-muted-foreground mt-1 uppercase tracking-wide">Horas</span>
+      </div>
+      <span className="text-2xl sm:text-3xl font-bold text-destructive animate-pulse">:</span>
+      <div className="flex flex-col items-center">
+        <div className="bg-destructive text-destructive-foreground text-2xl sm:text-3xl font-black px-3 sm:px-4 py-2 rounded-xl min-w-[60px] sm:min-w-[70px] text-center shadow-lg">
+          {formatNumber(timeLeft.minutes)}
+        </div>
+        <span className="text-xs text-muted-foreground mt-1 uppercase tracking-wide">Min</span>
+      </div>
+      <span className="text-2xl sm:text-3xl font-bold text-destructive animate-pulse">:</span>
+      <div className="flex flex-col items-center">
+        <div className="bg-destructive text-destructive-foreground text-2xl sm:text-3xl font-black px-3 sm:px-4 py-2 rounded-xl min-w-[60px] sm:min-w-[70px] text-center shadow-lg">
+          {formatNumber(timeLeft.seconds)}
+        </div>
+        <span className="text-xs text-muted-foreground mt-1 uppercase tracking-wide">Seg</span>
+      </div>
+    </div>
+  );
+};
 
 const OfferSection = () => {
   const handleCTAClick = () => {
@@ -9,6 +71,19 @@ const OfferSection = () => {
   return (
     <section className="bg-card py-16 lg:py-24">
       <div className="container">
+        {/* Urgency Banner */}
+        <AnimatedSection animation="scale" className="mb-10">
+          <div className="bg-destructive/10 border-2 border-destructive/30 rounded-2xl p-6 text-center max-w-2xl mx-auto">
+            <p className="text-destructive font-bold text-lg mb-4">
+              ⏰ Oferta expira em:
+            </p>
+            <CountdownTimer />
+            <p className="text-sm text-muted-foreground mt-4">
+              Depois desse tempo, o preço volta para R$ 47,00
+            </p>
+          </div>
+        </AnimatedSection>
+
         <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
           {/* E-book Mockup */}
           <AnimatedSection animation="left" className="flex-1 flex justify-center">
