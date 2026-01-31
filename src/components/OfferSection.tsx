@@ -1,4 +1,5 @@
 import ebookMockup from "@/assets/ebook-mockup.png";
+import AnimatedSection from "./AnimatedSection";
 
 const OfferSection = () => {
   const handleCTAClick = () => {
@@ -10,7 +11,7 @@ const OfferSection = () => {
       <div className="container">
         <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
           {/* E-book Mockup */}
-          <div className="flex-1 flex justify-center">
+          <AnimatedSection animation="left" className="flex-1 flex justify-center">
             <div className="relative animate-float">
               <div className="absolute -inset-8 bg-primary/10 rounded-full blur-3xl" />
               <img
@@ -19,10 +20,10 @@ const OfferSection = () => {
                 className="relative w-full max-w-sm lg:max-w-md drop-shadow-2xl"
               />
             </div>
-          </div>
+          </AnimatedSection>
 
           {/* Offer Content */}
-          <div className="flex-1 text-center lg:text-left">
+          <AnimatedSection animation="right" className="flex-1 text-center lg:text-left">
             <div className="inline-block px-4 py-2 bg-primary/10 rounded-full text-primary font-semibold text-sm mb-6">
               🎁 Oferta Especial por Tempo Limitado
             </div>
@@ -76,7 +77,7 @@ const OfferSection = () => {
             <p className="mt-4 text-sm text-muted-foreground">
               🔒 Pagamento 100% seguro · Acesso imediato
             </p>
-          </div>
+          </AnimatedSection>
         </div>
       </div>
     </section>

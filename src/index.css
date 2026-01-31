@@ -179,4 +179,45 @@
   .border-olive {
     border-color: hsl(var(--olive));
   }
+
+  /* Scroll Animation Classes */
+  .scroll-animate {
+    @apply opacity-0 transition-all duration-700 ease-out;
+  }
+
+  .scroll-animate.visible {
+    @apply opacity-100;
+  }
+
+  .scroll-animate-up {
+    @apply scroll-animate translate-y-10;
+  }
+
+  .scroll-animate-up.visible {
+    @apply translate-y-0;
+  }
+
+  .scroll-animate-left {
+    @apply scroll-animate -translate-x-10;
+  }
+
+  .scroll-animate-left.visible {
+    @apply translate-x-0;
+  }
+
+  .scroll-animate-right {
+    @apply scroll-animate translate-x-10;
+  }
+
+  .scroll-animate-right.visible {
+    @apply translate-x-0;
+  }
+
+  .scroll-animate-scale {
+    @apply scroll-animate scale-95;
+  }
+
+  .scroll-animate-scale.visible {
+    @apply scale-100;
+  }
 }
