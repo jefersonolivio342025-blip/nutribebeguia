@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import ebookMockup from "@/assets/ebook-mockup.png";
 import AnimatedSection from "./AnimatedSection";
+import { Progress } from "@/components/ui/progress";
 
 const CountdownTimer = () => {
   const [timeLeft, setTimeLeft] = useState({
@@ -24,7 +25,6 @@ const CountdownTimer = () => {
           minutes = 59;
           seconds = 59;
         } else {
-          // Reset to create urgency loop
           return { hours: 2, minutes: 47, seconds: 33 };
         }
         
@@ -63,6 +63,44 @@ const CountdownTimer = () => {
   );
 };
 
+const SalesProgress = () => {
+  const [soldCount, setSoldCount] = useState(847);
+  const totalUnits = 1000;
+  const percentage = (soldCount / totalUnits) * 100;
+
+  useEffect(() => {
+    // Simulate slow increase in sales
+    const timer = setInterval(() => {
+      setSoldCount((prev) => {
+        if (prev >= 987) return 847; // Reset to create loop
+        return prev + 1;
+      });
+    }, 45000); // Every 45 seconds
+
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <div className="w-full max-w-md mx-auto">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-sm font-semibold text-foreground">
+          🔥 {soldCount} vendidos
+        </span>
+        <span className="text-sm text-destructive font-bold">
+          Restam apenas {totalUnits - soldCount}!
+        </span>
+      </div>
+      <Progress 
+        value={percentage} 
+        className="h-3 bg-muted"
+      />
+      <p className="text-xs text-muted-foreground mt-2 text-center">
+        ⚠️ Lote promocional com unidades limitadas
+      </p>
+    </div>
+  );
+};
+
 const OfferSection = () => {
   const handleCTAClick = () => {
     window.open("https://pay.kiwify.com.br/9j0V7DB", "_blank");
@@ -71,6 +109,11 @@ const OfferSection = () => {
   return (
     <section className="bg-card py-16 lg:py-24">
       <div className="container">
+        {/* Sales Progress */}
+        <AnimatedSection animation="up" className="mb-10">
+          <SalesProgress />
+        </AnimatedSection>
+
         {/* Urgency Banner */}
         <AnimatedSection animation="scale" className="mb-10">
           <div className="bg-destructive/10 border-2 border-destructive/30 rounded-2xl p-6 text-center max-w-2xl mx-auto">
