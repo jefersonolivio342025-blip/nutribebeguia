@@ -1,4 +1,5 @@
 import momKitchen from "@/assets/mom-kitchen.jpg";
+import AnimatedSection from "./AnimatedSection";
 
 const TransformationSection = () => {
   return (
@@ -6,7 +7,7 @@ const TransformationSection = () => {
       <div className="container">
         <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
           {/* Image */}
-          <div className="flex-1">
+          <AnimatedSection animation="left" className="flex-1">
             <div className="relative">
               <div className="absolute -inset-4 bg-primary/10 rounded-[2.5rem] blur-2xl" />
               <img
@@ -15,10 +16,10 @@ const TransformationSection = () => {
                 className="relative w-full rounded-3xl shadow-card object-cover aspect-video lg:aspect-[4/3]"
               />
             </div>
-          </div>
+          </AnimatedSection>
 
           {/* Quote */}
-          <div className="flex-1 text-center lg:text-left">
+          <AnimatedSection animation="right" className="flex-1 text-center lg:text-left">
             <div className="relative">
               <span className="absolute -top-8 -left-4 text-8xl text-primary/20 font-serif">
                 "
@@ -53,7 +54,7 @@ const TransformationSection = () => {
                 confiam no NutriBebê
               </p>
             </div>
-          </div>
+          </AnimatedSection>
         </div>
       </div>
     </section>

@@ -4,6 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import AnimatedSection from "./AnimatedSection";
 
 const faqs = [
   {
@@ -44,33 +45,36 @@ const FAQSection = () => {
   return (
     <section id="faq" className="bg-background py-16 md:py-24">
       <div className="container mx-auto px-4">
-        <div className="mx-auto max-w-3xl text-center mb-12">
-          <span className="mb-4 inline-block rounded-full bg-primary/10 px-4 py-1.5 text-sm font-semibold text-primary">
-            Tire Suas Dúvidas
-          </span>
-          <h2 className="mb-4 text-3xl font-bold text-foreground md:text-4xl">
-            Perguntas Frequentes
-          </h2>
-          <p className="text-muted-foreground">
-            Respondemos as principais dúvidas das mamães sobre o Guia NutriBebê
-          </p>
-        </div>
+        <AnimatedSection animation="up">
+          <div className="mx-auto max-w-3xl text-center mb-12">
+            <span className="mb-4 inline-block rounded-full bg-primary/10 px-4 py-1.5 text-sm font-semibold text-primary">
+              Tire Suas Dúvidas
+            </span>
+            <h2 className="mb-4 text-3xl font-bold text-foreground md:text-4xl">
+              Perguntas Frequentes
+            </h2>
+            <p className="text-muted-foreground">
+              Respondemos as principais dúvidas das mamães sobre o Guia NutriBebê
+            </p>
+          </div>
+        </AnimatedSection>
 
         <div className="mx-auto max-w-2xl">
           <Accordion type="single" collapsible className="space-y-3">
             {faqs.map((faq, index) => (
-              <AccordionItem
-                key={index}
-                value={`item-${index}`}
-                className="rounded-2xl border border-border bg-card px-6 shadow-sm transition-shadow hover:shadow-md"
-              >
-                <AccordionTrigger className="text-left text-base font-semibold text-foreground hover:no-underline py-5">
-                  {faq.question}
-                </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground pb-5">
-                  {faq.answer}
-                </AccordionContent>
-              </AccordionItem>
+              <AnimatedSection key={index} animation="up" delay={index * 50}>
+                <AccordionItem
+                  value={`item-${index}`}
+                  className="rounded-2xl border border-border bg-card px-6 shadow-sm transition-shadow hover:shadow-md"
+                >
+                  <AccordionTrigger className="text-left text-base font-semibold text-foreground hover:no-underline py-5">
+                    {faq.question}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground pb-5">
+                    {faq.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              </AnimatedSection>
             ))}
           </Accordion>
         </div>
