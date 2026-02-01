@@ -1,45 +1,89 @@
 
 
-## Plano: Atualizar Link de Pagamento em Todos os Botões
+# Plano: Seção "Para Quem é Este Guia"
 
-### Resumo
-Atualizar o link de pagamento Kiwify de `https://pay.kiwify.com.br/vrYjxFv` para `https://pay.kiwify.com.br/9j0V7DB` em todos os botões CTA (Call-to-Action) da landing page.
-
----
-
-### Alterações Necessárias
-
-Serão atualizados **2 arquivos** que contêm botões de compra:
-
-| Arquivo | Localização | Alteração |
-|---------|-------------|-----------|
-| `src/components/HeroSection.tsx` | Linha 5 | Atualizar URL no `handleCTAClick` |
-| `src/components/OfferSection.tsx` | Linha 5 | Atualizar URL no `handleCTAClick` |
+## Objetivo
+Criar uma seção que ajude as mães a se identificarem com o produto, mostrando claramente quem vai se beneficiar do guia e, opcionalmente, para quem ele NÃO é indicado (criando exclusividade e filtrando expectativas).
 
 ---
 
-### Detalhes Técnicos
+## Design Visual
 
-**1. HeroSection.tsx** - Botão "Quero o Guia Agora"
-```tsx
-// De:
-window.open("https://pay.kiwify.com.br/vrYjxFv", "_blank");
+A seção terá dois blocos lado a lado (em desktop) ou empilhados (mobile):
 
-// Para:
-window.open("https://pay.kiwify.com.br/9j0V7DB", "_blank");
-```
-
-**2. OfferSection.tsx** - Botão "Sim! Quero o Guia por R$ 14,90"
-```tsx
-// De:
-window.open("https://pay.kiwify.com.br/vrYjxFv", "_blank");
-
-// Para:
-window.open("https://pay.kiwify.com.br/9j0V7DB", "_blank");
+```text
+┌─────────────────────────────────────────────────────────────────┐
+│                    🎯 Este Guia é Para Você?                    │
+├──────────────────────────┬──────────────────────────────────────┤
+│     ✅ IDEAL PARA        │        ❌ NÃO É PARA                 │
+│                          │                                      │
+│ ● Mães de primeira       │ ● Quem busca receitas para           │
+│   viagem inseguras       │   crianças maiores de 2 anos         │
+│                          │                                      │
+│ ● Quem tem medo de       │ ● Quem prefere papinhas              │
+│   engasgos               │   industrializadas                   │
+│                          │                                      │
+│ ● Mães que querem        │ ● Quem não está disposta             │
+│   receitas práticas      │   a preparar refeições               │
+│                          │                                      │
+│ ● Bebês de 6 a 12 meses  │                                      │
+│                          │                                      │
+│ ● Quem quer economizar   │                                      │
+│   tempo na cozinha       │                                      │
+└──────────────────────────┴──────────────────────────────────────┘
 ```
 
 ---
 
-### Observação
-O botão flutuante do WhatsApp não será alterado, pois ele é para suporte ao cliente e não para pagamento.
+## Implementacao
+
+### 1. Criar componente `TargetAudienceSection.tsx`
+
+**Estrutura do componente:**
+- Header com badge e titulo principal
+- Dois cards lado a lado:
+  - Card verde (ideal para) com lista de checkmarks
+  - Card vermelho/cinza (nao e para) com lista de X
+- Animacoes de entrada usando `AnimatedSection`
+
+**Conteudo do card "Ideal Para":**
+- Maes de primeira viagem que querem comecar a IA com seguranca
+- Quem tem medo de engasgos e nao sabe os cortes corretos
+- Maes que buscam receitas praticas prontas em 15 minutos
+- Familias com bebes de 6 a 12 meses iniciando a IA
+- Quem quer economizar tempo e ter um guia visual completo
+
+**Conteudo do card "Nao e Para":**
+- Quem busca receitas para criancas maiores de 2 anos
+- Maes que preferem papinhas industrializadas
+- Quem nao esta disposta a preparar refeicoes caseiras
+
+### 2. Atualizar `Index.tsx`
+
+- Importar o novo componente
+- Posicionar apos `TestimonialsSection` e antes de `FAQSection`
+
+---
+
+## Detalhes Tecnicos
+
+**Arquivo a criar:**
+- `src/components/TargetAudienceSection.tsx`
+
+**Arquivo a editar:**
+- `src/pages/Index.tsx` (adicionar import e posicionar componente)
+
+**Dependencias utilizadas:**
+- Componente `AnimatedSection` existente
+- Icones do `lucide-react` (CheckCircle, XCircle ou similar)
+- Classes CSS existentes (card styles, colors, etc.)
+
+**Responsividade:**
+- Desktop: cards lado a lado com `lg:grid-cols-2`
+- Mobile: cards empilhados com `grid-cols-1`
+
+**Animacoes:**
+- Card esquerdo: `animation="left"`
+- Card direito: `animation="right"`
+- Delays escalonados para cada item da lista
 
