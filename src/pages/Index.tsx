@@ -4,6 +4,7 @@ import TransformationSection from "@/components/TransformationSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import FAQSection from "@/components/FAQSection";
 import OfferSection from "@/components/OfferSection";
+import GuaranteeSection from "@/components/GuaranteeSection";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import Footer from "@/components/Footer";
 import SocialProofNotification from "@/components/SocialProofNotification";
@@ -19,6 +20,7 @@ const Index = () => {
       <TestimonialsSection />
       <FAQSection />
       <OfferSection />
+      <GuaranteeSection />
       <Footer />
       <WhatsAppButton />
       <SocialProofNotification />
