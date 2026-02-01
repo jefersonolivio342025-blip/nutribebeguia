@@ -68,6 +68,24 @@ const GuaranteeSection = () => {
                   "Sua satisfação é nossa prioridade. Confiamos tanto no nosso guia que oferecemos essa garantia."
                 </p>
               </AnimatedSection>
+
+              {/* Final CTA */}
+              <AnimatedSection animation="up" delay={600}>
+                <div className="mt-10 pt-8 border-t border-primary/10">
+                  <p className="text-lg font-semibold text-foreground mb-4">
+                    Pronta para começar a introdução alimentar com segurança?
+                  </p>
+                  <button
+                    onClick={() => window.open("https://pay.kiwify.com.br/9j0V7DB", "_blank")}
+                    className="btn-cta-large uppercase tracking-wide text-lg animate-pulse-soft"
+                  >
+                    Quero o Guia NutriBebê por R$ 14,90
+                  </button>
+                  <p className="mt-3 text-sm text-muted-foreground">
+                    🔒 Compra segura · Acesso imediato · Garantia de 7 dias
+                  </p>
+                </div>
+              </AnimatedSection>
             </div>
           </div>
         </AnimatedSection>
