@@ -23,6 +23,98 @@
     <meta name="twitter:title" content="NutriBebê - Introdução Alimentar Segura" />
     <meta name="twitter:description" content="Guia completo de introdução alimentar com cortes seguros e 50 receitas nutritivas." />
     
+    <!-- UTM Tracker Script -->
+    <script>
+      (function() {
+        const SUPABASE_URL = "https://huxcufxyfyntuskjawoz.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1eGN1Znh5ZnludHVza2phd296Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk5OTg1OTMsImV4cCI6MjA4NTU3NDU5M30.zXpj8y0MB0MiWoeOlhKK5gGzdNrb7RhfUPY7zfa0f68";
+
+        function getParams() {
+          const params = new URLSearchParams(window.location.search);
+          return {
+            utm_source: params.get('utm_source') || localStorage.getItem('utm_source') || null,
+            utm_medium: params.get('utm_medium') || localStorage.getItem('utm_medium') || null,
+            utm_campaign: params.get('utm_campaign') || localStorage.getItem('utm_campaign') || null,
+            utm_content: params.get('utm_content') || localStorage.getItem('utm_content') || null,
+            utm_term: params.get('utm_term') || localStorage.getItem('utm_term') || null,
+            src: params.get('src') || localStorage.getItem('src') || null,
+            fbclid: params.get('fbclid') || localStorage.getItem('fbclid') || null,
+            click_id: params.get('click_id') || params.get('fbclid') || localStorage.getItem('click_id') || generateClickId()
+          };
+        }
+
+        function generateClickId() {
+          return 'utmtrk_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        function saveToLocalStorage(data) {
+          Object.keys(data).forEach(key => {
+            if (data[key]) {
+              localStorage.setItem(key, data[key]);
+            }
+          });
+        }
+
+        async function sendToSupabase(data) {
+          try {
+            await fetch(SUPABASE_URL + '/rest/v1/leads_tracking', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+                'Prefer': 'return=minimal'
+              },
+              body: JSON.stringify({
+                ...data,
+                page_url: window.location.href,
+                referrer: document.referrer
+              })
+            });
+          } catch (e) {
+            console.error('UTM Tracker: Erro ao enviar dados', e);
+          }
+        }
+
+        function injectUTMsInLinks() {
+          const data = getParams();
+          const checkoutDomains = ['kiwify.com.br', 'hotmart.com', 'pay.kiwify', 'go.hotmart'];
+          
+          document.querySelectorAll('a').forEach(link => {
+            const href = link.href;
+            if (checkoutDomains.some(domain => href.includes(domain))) {
+              const url = new URL(href);
+              Object.keys(data).forEach(key => {
+                if (data[key]) {
+                  url.searchParams.set(key, data[key]);
+                }
+              });
+              link.href = url.toString();
+            }
+          });
+        }
+
+        const data = getParams();
+        saveToLocalStorage(data);
+        
+        if (data.utm_source || data.fbclid || data.click_id) {
+          sendToSupabase(data);
+        }
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', injectUTMsInLinks);
+        } else {
+          injectUTMsInLinks();
+        }
+
+        new MutationObserver(injectUTMsInLinks).observe(document.body, { 
+          childList: true, 
+          subtree: true 
+        });
+      })();
+    </script>
+    <!-- End UTM Tracker Script -->
+
     <!-- Facebook Pixel Code -->
     <script>
       !function(f,b,e,v,n,t,s)
