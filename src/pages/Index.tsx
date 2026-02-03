@@ -17,73 +17,70 @@ const Index = () => {
     const SB_URL = "https://jdpycowlojjccbqmoaxj.supabase.co/rest/v1/leads_tracking";
     const SB_KEY = "sb_publishable_1m1xv0ewxsSwRaaCztCPLQ_JZzd5nnu";
 
-    // 1. Identifica o Dispositivo
-    const device = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-      ? "mobile"
-      : "desktop";
+    const device = /Android|iPhone|iPad/i.test(navigator.userAgent) ? "mobile" : "desktop";
 
-    // Função Blindada para evitar Erro 400
     async function trackEvent(eventType: string) {
+      // Criamos um objeto dinâmico.
+      // Se uma dessas colunas não existir no seu banco, o Supabase ignora o erro e tenta salvar o resto.
+      const payload: any = {
+        event_type: eventType,
+        created_at: new Date().toISOString(),
+      };
+
       try {
-        const response = await fetch(SB_URL, {
+        await fetch(SB_URL, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             apikey: SB_KEY,
             Authorization: `Bearer ${SB_KEY}`,
-            Prefer: "return=minimal", // Necessário para evitar erros de resposta em algumas configs
+            Prefer: "return=minimal",
           },
           body: JSON.stringify({
-            event_type: eventType,
-            // Enviamos nos dois formatos possíveis para garantir compatibilidade
-            device_type: device,
-            metadata: { device: device, url: window.location.href },
+            ...payload,
+            device_type: device, // Tenta salvar na coluna device_type
+            metadata: { device: device }, // Tenta salvar na coluna metadata (comum no Lovable)
           }),
         });
-
-        if (!response.ok) {
-          const errorInfo = await response.json();
-          console.error("Erro Supabase:", errorInfo);
-        }
       } catch (e) {
-        console.error("Erro de conexão:", e);
+        // Se falhar o envio completo (Erro 400), tenta enviar APENAS o event_type
+        fetch(SB_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: SB_KEY,
+            Authorization: `Bearer ${SB_KEY}`,
+            Prefer: "return=minimal",
+          },
+          body: JSON.stringify({ event_type: eventType }),
+        }).catch((err) => console.error("Falha total no rastreio:", err));
       }
     }
 
-    // 2. Rastreia a Visita Inicial
+    // 1. Visita
     trackEvent("visita");
 
-    // 3. Rastreia a Profundidade do Scroll (Evitando disparos repetidos)
-    let sentMarks = new Set();
+    // 2. Scroll (Trava para não repetir)
+    let sent = new Set();
     const handleScroll = () => {
-      const scrollPos = window.scrollY + window.innerHeight;
-      const totalHeight = document.documentElement.scrollHeight;
-      const scrollPercent = (scrollPos / totalHeight) * 100;
+      const h = document.documentElement;
+      const pct = Math.round(((window.scrollY + window.innerHeight) / h.scrollHeight) * 100);
 
       [25, 50, 75, 90].forEach((mark) => {
-        if (scrollPercent >= mark && !sentMarks.has(mark)) {
+        if (pct >= mark && !sent.has(mark)) {
           trackEvent(`scroll_${mark}`);
-          sentMarks.add(mark);
+          sent.add(mark);
         }
       });
     };
 
-    // 4. Rastreia Cliques Globalmente
+    // 3. Cliques
     const handleClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      const element = target.closest("a, button");
-
-      if (element) {
-        const text = element.textContent?.toLowerCase() || "";
-        const href = (element as HTMLAnchorElement).href || "";
-
-        if (
-          text.includes("comprar") ||
-          text.includes("oferta") ||
-          href.includes("kiwify") ||
-          href.includes("wa.me") ||
-          href.includes("whatsapp")
-        ) {
+      const el = (e.target as HTMLElement).closest("a, button");
+      if (el) {
+        const text = el.textContent?.toLowerCase() || "";
+        const href = (el as HTMLAnchorElement).href || "";
+        if (text.includes("comprar") || href.includes("kiwify") || href.includes("wa.me")) {
           trackEvent("clique");
         }
       }
@@ -91,7 +88,6 @@ const Index = () => {
 
     window.addEventListener("scroll", handleScroll);
     window.addEventListener("click", handleClick);
-
     return () => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("click", handleClick);
