@@ -17,16 +17,10 @@ const Index = () => {
     const SB_URL = "https://jdpycowlojjccbqmoaxj.supabase.co/rest/v1/leads_tracking";
     const SB_KEY = "sb_publishable_1m1xv0ewxsSwRaaCztCPLQ_JZzd5nnu";
 
+    // Detecta o dispositivo para salvar dentro de metadata
     const device = /Android|iPhone|iPad/i.test(navigator.userAgent) ? "mobile" : "desktop";
 
     async function trackEvent(eventType: string) {
-      // Criamos um objeto dinâmico.
-      // Se uma dessas colunas não existir no seu banco, o Supabase ignora o erro e tenta salvar o resto.
-      const payload: any = {
-        event_type: eventType,
-        created_at: new Date().toISOString(),
-      };
-
       try {
         await fetch(SB_URL, {
           method: "POST",
@@ -37,44 +31,35 @@ const Index = () => {
             Prefer: "return=minimal",
           },
           body: JSON.stringify({
-            ...payload,
-            device_type: device, // Tenta salvar na coluna device_type
-            metadata: { device: device }, // Tenta salvar na coluna metadata (comum no Lovable)
+            event_type: eventType,
+            // Como não existe a coluna 'device_type', enviamos apenas para 'metadata'
+            metadata: { device: device, url: window.location.href },
           }),
         });
       } catch (e) {
-        // Se falhar o envio completo (Erro 400), tenta enviar APENAS o event_type
-        fetch(SB_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            apikey: SB_KEY,
-            Authorization: `Bearer ${SB_KEY}`,
-            Prefer: "return=minimal",
-          },
-          body: JSON.stringify({ event_type: eventType }),
-        }).catch((err) => console.error("Falha total no rastreio:", err));
+        console.error("Erro no rastreio:", e);
       }
     }
 
-    // 1. Visita
+    // 1. Registro de Visita
     trackEvent("visita");
 
-    // 2. Scroll (Trava para não repetir)
-    let sent = new Set();
+    // 2. Registro de Scroll (Evitando repetições)
+    let sentMarks = new Set();
     const handleScroll = () => {
-      const h = document.documentElement;
-      const pct = Math.round(((window.scrollY + window.innerHeight) / h.scrollHeight) * 100);
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (scrollHeight <= 0) return;
+      const pct = Math.round((window.scrollY / scrollHeight) * 100);
 
       [25, 50, 75, 90].forEach((mark) => {
-        if (pct >= mark && !sent.has(mark)) {
+        if (pct >= mark && !sentMarks.has(mark)) {
           trackEvent(`scroll_${mark}`);
-          sent.add(mark);
+          sentMarks.add(mark);
         }
       });
     };
 
-    // 3. Cliques
+    // 3. Registro de Cliques em botões importantes
     const handleClick = (e: MouseEvent) => {
       const el = (e.target as HTMLElement).closest("a, button");
       if (el) {
@@ -88,6 +73,7 @@ const Index = () => {
 
     window.addEventListener("scroll", handleScroll);
     window.addEventListener("click", handleClick);
+
     return () => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("click", handleClick);
