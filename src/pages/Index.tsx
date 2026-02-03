@@ -1,5 +1,52 @@
 import { useEffect } from "react"; // 1. Adicionado
-import { createClient } from "@supabase/supabase-js"; // 2. Adicionado
+import { useEffect } from "react";
+// Remova o import do supabase que dava erro
+
+const Index = () => {
+  useEffect(() => {
+    const trackVisitor = async () => {
+      // 1. Pega os parâmetros da URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const utmSource = urlParams.get('utm_source');
+
+      if (utmSource) {
+        // 2. Cria a conexão "na hora" usando o script global
+        // Nota: O Lovable precisa carregar o script no index.html (veja abaixo)
+        const supabaseUrl = 'https://jdpycowlojjccbqmoaxj.supabase.co';
+        const supabaseKey = 'sb_publishable_1m1xv0ewxsSwRaaCztCPLQ_JZzd5nnu';
+        
+        // Usando o formato fetch (padrão do navegador) que NÃO precisa de biblioteca
+        await fetch(`${supabaseUrl}/rest/v1/leads_tracking`, {
+          method: 'POST',
+          headers: {
+            'apikey': supabaseKey,
+            'Authorization': `Bearer ${supabaseKey}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify({
+            user_id: '5ec9e6d7-88c1-4b22-9a46-4a247f870fc6',
+            event_type: 'visita_sem_biblioteca',
+            metadata: { 
+              origem: utmSource,
+              campanha: urlParams.get('utm_campaign') || 'direto'
+            }
+          })
+        });
+        console.log("Rastreado via Fetch (Sem créditos)");
+      }
+    };
+
+    trackVisitor();
+  }, []);
+
+  return (
+    // ... restante do seu código (HeroSection, etc)
+
+
+
+
+
 import HeroSection from "@/components/HeroSection";
 import BenefitsSection from "@/components/BenefitsSection";
 import TransformationSection from "@/components/TransformationSection";
