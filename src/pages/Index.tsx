@@ -20,17 +20,9 @@ const Index = () => {
     const device = /Android|iPhone|iPad/i.test(navigator.userAgent) ? "mobile" : "desktop";
 
     async function trackEvent(val: string) {
-      // Criamos um payload que tenta agradar qualquer estrutura de banco de dados
-      const body = {
-        event_type: val, // Opção padrão
-        event: val, // Opção comum 2
-        device_type: device,
-        device: device,
-        metadata: { device: device, path: window.location.pathname },
-      };
-
       try {
-        const response = await fetch(SB_URL, {
+        // Enviamos apenas o que o banco já provou que aceita para não gerar Erro 400
+        await fetch(SB_URL, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -38,33 +30,24 @@ const Index = () => {
             Authorization: `Bearer ${SB_KEY}`,
             Prefer: "return=minimal",
           },
-          body: JSON.stringify(body),
+          body: JSON.stringify({
+            event_type: val,
+            metadata: { device: device, path: window.location.pathname },
+          }),
         });
-
-        if (response.ok) {
-          console.log(`✅ Registrado: ${val}`);
-        } else {
-          // Se falhar com o corpo completo, tenta o "mínimo absoluto"
-          fetch(SB_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json", apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` },
-            body: JSON.stringify({ event_type: val }),
-          });
-        }
       } catch (e) {
-        console.error("Erro no fetch:", e);
+        // Erro de rede silencioso
       }
     }
 
-    // 1. Visita
+    // 1. Visita Inicial
     trackEvent("visita");
 
-    // 2. Scroll (com trava para não sobrecarregar)
+    // 2. Scroll (Com travas em memória para eficiência)
     const sent = new Set();
     const handleScroll = () => {
-      const scrollPos = window.scrollY + window.innerHeight;
-      const totalHeight = document.documentElement.scrollHeight;
-      const pct = Math.round((scrollPos / totalHeight) * 100);
+      const h = document.documentElement;
+      const pct = Math.round(((window.scrollY + window.innerHeight) / h.scrollHeight) * 100);
 
       [25, 50, 75, 90].forEach((mark) => {
         if (pct >= mark && !sent.has(mark)) {
@@ -74,7 +57,7 @@ const Index = () => {
       });
     };
 
-    // 3. Cliques
+    // 3. Cliques em Conversão
     const handleClick = (e: MouseEvent) => {
       const el = (e.target as HTMLElement).closest("a, button");
       if (el) {
