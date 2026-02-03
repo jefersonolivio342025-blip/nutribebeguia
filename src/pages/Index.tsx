@@ -14,56 +14,61 @@ import StickyHeader from "@/components/StickyHeader";
 
 const Index = () => {
   useEffect(() => {
-    // Configurações do seu Supabase
     const SB_URL = "https://jdpycowlojjccbqmoaxj.supabase.co/rest/v1/leads_tracking";
     const SB_KEY = "sb_publishable_1m1xv0ewxsSwRaaCztCPLQ_JZzd5nnu";
 
     // 1. Identifica o Dispositivo
-    const deviceType = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+    const device = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
       ? "mobile"
       : "desktop";
 
-    // Função para enviar os dados para o Supabase
+    // Função Blindada para evitar Erro 400
     async function trackEvent(eventType: string) {
       try {
-        await fetch(SB_URL, {
+        const response = await fetch(SB_URL, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             apikey: SB_KEY,
             Authorization: `Bearer ${SB_KEY}`,
+            Prefer: "return=minimal", // Necessário para evitar erros de resposta em algumas configs
           },
           body: JSON.stringify({
             event_type: eventType,
-            device_type: deviceType,
-            created_at: new Date().toISOString(),
+            // Enviamos nos dois formatos possíveis para garantir compatibilidade
+            device_type: device,
+            metadata: { device: device, url: window.location.href },
           }),
         });
+
+        if (!response.ok) {
+          const errorInfo = await response.json();
+          console.error("Erro Supabase:", errorInfo);
+        }
       } catch (e) {
-        console.error("Erro ao rastrear evento:", e);
+        console.error("Erro de conexão:", e);
       }
     }
 
     // 2. Rastreia a Visita Inicial
     trackEvent("visita");
 
-    // 3. Rastreia a Profundidade do Scroll (Analytics)
-    let sentScrolls = new Set();
+    // 3. Rastreia a Profundidade do Scroll (Evitando disparos repetidos)
+    let sentMarks = new Set();
     const handleScroll = () => {
-      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-      if (scrollHeight <= 0) return;
-
-      const scrollPercent = Math.round((window.scrollY / scrollHeight) * 100);
+      const scrollPos = window.scrollY + window.innerHeight;
+      const totalHeight = document.documentElement.scrollHeight;
+      const scrollPercent = (scrollPos / totalHeight) * 100;
 
       [25, 50, 75, 90].forEach((mark) => {
-        if (scrollPercent >= mark && !sentScrolls.has(mark)) {
+        if (scrollPercent >= mark && !sentMarks.has(mark)) {
           trackEvent(`scroll_${mark}`);
-          sentScrolls.add(mark);
+          sentMarks.add(mark);
         }
       });
     };
 
-    // 4. Rastreia Cliques (Ouvinte global para botões e links)
+    // 4. Rastreia Cliques Globalmente
     const handleClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       const element = target.closest("a, button");
@@ -72,7 +77,6 @@ const Index = () => {
         const text = element.textContent?.toLowerCase() || "";
         const href = (element as HTMLAnchorElement).href || "";
 
-        // Se o clique for em botão de compra ou WhatsApp, registra como "clique"
         if (
           text.includes("comprar") ||
           text.includes("oferta") ||
@@ -88,7 +92,6 @@ const Index = () => {
     window.addEventListener("scroll", handleScroll);
     window.addEventListener("click", handleClick);
 
-    // Limpeza ao desmontar o componente
     return () => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("click", handleClick);
@@ -98,22 +101,16 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       <StickyHeader />
-
       <HeroSection />
-
       <BenefitsSection />
       <TransformationSection />
       <TestimonialsSection />
       <TargetAudienceSection />
       <FAQSection />
-
       <OfferSection />
-
       <GuaranteeSection />
       <Footer />
-
       <WhatsAppButton />
-
       <SocialProofNotification />
     </div>
   );
