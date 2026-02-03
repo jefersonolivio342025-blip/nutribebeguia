@@ -5,117 +5,71 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
     <meta name="theme-color" content="#556B2F" />
     <link rel="icon" href="/favicon.ico" />
-    
-    <!-- SEO Meta Tags -->
+
     <title>NutriBebê - Guia de Introdução Alimentar Segura para Bebês</title>
-    <meta name="description" content="Descubra o método validado por nutricionistas que ensina os cortes corretos e texturas seguras para o seu bebê. 50 receitas nutritivas e lista de alimentos proibidos." />
-    <meta name="keywords" content="introdução alimentar, alimentação bebê, BLW, cortes seguros, receitas para bebê, engasgo bebê" />
-    <meta name="author" content="NutriBebê" />
-    
-    <!-- Open Graph -->
-    <meta property="og:title" content="NutriBebê - Introdução Alimentar Segura" />
-    <meta property="og:description" content="Guia completo de introdução alimentar com cortes seguros, 50 receitas e lista de alimentos proibidos." />
-    <meta property="og:type" content="website" />
-    <meta property="og:locale" content="pt_BR" />
-    
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="NutriBebê - Introdução Alimentar Segura" />
-    <meta name="twitter:description" content="Guia completo de introdução alimentar com cortes seguros e 50 receitas nutritivas." />
-    
-    <!-- UTM Tracker Script -->
+    <meta
+      name="description"
+      content="Descubra o método validado por nutricionistas que ensina os cortes corretos e texturas seguras para o seu bebê. 50 receitas nutritivas e lista de alimentos proibidos."
+    />
+
     <script>
       (function() {
-        const SUPABASE_URL = "https://huxcufxyfyntuskjawoz.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1eGN1Znh5ZnludHVza2phd296Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk5OTg1OTMsImV4cCI6MjA4NTU3NDU5M30.zXpj8y0MB0MiWoeOlhKK5gGzdNrb7RhfUPY7zfa0f68";
+        // SUAS CHAVES DO DASHBOARD NUTRIBEBÊ PRO
+        const SB_URL = "https://jdpycowlojjccbqmoaxj.supabase.co";
+        const SB_KEY = "sb_publishable_1m1xv0ewxsSwRaaCztCPLQ_JZzd5nnu";
 
-        function getParams() {
+        const getUTM = () => {
           const params = new URLSearchParams(window.location.search);
-          return {
-            utm_source: params.get('utm_source') || localStorage.getItem('utm_source') || null,
-            utm_medium: params.get('utm_medium') || localStorage.getItem('utm_medium') || null,
-            utm_campaign: params.get('utm_campaign') || localStorage.getItem('utm_campaign') || null,
-            utm_content: params.get('utm_content') || localStorage.getItem('utm_content') || null,
-            utm_term: params.get('utm_term') || localStorage.getItem('utm_term') || null,
-            src: params.get('src') || localStorage.getItem('src') || null,
-            fbclid: params.get('fbclid') || localStorage.getItem('fbclid') || null,
-            click_id: params.get('click_id') || params.get('fbclid') || localStorage.getItem('click_id') || generateClickId()
-          };
-        }
+          return params.get('utm_source') || localStorage.getItem('utm_source') || 'Direto';
+        };
 
-        function generateClickId() {
-          return 'utmtrk_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-        }
-
-        function saveToLocalStorage(data) {
-          Object.keys(data).forEach(key => {
-            if (data[key]) {
-              localStorage.setItem(key, data[key]);
-            }
-          });
-        }
-
-        async function sendToSupabase(data) {
+        // Função para enviar os dados para a tabela leads_tracking
+        async function trackNutri(type) {
           try {
-            await fetch(SUPABASE_URL + '/rest/v1/leads_tracking', {
+            const utm = getUTM();
+            if (utm !== 'Direto') localStorage.setItem('utm_source', utm);
+
+            await fetch(`${SB_URL}/rest/v1/leads_tracking`, {
               method: 'POST',
               headers: {
+                'apikey': SB_KEY,
+                'Authorization': `Bearer ${SB_KEY}`,
                 'Content-Type': 'application/json',
-                'apikey': SUPABASE_ANON_KEY,
-                'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
                 'Prefer': 'return=minimal'
               },
               body: JSON.stringify({
-                ...data,
-                page_url: window.location.href,
-                referrer: document.referrer
+                event_type: type,
+                utm_source: utm
               })
             });
           } catch (e) {
-            console.error('UTM Tracker: Erro ao enviar dados', e);
+            console.error('Erro NutriBebê Tracker:', e);
           }
         }
 
-        function injectUTMsInLinks() {
-          const data = getParams();
-          const checkoutDomains = ['kiwify.com.br', 'hotmart.com', 'pay.kiwify', 'go.hotmart'];
-          
-          document.querySelectorAll('a').forEach(link => {
-            const href = link.href;
-            if (checkoutDomains.some(domain => href.includes(domain))) {
+        // 1. Rastreia VISITA ao carregar
+        window.addEventListener('load', () => {
+          trackNutri('visita');
+        });
+
+        // 2. Rastreia CLIQUE em botões de checkout
+        document.addEventListener('click', (e) => {
+          const target = e.target.closest('a') || e.target.closest('button');
+          if (target) {
+            trackNutri('clique');
+
+            // Injeta UTM no link se for Kiwify ou Hotmart
+            const href = target.href || "";
+            if (href.includes('kiwify') || href.includes('hotmart')) {
               const url = new URL(href);
-              Object.keys(data).forEach(key => {
-                if (data[key]) {
-                  url.searchParams.set(key, data[key]);
-                }
-              });
-              link.href = url.toString();
+              url.searchParams.set('utm_source', getUTM());
+              target.href = url.toString();
             }
-          });
-        }
-
-        const data = getParams();
-        saveToLocalStorage(data);
-        
-        if (data.utm_source || data.fbclid || data.click_id) {
-          sendToSupabase(data);
-        }
-
-        if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', injectUTMsInLinks);
-        } else {
-          injectUTMsInLinks();
-        }
-
-        new MutationObserver(injectUTMsInLinks).observe(document.body, { 
-          childList: true, 
-          subtree: true 
+          }
         });
       })();
     </script>
-    <!-- End UTM Tracker Script -->
 
-    <!-- Facebook Pixel Code -->
     <script>
       !function(f,b,e,v,n,t,s)
       {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -128,14 +82,16 @@
       fbq('init', '3077997939046690');
       fbq('track', 'PageView');
     </script>
-    <!-- End Facebook Pixel Code -->
   </head>
 
   <body>
-    <!-- Facebook Pixel noscript fallback -->
     <noscript>
-      <img height="1" width="1" style="display:none"
-           src="https://www.facebook.com/tr?id=3077997939046690&ev=PageView&noscript=1"/>
+      <img
+        height="1"
+        width="1"
+        style="display:none"
+        src="https://www.facebook.com/tr?id=3077997939046690&ev=PageView&noscript=1"
+      />
     </noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
