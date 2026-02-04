@@ -17,15 +17,32 @@ const Index = () => {
     const SB_URL = "https://jdpycowlojjccbqmoaxj.supabase.co/rest/v1/leads_tracking";
     const SB_KEY = "sb_publishable_1m1xv0ewxsSwRaaCztCPLQ_JZzd5nnu";
 
-    // 1. Captura UTMs e Dispositivo
     const params = new URLSearchParams(window.location.search);
     const utm_source = params.get("utm_source") || "direto";
     const utm_campaign = params.get("utm_campaign") || null;
     const device = /Android|iPhone|iPad/i.test(navigator.userAgent) ? "mobile" : "desktop";
 
-    async function trackEvent(val: string, extraData = {}) {
+    async function trackEvent(val: string, extraData: any = {}) {
       try {
-        await fetch(SB_URL, {
+        // Construindo o corpo do JSON de forma limpa
+        const payload: any = {
+          event_type: val,
+          utm_source: utm_source,
+          utm_campaign: utm_campaign,
+          metadata: {
+            device: device,
+            path: window.location.pathname,
+            ...extraData,
+          },
+        };
+
+        // Só adiciona as colunas click_x e click_y se forem números válidos
+        if (extraData.click_x !== undefined && extraData.click_x !== null) {
+          payload.click_x = Number(extraData.click_x);
+          payload.click_y = Number(extraData.click_y);
+        }
+
+        const response = await fetch(SB_URL, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -33,43 +50,35 @@ const Index = () => {
             Authorization: `Bearer ${SB_KEY}`,
             Prefer: "return=minimal",
           },
-          body: JSON.stringify({
-            event_type: val,
-            utm_source: utm_source,
-            utm_campaign: utm_campaign,
-            metadata: {
-              device: device,
-              path: window.location.pathname,
-              ...extraData,
-            },
-            // Se houver coordenadas de clique, elas entram aqui
-            ...((extraData as any).click_x && {
-              click_x: (extraData as any).click_x,
-              click_y: (extraData as any).click_y,
-            }),
-          }),
+          body: JSON.stringify(payload),
         });
+
+        if (!response.ok) {
+          console.error("Erro Supabase:", await response.text());
+        } else {
+          console.log(`Evento ${val} enviado com sucesso!`);
+        }
       } catch (e) {
-        // Erro silencioso
+        console.error("Erro na requisição:", e);
       }
     }
 
-    // 2. Visita Inicial
+    // 1. Visita Inicial
     trackEvent("visita");
 
-    // 3. Captura de Mapa de Calor (Heatmap) + Cliques de Conversão
+    // 2. Captura de Mapa de Calor + Conversão
     const handleGlobalClick = (e: MouseEvent) => {
       const width = window.innerWidth;
       const height = document.documentElement.scrollHeight;
 
-      // Coordenadas em % para o Heatmap
-      const click_x = (e.pageX / width) * 100;
-      const click_y = (e.pageY / height) * 100;
+      // Cálculo das coordenadas em %
+      const x = (e.pageX / width) * 100;
+      const y = (e.pageY / height) * 100;
 
-      // Primeiro, registra o ponto no Mapa de Calor
-      trackEvent("click_heatmap", { click_x, click_y });
+      // Envia para o mapa de calor
+      trackEvent("click_heatmap", { click_x: x, click_y: y });
 
-      // Segundo, verifica se foi um clique em botão de conversão
+      // Verifica cliques em botões/links de compra
       const el = (e.target as HTMLElement).closest("a, button");
       if (el) {
         const text = el.textContent?.toLowerCase() || "";
@@ -80,16 +89,16 @@ const Index = () => {
       }
     };
 
-    // 4. Scroll
-    const sent = new Set();
+    // 3. Rastreio de Scroll
+    const sentMarks = new Set();
     const handleScroll = () => {
       const h = document.documentElement;
       const pct = Math.round(((window.scrollY + window.innerHeight) / h.scrollHeight) * 100);
 
       [25, 50, 75, 90].forEach((mark) => {
-        if (pct >= mark && !sent.has(mark)) {
+        if (pct >= mark && !sentMarks.has(mark)) {
           trackEvent(`scroll_${mark}`);
-          sent.add(mark);
+          sentMarks.add(mark);
         }
       });
     };
