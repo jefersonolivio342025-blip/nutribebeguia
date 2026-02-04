@@ -24,28 +24,21 @@ const Index = () => {
 
     async function trackEvent(val: string, extraData: any = {}) {
       try {
-        // Criamos o objeto base
+        // Objeto simplificado para evitar conflitos no banco
         const payload: any = {
           event_type: val,
           utm_source: utm_source,
           utm_campaign: utm_campaign,
+          // Se as coordenadas existirem, garantimos que são números
+          click_x: extraData.click_x !== undefined ? Number(extraData.click_x.toFixed(2)) : null,
+          click_y: extraData.click_y !== undefined ? Number(extraData.click_y.toFixed(2)) : null,
           metadata: {
             device: device,
             path: window.location.pathname,
+            // Mantemos o resto dos dados no metadata, se houver
+            ...Object.fromEntries(Object.entries(extraData).filter(([k]) => k !== "click_x" && k !== "click_y")),
           },
         };
-
-        // Extraímos click_x e click_y se existirem e garantimos que são números
-        if (extraData.click_x !== undefined) {
-          payload.click_x = Number(extraData.click_x.toFixed(2));
-          payload.click_y = Number(extraData.click_y.toFixed(2));
-
-          // Removemos do metadata para não duplicar informação
-          const { click_x, click_y, ...otherMetadata } = extraData;
-          payload.metadata = { ...payload.metadata, ...otherMetadata };
-        } else {
-          payload.metadata = { ...payload.metadata, ...extraData };
-        }
 
         const response = await fetch(SB_URL, {
           method: "POST",
@@ -59,32 +52,28 @@ const Index = () => {
         });
 
         if (response.ok) {
-          console.log(`✅ [${val}] enviado com sucesso! X: ${payload.click_x || "-"} Y: ${payload.click_y || "-"}`);
-        } else {
-          const errorMsg = await response.text();
-          console.error("❌ Erro Supabase:", errorMsg);
+          console.log(`✅ [${val}] X: ${payload.click_x || "-"} Y: ${payload.click_y || "-"}`);
         }
       } catch (e) {
-        console.error("❌ Erro na requisição:", e);
+        console.error("❌ Erro de rede:", e);
       }
     }
 
     // 1. Visita Inicial
     trackEvent("visita");
 
-    // 2. Captura Global de Cliques (Heatmap + Conversão)
+    // 2. Captura de Cliques
     const handleGlobalClick = (e: MouseEvent) => {
       const width = window.innerWidth;
       const height = document.documentElement.scrollHeight;
 
-      // Cálculo preciso em porcentagem
       const x = (e.pageX / width) * 100;
       const y = (e.pageY / height) * 100;
 
-      // Salva no mapa de calor
+      // Mapa de calor
       trackEvent("click_heatmap", { click_x: x, click_y: y });
 
-      // Verifica cliques em botões de compra
+      // Cliques de conversão
       const el = (e.target as HTMLElement).closest("a, button");
       if (el) {
         const text = el.textContent?.toLowerCase() || "";
@@ -95,7 +84,7 @@ const Index = () => {
       }
     };
 
-    // 3. Rastreio de Scroll (25%, 50%, 75%, 90%)
+    // 3. Scroll
     const sentMarks = new Set();
     const handleScroll = () => {
       const h = document.documentElement;
