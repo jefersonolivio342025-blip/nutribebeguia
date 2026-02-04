@@ -17,11 +17,14 @@ const Index = () => {
     const SB_URL = "https://jdpycowlojjccbqmoaxj.supabase.co/rest/v1/leads_tracking";
     const SB_KEY = "sb_publishable_1m1xv0ewxsSwRaaCztCPLQ_JZzd5nnu";
 
+    // 1. Captura UTMs e Dispositivo
+    const params = new URLSearchParams(window.location.search);
+    const utm_source = params.get("utm_source") || "direto";
+    const utm_campaign = params.get("utm_campaign") || null;
     const device = /Android|iPhone|iPad/i.test(navigator.userAgent) ? "mobile" : "desktop";
 
-    async function trackEvent(val: string) {
+    async function trackEvent(val: string, extraData = {}) {
       try {
-        // Enviamos apenas o que o banco já provou que aceita para não gerar Erro 400
         await fetch(SB_URL, {
           method: "POST",
           headers: {
@@ -32,18 +35,52 @@ const Index = () => {
           },
           body: JSON.stringify({
             event_type: val,
-            metadata: { device: device, path: window.location.pathname },
+            utm_source: utm_source,
+            utm_campaign: utm_campaign,
+            metadata: {
+              device: device,
+              path: window.location.pathname,
+              ...extraData,
+            },
+            // Se houver coordenadas de clique, elas entram aqui
+            ...((extraData as any).click_x && {
+              click_x: (extraData as any).click_x,
+              click_y: (extraData as any).click_y,
+            }),
           }),
         });
       } catch (e) {
-        // Erro de rede silencioso
+        // Erro silencioso
       }
     }
 
-    // 1. Visita Inicial
+    // 2. Visita Inicial
     trackEvent("visita");
 
-    // 2. Scroll (Com travas em memória para eficiência)
+    // 3. Captura de Mapa de Calor (Heatmap) + Cliques de Conversão
+    const handleGlobalClick = (e: MouseEvent) => {
+      const width = window.innerWidth;
+      const height = document.documentElement.scrollHeight;
+
+      // Coordenadas em % para o Heatmap
+      const click_x = (e.pageX / width) * 100;
+      const click_y = (e.pageY / height) * 100;
+
+      // Primeiro, registra o ponto no Mapa de Calor
+      trackEvent("click_heatmap", { click_x, click_y });
+
+      // Segundo, verifica se foi um clique em botão de conversão
+      const el = (e.target as HTMLElement).closest("a, button");
+      if (el) {
+        const text = el.textContent?.toLowerCase() || "";
+        const href = (el as HTMLAnchorElement).href || "";
+        if (text.includes("comprar") || text.includes("oferta") || href.includes("kiwify") || href.includes("wa.me")) {
+          trackEvent("clique");
+        }
+      }
+    };
+
+    // 4. Scroll
     const sent = new Set();
     const handleScroll = () => {
       const h = document.documentElement;
@@ -57,24 +94,12 @@ const Index = () => {
       });
     };
 
-    // 3. Cliques em Conversão
-    const handleClick = (e: MouseEvent) => {
-      const el = (e.target as HTMLElement).closest("a, button");
-      if (el) {
-        const text = el.textContent?.toLowerCase() || "";
-        const href = (el as HTMLAnchorElement).href || "";
-        if (text.includes("comprar") || text.includes("oferta") || href.includes("kiwify") || href.includes("wa.me")) {
-          trackEvent("clique");
-        }
-      }
-    };
-
     window.addEventListener("scroll", handleScroll);
-    window.addEventListener("click", handleClick);
+    window.addEventListener("click", handleGlobalClick);
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("click", handleClick);
+      window.removeEventListener("click", handleGlobalClick);
     };
   }, []);
 
