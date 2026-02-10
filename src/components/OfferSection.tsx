@@ -1,7 +1,3 @@
-Entendido, Jeferson! Vamos ajustar essa OfferSection para que ela reflita o valor de R$ 29,90, mude o foco do "E-book" para o "App NutriBebê Pro" e mantenha os gatilhos de urgência (o contador e a barra de progresso).
-
-Aqui está o código pronto para você copiar e substituir no seu arquivo. Enviei como texto simples para garantir que você visualize:
-
 import { useState, useEffect } from "react";
 import ebookMockup from "@/assets/ebook-mockup.png";
 import AnimatedSection from "./AnimatedSection";
