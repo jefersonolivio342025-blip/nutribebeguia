@@ -38,20 +38,16 @@ return (
 <p className="text-sm font-bold mb-2">🔥 {s} ativos. Restam {1000 - s} vagas!</p>
 <Progress value={(s/1000)*100} className="h-2" />
 </div>
-<div className="bg-destructive/10 border p-6 rounded-2xl mb-10">
+<div className="bg-destructive/10 border p-6 rounded-2xl mb-10 text-center">
 <p className="text-destructive font-bold mb-2 italic">⏰ Oferta expira em:</p>
 <Timer />
 </div>
-<div className="flex flex-col lg:flex-row items-center gap-8 text-center lg:text-left">
-<img src={ebookMockup} className="w-full max-w-[280px] mx-auto border-[8px] border-slate-900 rounded-[2.5rem] shadow-2xl" alt="App" />
-<div className="flex-1">
+<div className="flex flex-col lg:flex-row items-center gap-8">
+<img src={ebookMockup} className="w-64 mx-auto border-[8px] border-slate-900 rounded-[2.5rem] shadow-2xl" alt="App" />
+<div className="flex-1 text-center lg:text-left">
 <h2 className="text-3xl font-black mb-4">App <span className="text-primary">NutriBebê Pro</span></h2>
-<div className="mb-6 space-y-2 text-sm font-semibold text-muted-foreground">
-<p>✅ Cortes Seguros (Vídeos)</p>
-<p>✅ Cardápios e +100 Receitas</p>
-<p>✅ Acesso Vitalício (Sem Mensalidade)</p>
-</div>
+<p className="mb-6 text-muted-foreground font-semibold">✅ Cortes Seguros • ✅ Cardápios • ✅ +100 Receitas</p>
 <div className="mb-6">
-<span className="line-through text-muted-foreground italic text-lg">R$ 97,00
+<span className="line-through text-muted-foreground italic">R$ 97,00
 
 export default OfferSection;
