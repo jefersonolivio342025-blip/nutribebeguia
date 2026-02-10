@@ -22,7 +22,9 @@ return (
 <div className="bg-destructive p-2 rounded">{f(t.s)}</div>
 </div>
 );
-};export const OfferSection = () => {
+};
+
+export const OfferSection = () => {
 const [s, setS] = useState(847);
 useEffect(() => {
 const i = setInterval(() => setS(v => v < 990 ? v + 1 : 847), 30000);
