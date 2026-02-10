@@ -1,3 +1,7 @@
+O erro aconteceu porque, ao copiar o texto puro, algum caractere ou fechamento de tag </div> ou </section> acabou ficando de fora no final do arquivo. O TypeScript (TS) não consegue compilar se as tags não estiverem perfeitamente fechadas.
+
+Vou te passar o código completo e revisado. Certifique-se de apagar TUDO o que está no arquivo antes de colar este, para não sobrar nenhuma chave { ou tag perdida no final.
+
 import { useState, useEffect } from "react";
 import ebookMockup from "@/assets/ebook-mockup.png";
 import AnimatedSection from "./AnimatedSection";
@@ -87,7 +91,7 @@ Restam apenas {totalUnits - soldCount} licenças!
 </div>
 <Progress value={percentage} className="h-3 bg-muted" />
 <p className="text-xs text-muted-foreground mt-2 text-center">
-⚠️ Lote promocional de acesso vitalício limitado
+⚠️ Lote promocional limitado
 </p>
 </div>
 );
@@ -97,6 +101,15 @@ const OfferSection = () => {
 const handleCTAClick = () => {
 window.open("", "_blank");
 };
+
+const listItems = [
+"Biblioteca inteligente com +100 receitas",
+"Guia visual de cortes seguros (BLW)",
+"Cronograma de introdução alimentar passo a passo",
+"Lista de compras e alimentos proibidos",
+"Bônus: E-book de Introdução Alimentar (PDF)",
+"Acesso Vitalício sem mensalidades",
+];
 
 return (
 <section className="bg-card py-16 lg:py-24">
