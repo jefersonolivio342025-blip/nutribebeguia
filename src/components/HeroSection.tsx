@@ -2,47 +2,50 @@ import heroBaby from "@/assets/hero-baby.jpg";
 
 const HeroSection = () => {
   const handleCTAClick = () => {
-    window.open("https://pay.kiwify.com.br/9j0V7DB", "_blank");
+    window.open("", "_blank");
   };
 
   return (
     <section className="section-beige min-h-screen">
       <div className="container py-8 lg:py-16">
         <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
-          {/* Text Content */}
           <div className="flex-1 text-center lg:text-left order-2 lg:order-1">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black leading-tight text-foreground mb-6 animate-slide-up">
-              Você tem medo do seu bebê{" "}
-              <span className="text-primary">engasgar?</span>
+            <div className="inline-block bg-primary/10 text-primary px-4 py-1 rounded-full text-sm font-bold mb-6">
+              📱 NOVO APP NUTRIBEBÊ PRO
+            </div>
+
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black leading-tight text-foreground mb-6">
+              Segurança para o seu bebê na <span className="text-primary">palma da mão!</span>
             </h1>
-            
-            <p className="text-lg sm:text-xl lg:text-2xl text-muted-foreground mb-8 leading-relaxed animate-slide-up" style={{ animationDelay: "0.1s" }}>
-              <span className="text-2xl">🌱</span>{" "}
-              <strong className="text-foreground">Introdução Alimentar Segura:</strong>{" "}
-              Descubra o método validado por nutricionistas que ensina os{" "}
-              <span className="text-primary font-semibold">cortes corretos</span> e{" "}
-              <span className="text-primary font-semibold">texturas seguras</span> para o seu bebê.
+
+            <p className="text-lg sm:text-xl lg:text-2xl text-muted-foreground mb-8 leading-relaxed">
+              <span className="text-2xl">🥗</span>{" "}
+              <strong className="text-foreground">Muito mais que um e-book:</strong> Tenha acesso imediato a receitas,
+              cardápios e o guia de <span className="text-primary font-semibold">cortes seguros</span> direto no nosso
+              aplicativo exclusivo por apenas <span className="text-primary font-semibold"> R$ 29,90.</span>
             </p>
 
-            <div className="animate-slide-up" style={{ animationDelay: "0.2s" }}>
+            <div className="space-y-4">
               <button
                 onClick={handleCTAClick}
-                className="btn-cta-large uppercase tracking-wide animate-bounce-gentle"
+                className="btn-cta-large uppercase tracking-wide shadow-xl shadow-primary/20"
               >
-                Quero o Guia Agora
+                Quero o App Agora
               </button>
+              <p className="text-sm font-bold text-foreground italic">✨ Pagamento único • Sem mensalidades</p>
             </div>
           </div>
 
-          {/* Hero Image */}
-          <div className="flex-1 order-1 lg:order-2 animate-scale-in">
+          <div className="flex-1 order-1 lg:order-2">
             <div className="relative">
-              <div className="absolute -inset-4 bg-primary/10 rounded-[3rem] blur-2xl" />
-              <img
-                src={heroBaby}
-                alt="Bebê feliz comendo fruta de forma segura"
-                className="relative w-full max-w-md lg:max-w-lg mx-auto rounded-[2rem] shadow-card object-cover aspect-[4/5]"
-              />
+              <div className="absolute -inset-4 bg-primary/20 rounded-[3rem] blur-2xl opacity-60" />
+              <div className="relative mx-auto w-full max-w-[300px] lg:max-w-[350px] border-[8px] border-slate-900 rounded-[3rem] shadow-2xl overflow-hidden bg-white">
+                <img src={heroBaby} alt="App NutriBebê Pro" className="w-full object-cover aspect-[9/16]" />
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[85%] bg-white/90 backdrop-blur-sm p-3 rounded-2xl shadow-lg border border-primary/20 text-center">
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase">Acesso Vitalício</p>
+                  <p className="text-xl font-black text-primary">R$ 29,90</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
