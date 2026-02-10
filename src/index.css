@@ -45,6 +45,15 @@
     --cream: 45 50% 95%;
     --warm-white: 40 40% 98%;
 
+    /* App colors - Mint & Peach */
+    --app-mint: 160 40% 55%;
+    --app-mint-light: 160 45% 92%;
+    --app-mint-dark: 160 45% 35%;
+    --app-peach: 25 80% 75%;
+    --app-peach-light: 25 80% 93%;
+    --app-peach-dark: 25 60% 55%;
+    --app-bg: 160 20% 97%;
+
     /* Gradients */
     --gradient-hero: linear-gradient(135deg, hsl(60 56% 96%) 0%, hsl(60 56% 91%) 100%);
     --gradient-cta: linear-gradient(135deg, hsl(79 50% 40%) 0%, hsl(79 41% 31%) 100%);
@@ -148,6 +157,10 @@
 }
 
 @layer utilities {
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
   .bg-warm-white {
     background-color: hsl(var(--warm-white));
   }
