@@ -62,6 +62,17 @@ export default {
         },
         cream: "hsl(var(--cream))",
         "warm-white": "hsl(var(--warm-white))",
+        "app-mint": {
+          DEFAULT: "hsl(var(--app-mint))",
+          light: "hsl(var(--app-mint-light))",
+          dark: "hsl(var(--app-mint-dark))",
+        },
+        "app-peach": {
+          DEFAULT: "hsl(var(--app-peach))",
+          light: "hsl(var(--app-peach-light))",
+          dark: "hsl(var(--app-peach-dark))",
+        },
+        "app-bg": "hsl(var(--app-bg))",
       },
       borderRadius: {
         lg: "var(--radius)",
