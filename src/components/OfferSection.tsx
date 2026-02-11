@@ -1,87 +1,25 @@
-import { useState, useEffect } from "react";
-import ebookMockup from "@/assets/ebook-mockup.png";
-import { Progress } from "@/components/ui/progress";
+<div className="flex-1 text-center lg:text-left">
+  <h2 className="text-3xl font-black mb-4 text-foreground text-center lg:text-left">
+    App <span className="text-primary">NutriBebê Pro</span>
+  </h2>
 
-const Timer = () => {
-  const [t, setT] = useState({ h: 2, m: 47, s: 33 });
-  useEffect(() => {
-    const i = setInterval(() => {
-      setT((p) => {
-        let { h, m, s } = p;
-        if (s > 0) s--;
-        else if (m > 0) {
-          m--;
-          s = 59;
-        } else if (h > 0) {
-          h--;
-          m = 59;
-          s = 59;
-        }
-        return { h, m, s };
-      });
-    }, 1000);
-    return () => clearInterval(i);
-  }, []);
-  const f = (n: number) => n.toString().padStart(2, "0");
-  return (
-    <div className="flex justify-center gap-2 text-white font-bold">
-      <div className="bg-destructive p-2 rounded">{f(t.h)}</div>:
-      <div className="bg-destructive p-2 rounded">{f(t.m)}</div>:
-      <div className="bg-destructive p-2 rounded">{f(t.s)}</div>
-    </div>
-  );
-};
+  <div className="mb-6 space-y-2 text-sm font-semibold text-muted-foreground">
+    <p className="flex items-center gap-2 justify-center lg:justify-start">
+      ✅ Guia Visual de Cortes Seguros (Passo a Passo)
+    </p>
+    <p className="flex items-center gap-2 justify-center lg:justify-start">✅ Cardápios e Receitas Exclusivas</p>
+    <p className="flex items-center gap-2 justify-center lg:justify-start">✅ Acesso Vitalício (Sem Mensalidade)</p>
+  </div>
 
-export const OfferSection = () => {
-  const [s, setS] = useState(847);
-  useEffect(() => {
-    const i = setInterval(() => setS((v) => (v < 990 ? v + 1 : 847)), 30000);
-    return () => clearInterval(i);
-  }, []);
+  <div className="mb-6 text-center lg:text-left">
+    <span className="line-through text-muted-foreground italic text-lg">R$ 97,00</span>
+    <div className="text-5xl font-black text-primary">R$ 29,90</div>
+  </div>
 
-  return (
-    <section className="bg-card py-12">
-      <div className="container px-4 max-w-4xl mx-auto text-center">
-        <div className="mb-8">
-          <p className="text-sm font-bold mb-2">
-            🔥 {s} ativos. Restam {1000 - s} vagas!
-          </p>
-          <Progress value={(s / 1000) * 100} className="h-2" />
-        </div>
-        <div className="bg-destructive/10 border p-6 rounded-2xl mb-10">
-          <p className="text-destructive font-bold mb-2 italic">⏰ Oferta expira em:</p>
-          <Timer />
-        </div>
-        <div className="flex flex-col lg:flex-row items-center gap-8">
-          <img
-            src={ebookMockup}
-            className="w-64 mx-auto border-[8px] border-slate-900 rounded-[2.5rem] shadow-2xl"
-            alt="App"
-          />
-          <div className="flex-1 text-center lg:text-left">
-            <h2 className="text-3xl font-black mb-4">
-              App <span className="text-primary">NutriBebê Pro</span>
-            </h2>
-            <div className="mb-6 space-y-2 text-sm font-semibold text-muted-foreground">
-              <p>✅ Cortes Seguros (Vídeos)</p>
-              <p>✅ Cardápios e +100 Receitas</p>
-              <p>✅ Acesso Vitalício (Sem Mensalidade)</p>
-            </div>
-            <div className="mb-6">
-              <span className="line-through text-muted-foreground italic text-lg">R$ 97,00</span>
-              <div className="text-5xl font-black text-primary">R$ 29,90</div>
-            </div>
-            <button
-              onClick={() => window.open("", "_blank")}
-              className="w-full lg:w-auto bg-primary text-white font-bold py-4 px-10 rounded-xl shadow-lg"
-            >
-              QUERO O APP AGORA
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-export default OfferSection;
+  <button
+    onClick={() => window.open("https://pay.kiwify.com.br/9j0V7DB", "_blank")}
+    className="w-full lg:w-auto bg-primary text-white font-bold py-4 px-10 rounded-xl shadow-lg hover:scale-105 transition-transform"
+  >
+    QUERO O APP AGORA
+  </button>
+</div>;
