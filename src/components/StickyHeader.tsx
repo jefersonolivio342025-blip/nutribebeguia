@@ -14,7 +14,7 @@ const StickyHeader = () => {
   }, []);
 
   const handleCTAClick = () => {
-    window.open("https://pay.kiwify.com.br/9j0V7DB", "_blank");
+    window.open("https://pay.kiwify.com.br/vrYjxFv", "_blank");
   };
 
   return (
@@ -38,7 +38,7 @@ const StickyHeader = () => {
           onClick={handleCTAClick}
           className="btn-cta px-4 py-2 sm:px-6 sm:py-2.5 text-sm sm:text-base whitespace-nowrap"
         >
-          Comprar por R$ 14,90
+          Comprar por R$ 29,90
         </button>
       </div>
     </header>
