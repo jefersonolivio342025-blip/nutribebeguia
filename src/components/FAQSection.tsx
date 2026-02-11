@@ -1,50 +1,31 @@
-import {
-Accordion,
-AccordionContent,
-AccordionItem,
-AccordionTrigger,
-} from "@/components/ui/accordion";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 const FAQSection = () => {
 const faqs = [
-{
-question: "Como recebo o acesso ao App NutriBebê Pro?",
-answer: "O acesso é imediato! Assim que o seu pagamento for aprovado (no cartão ou PIX), você receberá um e-mail da Kiwify com o link exclusivo e as instruções para acessar a nossa plataforma e instalar o app no seu celular.",
-},
-{
-question: "Preciso pagar mensalidade?",
-answer: "Não! O NutriBebê Pro é de pagamento único. Você paga apenas R$ 29,90 uma vez e tem acesso vitalício a todas as receitas, cardápios e atualizações futuras sem nunca mais pagar nada.",
-},
-{
-question: "O App funciona em qualquer celular?",
-answer: "Sim! Nossa plataforma é compatível com Android e iPhone (iOS). Você poderá acessar pelo celular, tablet ou até pelo computador.",
-},
-{
-question: "O que vem dentro do aplicativo?",
-answer: "Você terá acesso ao guia visual de cortes seguros (BLW), cronogramas de introdução alimentar passo a passo, uma biblioteca com mais de 100 receitas saudáveis e cardápios semanais completos para não precisar pensar no que cozinhar.",
-},
-{
-question: "O pagamento é seguro?",
-answer: "Totalmente. O pagamento é processado pela Kiwify, uma das maiores e mais seguras plataformas de produtos digitais do Brasil. Seus dados estão 100% protegidos.",
-},
-{
-question: "E se eu não gostar, tenho garantia?",
-answer: "Com certeza! Oferecemos uma garantia incondicional de 7 dias. Se por qualquer motivo você achar que o conteúdo não é para você, basta solicitar o reembolso e devolvemos 100% do seu dinheiro.",
-},
+{ q: "Como recebo o acesso?", a: "Imediato! Você recebe um e-mail da Kiwify com o link do app assim que o pagamento for aprovado." },
+{ q: "Preciso pagar mensalidade?", a: "Não! É pagamento único de R$ 29,90 com acesso vitalício." },
+{ q: "Funciona em qualquer celular?", a: "Sim! É compatível com Android e iPhone (iOS)." },
+{ q: "O que tem no app?", a: "Guia de cortes seguros, cronogramas de introdução alimentar e +100 receitas." },
+{ q: "É seguro?", a: "Sim, o pagamento é processado pela Kiwify com 7 dias de garantia." }
 ];
 
 return (
-<section id="faq" className="section-beige">
-<div className="container py-16 lg:py-24 max-w-3xl mx-auto px-4">
-<div className="text-center mb-12">
-<h2 className="text-3xl lg:text-4xl font-black text-foreground mb-4">
-Dúvidas <span className="text-primary">Frequentes</span>
-</h2>
-<p className="text-muted-foreground font-medium">
-Tudo o que você precisa saber sobre o NutriBebê Pro.
-</p>
+<section id="faq" className="bg-orange-50/50 py-16">
+<div className="container max-w-3xl mx-auto px-4">
+<div className="text-center mb-10">
+<h2 className="text-3xl font-black mb-2 text-foreground">Dúvidas Frequentes</h2>
+<p className="text-muted-foreground">Tudo sobre o NutriBebê Pro</p>
 </div>
-
+<Accordion type="single" collapsible className="space-y-3">
+{faqs.map((f, i) => (
+<AccordionItem key={i} value={item-${i}} className="bg-white border rounded-xl px-4 shadow-sm">
+<AccordionTrigger className="text-left font-bold">{f.q}</AccordionTrigger>
+<AccordionContent className="text-muted-foreground">{f.a}</AccordionContent>
+</AccordionItem>
+))}
+</Accordion>
+</div>
+</section>
 );
 };
 
