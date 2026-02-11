@@ -12,14 +12,14 @@ export const OfferSection = () => {
     <section className="bg-card py-12">
       <div className="container px-4 max-w-4xl mx-auto text-center">
         <div className="mb-8">
-          <p className="text-sm font-bold mb-2">
+          <p className="text-sm font-bold mb-2 text-foreground">
             🔥 {s} ativos. Restam {1000 - s} vagas!
           </p>
           <Progress value={(s / 1000) * 100} className="h-2" />
         </div>
         <div className="flex flex-col lg:flex-row items-center gap-8 text-center lg:text-left">
           <div className="flex-1">
-            <h2 className="text-3xl font-black mb-4">
+            <h2 className="text-3xl font-black mb-4 text-foreground">
               App <span className="text-primary">NutriBebê Pro</span>
             </h2>
             <div className="mb-6 space-y-2 text-sm font-semibold text-muted-foreground">
@@ -27,7 +27,7 @@ export const OfferSection = () => {
               <p>✅ Cardápios e Receitas Exclusivas</p>
               <p>✅ Acesso Vitalício (Sem Mensalidade)</p>
             </div>
-            <div className="mb-6 text-center lg:text-left">
+            <div className="mb-6">
               <span className="line-through text-muted-foreground italic text-lg">R$ 97,00</span>
               <div className="text-5xl font-black text-primary">R$ 29,90</div>
             </div>
