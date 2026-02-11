@@ -27,13 +27,13 @@ export const OfferSection = () => {
               <p>✅ Cardápios e Receitas Exclusivas</p>
               <p>✅ Acesso Vitalício (Sem Mensalidade)</p>
             </div>
-            <div className="mb-6">
-              <span className="line-through text-muted-foreground italic">R$ 97,00</span>
+            <div className="mb-6 text-center lg:text-left">
+              <span className="line-through text-muted-foreground italic text-lg">R$ 97,00</span>
               <div className="text-5xl font-black text-primary">R$ 29,90</div>
             </div>
             <button
-              onClick={() => window.open("https://pay.kiwify.com.br/9j0V7DB", "_blank")}
-              className="w-full lg:w-auto bg-primary text-white font-bold py-4 px-10 rounded-xl"
+              onClick={() => window.open("https://pay.kiwify.com.br/vrYjxFv", "_blank")}
+              className="w-full lg:w-auto bg-primary text-white font-bold py-4 px-10 rounded-xl shadow-lg hover:scale-105 transition-transform"
             >
               QUERO O APP AGORA
             </button>
