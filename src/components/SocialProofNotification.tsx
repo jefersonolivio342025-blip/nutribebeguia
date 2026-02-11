@@ -3,15 +3,15 @@ import { ShoppingCart, Baby, Sparkles, Salad } from "lucide-react";
 
 const notifications = [
   { name: "Ana Paula", city: "São Paulo", action: "acabou de comprar", icon: ShoppingCart },
-  { name: "Mariana Silva", city: "Curitiba", action: "adquiriu o Guia", icon: Baby },
+  { name: "Mariana Silva", city: "Curitiba", action: "adquiriu o App", icon: Baby },
   { name: "Beatriz Oliveira", city: "Salvador", action: "ativou o acesso Pro", icon: Sparkles },
   { name: "Juliana Costa", city: "Rio de Janeiro", action: "acabou de comprar", icon: Salad },
-  { name: "Fernanda Santos", city: "Belo Horizonte", action: "adquiriu o Guia", icon: Baby },
+  { name: "Fernanda Santos", city: "Belo Horizonte", action: "adquiriu o App", icon: Baby },
   { name: "Camila Rodrigues", city: "Porto Alegre", action: "acabou de comprar", icon: ShoppingCart },
   { name: "Larissa Almeida", city: "Brasília", action: "ativou o acesso Pro", icon: Sparkles },
-  { name: "Patrícia Lima", city: "Recife", action: "adquiriu o Guia", icon: Baby },
+  { name: "Patrícia Lima", city: "Recife", action: "adquiriu o App", icon: Baby },
   { name: "Renata Souza", city: "Fortaleza", action: "acabou de comprar", icon: ShoppingCart },
-  { name: "Carolina Pereira", city: "Florianópolis", action: "adquiriu o Guia", icon: Baby },
+  { name: "Carolina Pereira", city: "Florianópolis", action: "adquiriu o App", icon: Baby },
   { name: "Amanda Ferreira", city: "Goiânia", action: "acabou de comprar", icon: Salad },
   { name: "Gabriela Martins", city: "Manaus", action: "ativou o acesso Pro", icon: Sparkles },
 ];
