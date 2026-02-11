@@ -41,16 +41,12 @@ export const GuaranteeSection = () => {
           </p>
         </div>
 
-        <div className="border-t pt-8 text-center">
-          <h4 className="font-black text-primary text-xl mb-2">NutriBebê</h4>
-          <p className="text-sm text-muted-foreground mb-4">Introdução alimentar segura e tranquila para o seu bebê</p>
-          <p className="text-[10px] text-muted-foreground uppercase tracking-widest">
+        <div className="border-t border-slate-200 pt-12 text-center">
+          <h4 className="font-black text-primary text-2xl mb-2">NutriBebê</h4>
+          <p className="text-muted-foreground font-medium mb-6">
+            Introdução alimentar segura e tranquila para o seu bebê
+          </p>
+          <p className="text-[11px] text-muted-foreground/60 uppercase tracking-widest font-semibold">
             © 2026 NutriBebê. Todos os direitos reservados.
           </p>
         </div>
-      </div>
-    </footer>
-  );
-};
-
-export default GuaranteeSection;
