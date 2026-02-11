@@ -10,30 +10,49 @@ export const OfferSection = () => {
 
   return (
     <section className="bg-card py-12">
-      <div className="container px-4 max-w-4xl mx-auto text-center">
-        <div className="mb-8">
+      <div className="container px-4 max-w-4xl mx-auto">
+        <div className="text-center mb-12">
           <p className="text-sm font-bold mb-2 text-foreground">
             🔥 {s} ativos. Restam {1000 - s} vagas!
           </p>
-          <Progress value={(s / 1000) * 100} className="h-2" />
+          <Progress value={(s / 1000) * 100} className="h-2 max-w-md mx-auto" />
         </div>
-        <div className="flex flex-col lg:flex-row items-center gap-8 text-center lg:text-left">
-          <div className="flex-1">
-            <h2 className="text-3xl font-black mb-4 text-foreground">
+
+        <div className="flex flex-col lg:flex-row items-center gap-12">
+          {/* FOTO DO BEBÊ REESTABELECIDA AQUI */}
+          <div className="w-full lg:w-1/2 flex justify-center">
+            <img
+              src="https://images.unsplash.com/photo-1596265910586-4444530018d7?q=80&w=600&auto=format&fit=crop"
+              alt="Bebê comendo de forma saudável"
+              className="rounded-[2.5rem] shadow-2xl border-[10px] border-white max-w-xs rotate-3 hover:rotate-0 transition-transform duration-500"
+            />
+          </div>
+
+          <div className="w-full lg:w-1/2 text-center lg:text-left">
+            <h2 className="text-4xl font-black mb-4 text-foreground">
               App <span className="text-primary">NutriBebê Pro</span>
             </h2>
-            <div className="mb-6 space-y-2 text-sm font-semibold text-muted-foreground">
-              <p>✅ Guia Visual de Cortes Seguros (Passo a Passo)</p>
-              <p>✅ Cardápios e Receitas Exclusivas</p>
-              <p>✅ Acesso Vitalício (Sem Mensalidade)</p>
+
+            <div className="mb-8 space-y-3 text-sm font-semibold text-muted-foreground">
+              <p className="flex items-center gap-2 justify-center lg:justify-start">
+                ✅ Guia Visual de Cortes Seguros
+              </p>
+              <p className="flex items-center gap-2 justify-center lg:justify-start">
+                ✅ Cardápios e Receitas Exclusivas
+              </p>
+              <p className="flex items-center gap-2 justify-center lg:justify-start">
+                ✅ Acesso Vitalício (Sem Mensalidade)
+              </p>
             </div>
-            <div className="mb-6">
-              <span className="line-through text-muted-foreground italic text-lg">R$ 97,00</span>
-              <div className="text-5xl font-black text-primary">R$ 29,90</div>
+
+            <div className="mb-8">
+              <span className="line-through text-muted-foreground italic text-lg font-medium">R$ 97,00</span>
+              <div className="text-6xl font-black text-primary">R$ 29,90</div>
             </div>
+
             <button
               onClick={() => window.open("https://pay.kiwify.com.br/vrYjxFv", "_blank")}
-              className="w-full lg:w-auto bg-primary text-white font-bold py-4 px-10 rounded-xl shadow-lg hover:scale-105 transition-transform"
+              className="w-full bg-primary text-white font-black py-5 px-10 rounded-2xl shadow-xl hover:scale-105 transition-transform text-xl"
             >
               QUERO O APP AGORA
             </button>
