@@ -1,96 +1,55 @@
-import AnimatedSection from "./AnimatedSection";
-import { Shield, CheckCircle, RefreshCcw } from "lucide-react";
+import { ShieldCheck, Clock, CheckCircle2 } from "lucide-react";
 
-const GuaranteeSection = () => {
+export const GuaranteeSection = () => {
   return (
-    <section className="bg-background py-16 lg:py-20">
-      <div className="container">
-        <AnimatedSection animation="scale">
-          <div className="max-w-3xl mx-auto">
-            {/* Guarantee Card */}
-            <div className="relative bg-card rounded-3xl p-8 lg:p-12 text-center border-2 border-primary/20 overflow-hidden">
-              {/* Background decoration */}
-              <div className="absolute top-0 left-0 w-full h-full opacity-5">
-                <div className="absolute top-4 left-4 w-32 h-32 bg-primary rounded-full blur-3xl" />
-                <div className="absolute bottom-4 right-4 w-40 h-40 bg-primary rounded-full blur-3xl" />
-              </div>
+    <footer className="bg-slate-50 pt-16 pb-8 border-t">
+      <div className="container px-4 max-w-4xl mx-auto">
+        <div className="bg-white border-2 border-primary/20 rounded-3xl p-8 text-center shadow-sm mb-16">
+          <ShieldCheck className="w-16 h-16 text-primary mx-auto mb-4" />
+          <h2 className="text-2xl font-black mb-4">Garantia Incondicional de 7 Dias</h2>
+          <p className="text-muted-foreground mb-8">
+            Se você não ficar 100% satisfeita com o <strong>App NutriBebê Pro</strong>, devolvemos todo o seu dinheiro.
+            Sem perguntas, sem burocracia. O risco é todo nosso!
+          </p>
 
-              {/* Seal/Badge */}
-              <AnimatedSection animation="up" delay={100}>
-                <div className="relative inline-flex items-center justify-center mb-6">
-                  <div className="absolute w-32 h-32 bg-primary/10 rounded-full animate-pulse" />
-                  <div className="relative w-28 h-28 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center shadow-lg">
-                    <div className="w-24 h-24 bg-card rounded-full flex flex-col items-center justify-center border-4 border-primary">
-                      <Shield className="w-8 h-8 text-primary mb-1" />
-                      <span className="text-2xl font-black text-primary">7</span>
-                      <span className="text-[10px] font-bold text-primary uppercase tracking-wide">dias</span>
-                    </div>
-                  </div>
-                </div>
-              </AnimatedSection>
-
-              {/* Title */}
-              <AnimatedSection animation="up" delay={200}>
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-4">
-                  Garantia <span className="text-primary">Incondicional</span> de 7 Dias
-                </h2>
-              </AnimatedSection>
-
-              {/* Description */}
-              <AnimatedSection animation="up" delay={300}>
-                <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">
-                  Se você não ficar 100% satisfeita com o Guia NutriBebê, devolvemos todo o seu dinheiro. 
-                  Sem perguntas, sem burocracia. O risco é todo nosso!
-                </p>
-              </AnimatedSection>
-
-              {/* Guarantee Points */}
-              <AnimatedSection animation="up" delay={400}>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8">
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
-                    <span className="text-sm font-medium">Sem perguntas</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <RefreshCcw className="w-5 h-5 text-primary flex-shrink-0" />
-                    <span className="text-sm font-medium">Reembolso em até 24h</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Shield className="w-5 h-5 text-primary flex-shrink-0" />
-                    <span className="text-sm font-medium">Compra 100% segura</span>
-                  </div>
-                </div>
-              </AnimatedSection>
-
-              {/* Trust message */}
-              <AnimatedSection animation="up" delay={500}>
-                <p className="mt-8 text-sm text-muted-foreground italic">
-                  "Sua satisfação é nossa prioridade. Confiamos tanto no nosso guia que oferecemos essa garantia."
-                </p>
-              </AnimatedSection>
-
-              {/* Final CTA */}
-              <AnimatedSection animation="up" delay={600}>
-                <div className="mt-10 pt-8 border-t border-primary/10">
-                  <p className="text-lg font-semibold text-foreground mb-4">
-                    Pronta para começar a introdução alimentar com segurança?
-                  </p>
-                  <button
-                    onClick={() => window.open("https://pay.kiwify.com.br/9j0V7DB", "_blank")}
-                    className="btn-cta-large uppercase tracking-wide text-lg animate-pulse-soft"
-                  >
-                    Quero o Guia NutriBebê por R$ 14,90
-                  </button>
-                  <p className="mt-3 text-sm text-muted-foreground">
-                    🔒 Compra segura · Acesso imediato · Garantia de 7 dias
-                  </p>
-                </div>
-              </AnimatedSection>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm font-bold">
+            <div className="flex items-center justify-center gap-2">
+              <CheckCircle2 className="text-primary w-5 h-5" /> Sem perguntas
+            </div>
+            <div className="flex items-center justify-center gap-2">
+              <Clock className="text-primary w-5 h-5" /> Reembolso em até 24h
+            </div>
+            <div className="flex items-center justify-center gap-2">
+              <ShieldCheck className="text-primary w-5 h-5" /> Compra 100% segura
             </div>
           </div>
-        </AnimatedSection>
+          <p className="mt-8 italic text-muted-foreground text-sm">
+            "Sua satisfação é nossa prioridade. Confiamos tanto no nosso app que oferecemos essa garantia."
+          </p>
+        </div>
+
+        <div className="text-center mb-16">
+          <h3 className="text-2xl font-black mb-6">Pronta para começar a introdução alimentar com segurança?</h3>
+          <button
+            onClick={() => window.open("https://pay.kiwify.com.br/9j0V7DB", "_blank")}
+            className="w-full max-w-md bg-primary text-white font-black py-5 px-8 rounded-2xl shadow-xl hover:scale-105 transition-transform text-lg"
+          >
+            QUERO O APP POR R$ 29,90
+          </button>
+          <p className="mt-4 text-xs text-muted-foreground flex items-center justify-center gap-2">
+            🔒 Compra segura · Acesso imediato · Garantia de 7 dias
+          </p>
+        </div>
+
+        <div className="border-t pt-8 text-center">
+          <h4 className="font-black text-primary text-xl mb-2">NutriBebê</h4>
+          <p className="text-sm text-muted-foreground mb-4">Introdução alimentar segura e tranquila para o seu bebê</p>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-widest">
+            © 2026 NutriBebê. Todos os direitos reservados.
+          </p>
+        </div>
       </div>
-    </section>
+    </footer>
   );
 };
 
