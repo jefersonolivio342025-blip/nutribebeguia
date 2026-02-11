@@ -1,4 +1,5 @@
 import { ArrowRight } from "lucide-react";
+import heroBaby from "@/assets/hero-baby.jpg";
 
 export const Hero = () => {
   return (
@@ -26,7 +27,7 @@ export const Hero = () => {
           </div>
           <div className="w-full lg:w-1/2 px-4 flex justify-center">
             <img
-              src="https://images.unsplash.com/photo-1596265910586-4444530018d7?q=80&w=600&auto=format&fit=crop"
+              src={heroBaby}
               alt="Bebê comendo de forma saudável durante introdução alimentar"
               className="rounded-3xl shadow-xl max-w-sm w-full object-cover"
             />
