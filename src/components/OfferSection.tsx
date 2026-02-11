@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Progress } from "@/components/ui/progress";
+import heroBaby from "@/assets/hero-baby.jpg";
 
 export const OfferSection = () => {
   const [s, setS] = useState(847);
@@ -22,7 +23,7 @@ export const OfferSection = () => {
           {/* FOTO DO BEBÊ REESTABELECIDA AQUI */}
           <div className="w-full lg:w-1/2 flex justify-center">
             <img
-              src="https://images.unsplash.com/photo-1596265910586-4444530018d7?q=80&w=600&auto=format&fit=crop"
+              src={heroBaby}
               alt="Bebê comendo de forma saudável"
               className="rounded-[2.5rem] shadow-2xl border-[10px] border-white max-w-xs rotate-3 hover:rotate-0 transition-transform duration-500"
             />
