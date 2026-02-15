@@ -1,5 +1,10 @@
-import { BookOpen, Scissors, CalendarDays, Baby, Heart, ChefHat } from "lucide-react";
+import { useEffect, useState } from "react";
+import { BookOpen, Scissors, CalendarDays, Baby, Heart, ChefHat, Users } from "lucide-react";
 import { Link } from "react-router-dom";
+
+// Mantenha as configurações do seu Supabase aqui
+const SB_URL = "https://jdpycowlojjccbqmoaxj.supabase.co";
+const SB_KEY = "sb_publishable_1m1xv0ewxsSwRaaCztCPLQ_JZzd5nnu";
 
 const quickLinks = [
   { to: "/app/receitas", icon: ChefHat, label: "Receitas do Dia", color: "bg-app-mint-light text-app-mint-dark" },
@@ -18,20 +23,64 @@ const tips = [
 
 const Dashboard = () => {
   const tipOfDay = tips[new Date().getDay() % tips.length];
+  const [onlineCount, setOnlineCount] = useState<number>(0);
+  const [showWidget, setShowWidget] = useState(false);
+
+  // --- LÓGICA DE ESCASSEZ DINÂMICA ---
+  useEffect(() => {
+    const fetchOnlineUsers = async () => {
+      // Pega visitas dos últimos 15 minutos
+      const fifteenMinsAgo = new Date(Date.now() - 15 * 60000).toISOString();
+      const h = { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` };
+
+      try {
+        const res = await fetch(
+          `${SB_URL}/rest/v1/leads_tracking?event_type=ilike.*visita*&created_at=gte.${fifteenMinsAgo}&select=count`,
+          { headers: h },
+        );
+        const data = await res.json();
+        const count = (data[0]?.count || 0) + 3; // +3 para prova social inicial
+
+        if (count > 2) {
+          setOnlineCount(count);
+          setShowWidget(true);
+          // Esconde o widget após 10 segundos
+          setTimeout(() => setShowWidget(false), 10000);
+        }
+      } catch (e) {
+        console.error("Erro widget:", e);
+      }
+    };
+
+    fetchOnlineUsers();
+    const interval = setInterval(fetchOnlineUsers, 60000); // Atualiza a cada 1 min
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <div className="px-4 pt-6 max-w-lg mx-auto">
+    <div className="px-4 pt-6 max-w-lg mx-auto relative">
+      {/* WIDGET DE ESCASSEZ (FLUTUANTE) */}
+      {showWidget && (
+        <div className="fixed bottom-24 left-4 right-4 z-50 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="bg-white/95 backdrop-blur-sm border border-app-mint/30 shadow-xl rounded-2xl p-3 flex items-center gap-3 max-w-sm mx-auto">
+            <div className="relative flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+            </div>
+            <p className="text-xs font-bold text-slate-700">
+              <span className="text-emerald-600">{onlineCount} mães</span> estão preparando receitas agora!
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-1">
           <span className="text-2xl">👋</span>
-          <h1 className="text-2xl font-heading font-bold text-foreground">
-            Olá, mamãe!
-          </h1>
+          <h1 className="text-2xl font-heading font-bold text-foreground">Olá, mamãe!</h1>
         </div>
-        <p className="text-muted-foreground text-sm">
-          Vamos preparar algo gostoso para o seu bebê hoje?
-        </p>
+        <p className="text-muted-foreground text-sm">Vamos preparar algo gostoso para o seu bebê hoje?</p>
       </div>
 
       {/* Tip of the Day */}
