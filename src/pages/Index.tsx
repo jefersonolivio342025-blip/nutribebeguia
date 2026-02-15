@@ -19,14 +19,15 @@ const Index = () => {
 
     const params = new URLSearchParams(window.location.search);
 
-    // 1. LÓGICA DE MEMÓRIA (PERSISTÊNCIA)
-    // Pega da URL ou recupera do "bolso" (localStorage)
+    // 1. LÓGICA DE MEMÓRIA (PERSISTÊNCIA) - Incluindo Criativo (utm_content)
     const source = params.get("utm_source") || localStorage.getItem("nb_source") || "direto";
     const campaign = params.get("utm_campaign") || localStorage.getItem("nb_campaign") || "organico";
+    const content = params.get("utm_content") || localStorage.getItem("nb_content") || "sem_criativo";
 
-    // Se veio algo novo na URL, atualiza a memória
+    // Se vierem novos parâmetros na URL, atualiza a memória do navegador
     if (params.get("utm_source")) localStorage.setItem("nb_source", params.get("utm_source")!);
     if (params.get("utm_campaign")) localStorage.setItem("nb_campaign", params.get("utm_campaign")!);
+    if (params.get("utm_content")) localStorage.setItem("nb_content", params.get("utm_content")!);
 
     // 2. FUNÇÃO PARA ENVIAR EVENTOS AO BANCO (DASHBOARD)
     async function trackEvent(val: string) {
@@ -43,6 +44,7 @@ const Index = () => {
             event_type: val,
             utm_source: source,
             utm_campaign: campaign,
+            utm_content: content, // Agora enviando o Criativo
             metadata: {
               device: /Android|iPhone/i.test(navigator.userAgent) ? "mobile" : "desktop",
               path: window.location.pathname,
@@ -54,7 +56,7 @@ const Index = () => {
       }
     }
 
-    // Registra a visita assim que carrega
+    // Registra a visita inicial
     trackEvent("visita");
 
     // 3. FUNÇÃO PARA CARIMBAR OS BOTÕES (CHECKOUT/ZAP)
@@ -62,16 +64,15 @@ const Index = () => {
       const links = document.querySelectorAll("a");
       links.forEach((link) => {
         if (link.href.includes("wa.me") || link.href.includes("kiwify.com.br")) {
-          // Usa a URL API para evitar erros de interrogação dupla
           try {
             const url = new URL(link.href);
             url.searchParams.set("utm_source", source);
             url.searchParams.set("utm_campaign", campaign);
+            url.searchParams.set("utm_content", content); // Passando o criativo para a Kiwify
             link.href = url.toString();
           } catch (e) {
-            // Fallback caso a URL seja inválida
             const connector = link.href.includes("?") ? "&" : "?";
-            link.href += `${connector}utm_source=${source}&utm_campaign=${campaign}`;
+            link.href += `${connector}utm_source=${source}&utm_campaign=${campaign}&utm_content=${content}`;
           }
         }
       });
@@ -83,7 +84,8 @@ const Index = () => {
       if (el) {
         const text = el.textContent?.toLowerCase() || "";
         const href = (el as HTMLAnchorElement).href || "";
-        // Se o clique for em botões de compra, avisa o dashboard
+
+        // Identifica clique de intenção de compra
         if (text.includes("comprar") || text.includes("acesso") || href.includes("kiwify") || href.includes("wa.me")) {
           trackEvent("clique");
         }
@@ -92,7 +94,7 @@ const Index = () => {
 
     // Execução
     carimbarBotoes();
-    setTimeout(carimbarBotoes, 2000); // Garante o carimbo após o load total
+    setTimeout(carimbarBotoes, 2000);
     window.addEventListener("click", handleGlobalClick);
 
     return () => window.removeEventListener("click", handleGlobalClick);
