@@ -19,28 +19,25 @@ const Index = () => {
 
     const params = new URLSearchParams(window.location.search);
     const utm_source = params.get("utm_source") || "direto";
-    const utm_campaign = params.get("utm_campaign") || null;
+    const utm_campaign = params.get("utm_campaign") || "organico";
     const device = /Android|iPhone|iPad/i.test(navigator.userAgent) ? "mobile" : "desktop";
 
     async function trackEvent(val: string, extraData: any = {}) {
       try {
-        // Objeto simplificado para evitar conflitos no banco
         const payload: any = {
           event_type: val,
           utm_source: utm_source,
           utm_campaign: utm_campaign,
-          // Se as coordenadas existirem, garantimos que são números
           click_x: extraData.click_x !== undefined ? Number(extraData.click_x.toFixed(2)) : null,
           click_y: extraData.click_y !== undefined ? Number(extraData.click_y.toFixed(2)) : null,
           metadata: {
             device: device,
             path: window.location.pathname,
-            // Mantemos o resto dos dados no metadata, se houver
             ...Object.fromEntries(Object.entries(extraData).filter(([k]) => k !== "click_x" && k !== "click_y")),
           },
         };
 
-        const response = await fetch(SB_URL, {
+        await fetch(SB_URL, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -50,46 +47,55 @@ const Index = () => {
           },
           body: JSON.stringify(payload),
         });
-
-        if (response.ok) {
-          console.log(`✅ [${val}] X: ${payload.click_x || "-"} Y: ${payload.click_y || "-"}`);
-        }
       } catch (e) {
-        console.error("❌ Erro de rede:", e);
+        console.error("❌ Erro no rastreio:", e);
       }
     }
 
     // 1. Visita Inicial
     trackEvent("visita");
 
-    // 2. Captura de Cliques
+    // 2. Persistência de UTM nos Links (Onde o Fernando vira venda rastreada)
+    const query = window.location.search;
+    if (query) {
+      setTimeout(() => {
+        // Aguarda os componentes renderizarem
+        const links = document.querySelectorAll("a");
+        links.forEach((link) => {
+          if (link.href.includes("kiwify.com.br") || link.href.includes("wa.me")) {
+            const connector = link.href.includes("?") ? "&" : "?";
+            link.href += connector + query.substring(1);
+          }
+        });
+      }, 1000);
+    }
+
+    // 3. Captura de Cliques e Heatmap
     const handleGlobalClick = (e: MouseEvent) => {
       const width = window.innerWidth;
       const height = document.documentElement.scrollHeight;
-
       const x = (e.pageX / width) * 100;
       const y = (e.pageY / height) * 100;
 
-      // Mapa de calor
+      // Mapa de calor (para o banco de dados)
       trackEvent("click_heatmap", { click_x: x, click_y: y });
 
-      // Cliques de conversão
+      // Cliques de conversão (Para sua Tabela de Performance)
       const el = (e.target as HTMLElement).closest("a, button");
       if (el) {
         const text = el.textContent?.toLowerCase() || "";
         const href = (el as HTMLAnchorElement).href || "";
-        if (text.includes("comprar") || text.includes("oferta") || href.includes("kiwify") || href.includes("wa.me")) {
+        if (text.includes("comprar") || text.includes("acesso") || href.includes("kiwify") || href.includes("wa.me")) {
           trackEvent("clique");
         }
       }
     };
 
-    // 3. Scroll
+    // 4. Scroll (Engajamento)
     const sentMarks = new Set();
     const handleScroll = () => {
       const h = document.documentElement;
       const pct = Math.round(((window.scrollY + window.innerHeight) / h.scrollHeight) * 100);
-
       [25, 50, 75, 90].forEach((mark) => {
         if (pct >= mark && !sentMarks.has(mark)) {
           trackEvent(`scroll_${mark}`, { scroll_depth: mark });
