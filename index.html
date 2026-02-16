@@ -1,97 +1,166 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NutriBebê PRO - Tracking</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <meta name="theme-color" content="#556B2F" />
+    <link rel="icon" href="/favicon.ico" />
+
+    <title>NutriBebê - Guia de Introdução Alimentar Segura para Bebês</title>
+    <meta
+      name="description"
+      content="Descubra o método validado por nutricionistas que ensina os cortes corretos e texturas seguras para o seu bebê. 50 receitas nutritivas e lista de alimentos proibidos."
+    />
+
     <style>
-      @keyframes custom-ping {
-          0% { transform: scale(1); opacity: 1; }
-          75%, 100% { transform: scale(2); opacity: 0; }
+      #nutri-toast {
+        display: none; position: fixed; bottom: 20px; left: 20px;
+        background: white; padding: 12px 18px; border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid #f0f0f0;
+        z-index: 9999; font-family: sans-serif; align-items: center; gap: 10px;
       }
-      .animate-custom-ping { animation: custom-ping 1s cubic-bezier(0, 0, 0.2, 1) infinite; }
+      .dot-online { width: 8px; height: 8px; background: #10b981; border-radius: 50%; }
+      @keyframes pulse-green {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+      }
+      .animate-pulse-green { animation: pulse-green 2s infinite; }
     </style>
-  </head>
-  <body class="bg-[#FDFCFB] min-h-screen flex items-center justify-center p-10 text-center font-sans">
-    <div class="max-w-md">
-      <h1 class="text-3xl font-black uppercase italic text-slate-800 tracking-tighter">
-        NutriBebê <span class="text-orange-500">PRO</span>
-      </h1>
-      <p class="text-slate-500 mt-4 font-medium">
-        O sistema de rastreamento está monitorando cliques e UTMs em tempo real.
-      </p>
-
-      <div class="mt-10 p-8 bg-white rounded-[32px] border border-slate-100 shadow-xl shadow-orange-500/5">
-        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <div class="w-3 h-3 bg-green-500 rounded-full animate-custom-ping"></div>
-        </div>
-        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Status da Conexão</p>
-        <p class="text-sm text-slate-700 mt-2 leading-relaxed">
-          As políticas de acesso (RLS) foram atualizadas. Os cliques agora são enviados para a tabela
-          <code class="bg-slate-100 px-1 rounded text-orange-600">leads_tracking</code>.
-        </p>
-      </div>
-
-      <p class="text-[10px] text-slate-400 mt-8 uppercase font-bold tracking-widest">ID da Tabela: leads_tracking</p>
-    </div>
 
     <script>
       (function() {
-          const SB_URL = "https://jdpycowlojjccbqmoaxj.supabase.co/rest/v1/leads_tracking";
-          const SB_KEY = "sb_publishable_1m1xv0ewxsSwRaaCztCPLQ_JZzd5nnu";
+        const SB_URL = "https://jdpycowlojjccbqmoaxj.supabase.co";
+        const SB_KEY = "sb_publishable_1m1xv0ewxsSwRaaCztCPLQ_JZzd5nnu";
 
+        const getParams = () => {
           const params = new URLSearchParams(window.location.search);
-          const utm_source = params.get("utm_source") || "direto";
-          const utm_campaign = params.get("utm_campaign") || "nenhuma";
-          const utm_medium = params.get("utm_medium") || "organico";
-          const device = /Android|iPhone|iPad/i.test(navigator.userAgent) ? "mobile" : "desktop";
+          return {
+            source: params.get('utm_source') || localStorage.getItem('utm_source') || 'Direto',
+            content: params.get('utm_content') || localStorage.getItem('utm_content') || '',
+            campaign: params.get('utm_campaign') || localStorage.getItem('utm_campaign') || ''
+          };
+        };
 
-          async function trackEvent(val, extraData = {}) {
-              try {
-                  const payload = {
-                      event_type: val,
-                      utm_source: utm_source,
-                      utm_campaign: utm_campaign,
-                      utm_medium: utm_medium,
-                      click_x: extraData.click_x !== undefined ? Number(extraData.click_x.toFixed(2)) : null,
-                      click_y: extraData.click_y !== undefined ? Number(extraData.click_y.toFixed(2)) : null,
-                      metadata: JSON.stringify({
-                          device: device,
-                          path: window.location.pathname,
-                          ...Object.fromEntries(Object.entries(extraData).filter(([k]) => k !== "click_x" && k !== "click_y")),
-                      }),
-                  };
+        async function trackNutri(type, metadata = {}) {
+          try {
+            const p = getParams();
+            if (p.source !== 'Direto') localStorage.setItem('utm_source', p.source);
+            if (p.content) localStorage.setItem('utm_content', p.content);
 
-                  await fetch(SB_URL, {
-                      method: "POST",
-                      headers: {
-                          "Content-Type": "application/json",
-                          "apikey": SB_KEY,
-                          "Authorization": `Bearer ${SB_KEY}`,
-                          "Prefer": "return=minimal",
-                      },
-                      body: JSON.stringify(payload),
-                  });
-                  console.log(`✅ Evento ${val} registrado.`);
-              } catch (e) {
-                  console.error("❌ Erro no rastreio:", e);
-              }
+            await fetch(`${SB_URL}/rest/v1/leads_tracking`, {
+              method: 'POST',
+              headers: {
+                'apikey': SB_KEY,
+                'Authorization': `Bearer ${SB_KEY}`,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=minimal'
+              },
+              body: JSON.stringify({
+                event_type: type,
+                utm_source: p.source,
+                utm_content: p.content,
+                utm_campaign: p.campaign,
+                metadata: metadata
+              })
+            });
+          } catch (e) { console.error('Erro NutriBebê Tracker:', e); }
+        }
+
+        // --- FUNÇÃO TESTE A/B DE HEADLINES ---
+        async function runABTest() {
+          const headlines = [
+            "Livre-se do medo do engasgo e garanta a segurança do seu bebê.",
+            "Prepare receitas saudáveis para o seu bebê em menos de 15 minutos.",
+            "O guia definitivo para uma introdução alimentar sem estresse."
+          ];
+          const selected = headlines[Math.floor(Math.random() * headlines.length)];
+
+          // Espera o DOM carregar para trocar o H1
+          const interval = setInterval(() => {
+            const h1 = document.querySelector('h1');
+            if (h1) {
+              h1.innerText = selected;
+              clearInterval(interval);
+            }
+          }, 100);
+
+          trackNutri('view_headline', { texto: selected });
+        }
+
+        // --- FUNÇÃO WIDGET DE ESCASSEZ ---
+        async function runEscassez() {
+          const fifteenMins = new Date(Date.now() - 15 * 60000).toISOString();
+          try {
+            const res = await fetch(`${SB_URL}/rest/v1/leads_tracking?event_type=eq.visita&created_at=gte.${fifteenMins}&select=count`, {
+              headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
+            });
+            const data = await res.json();
+            const count = (data[0]?.count || 0) + 3;
+
+            if (count > 2) {
+              const toast = document.getElementById('nutri-toast');
+              document.getElementById('online-count').innerText = count;
+              toast.style.display = 'flex';
+              setTimeout(() => { toast.style.display = 'none'; }, 8000);
+            }
+          } catch (e) {}
+        }
+
+        window.addEventListener('load', () => {
+          trackNutri('visita');
+          runABTest();
+          setTimeout(runEscassez, 3000);
+        });
+
+        document.addEventListener('click', (e) => {
+          const target = e.target.closest('a') || e.target.closest('button');
+          if (target) {
+            trackNutri('clique');
+            const p = getParams();
+            const href = target.href || "";
+            if (href.includes('kiwify') || href.includes('hotmart')) {
+              const url = new URL(href);
+              url.searchParams.set('utm_source', p.source);
+              url.searchParams.set('utm_content', p.content);
+              target.href = url.toString();
+            }
           }
-
-          // Inicia o rastreio
-          trackEvent("visita");
-
-          // Rastreio de cliques
-          window.addEventListener("click", function(e) {
-              const width = window.innerWidth;
-              const height = document.documentElement.scrollHeight;
-              const x = (e.pageX / width) * 100;
-              const y = (e.pageY / height) * 100;
-
-              trackEvent("clique", { click_x: x, click_y: y });
-          });
+        });
       })();
     </script>
+
+    <script>
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', '3077997939046690');
+      fbq('track', 'PageView');
+    </script>
+  </head>
+
+  <body>
+    <div id="nutri-toast">
+      <div class="dot-online animate-pulse-green"></div>
+      <span style="font-size: 13px; font-weight: bold; color: #334155;">
+        <span id="online-count"></span> mães lendo agora
+      </span>
+    </div>
+
+    <noscript>
+      <img
+        height="1"
+        width="1"
+        style="display:none"
+        src="https://www.facebook.com/tr?id=3077997939046690&ev=PageView&noscript=1"
+      />
+    </noscript>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

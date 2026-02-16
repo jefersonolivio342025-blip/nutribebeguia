@@ -18,10 +18,19 @@ const Index = () => {
     const SB_KEY = "sb_publishable_1m1xv0ewxsSwRaaCztCPLQ_JZzd5nnu";
 
     const params = new URLSearchParams(window.location.search);
-    const utm_source = params.get("utm_source") || "direto";
-    const utm_campaign = params.get("utm_campaign") || "nenhuma";
 
-    async function trackEvent(val: string, extraData: any = {}) {
+    // 1. LÓGICA DE MEMÓRIA (PERSISTÊNCIA) - Incluindo Criativo (utm_content)
+    const source = params.get("utm_source") || localStorage.getItem("nb_source") || "direto";
+    const campaign = params.get("utm_campaign") || localStorage.getItem("nb_campaign") || "organico";
+    const content = params.get("utm_content") || localStorage.getItem("nb_content") || "sem_criativo";
+
+    // Se vierem novos parâmetros na URL, atualiza a memória do navegador
+    if (params.get("utm_source")) localStorage.setItem("nb_source", params.get("utm_source")!);
+    if (params.get("utm_campaign")) localStorage.setItem("nb_campaign", params.get("utm_campaign")!);
+    if (params.get("utm_content")) localStorage.setItem("nb_content", params.get("utm_content")!);
+
+    // 2. FUNÇÃO PARA ENVIAR EVENTOS AO BANCO (DASHBOARD)
+    async function trackEvent(val: string) {
       try {
         await fetch(SB_URL, {
           method: "POST",
@@ -33,13 +42,13 @@ const Index = () => {
           },
           body: JSON.stringify({
             event_type: val,
-            utm_source: utm_source,
-            utm_campaign: utm_campaign,
-            metadata: JSON.stringify({
+            utm_source: source,
+            utm_campaign: campaign,
+            utm_content: content, // Agora enviando o Criativo
+            metadata: {
               device: /Android|iPhone/i.test(navigator.userAgent) ? "mobile" : "desktop",
               path: window.location.pathname,
-              ...extraData,
-            }),
+            },
           }),
         });
       } catch (e) {
@@ -47,21 +56,52 @@ const Index = () => {
       }
     }
 
-    // Registra a visita sem mudar o visual do site
+    // Registra a visita inicial
     trackEvent("visita");
 
-    const handleGlobalClick = (e: MouseEvent) => {
-      const x = (e.pageX / window.innerWidth) * 100;
-      const y = (e.pageY / document.documentElement.scrollHeight) * 100;
-      trackEvent("clique", { click_x: x.toFixed(2), click_y: y.toFixed(2) });
+    // 3. FUNÇÃO PARA CARIMBAR OS BOTÕES (CHECKOUT/ZAP)
+    const carimbarBotoes = () => {
+      const links = document.querySelectorAll("a");
+      links.forEach((link) => {
+        if (link.href.includes("wa.me") || link.href.includes("kiwify.com.br")) {
+          try {
+            const url = new URL(link.href);
+            url.searchParams.set("utm_source", source);
+            url.searchParams.set("utm_campaign", campaign);
+            url.searchParams.set("utm_content", content); // Passando o criativo para a Kiwify
+            link.href = url.toString();
+          } catch (e) {
+            const connector = link.href.includes("?") ? "&" : "?";
+            link.href += `${connector}utm_source=${source}&utm_campaign=${campaign}&utm_content=${content}`;
+          }
+        }
+      });
     };
 
+    // 4. MONITORAR CLIQUES DE CONVERSÃO
+    const handleGlobalClick = (e: MouseEvent) => {
+      const el = (e.target as HTMLElement).closest("a, button");
+      if (el) {
+        const text = el.textContent?.toLowerCase() || "";
+        const href = (el as HTMLAnchorElement).href || "";
+
+        // Identifica clique de intenção de compra
+        if (text.includes("comprar") || text.includes("acesso") || href.includes("kiwify") || href.includes("wa.me")) {
+          trackEvent("clique");
+        }
+      }
+    };
+
+    // Execução
+    carimbarBotoes();
+    setTimeout(carimbarBotoes, 2000);
     window.addEventListener("click", handleGlobalClick);
+
     return () => window.removeEventListener("click", handleGlobalClick);
   }, []);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       <StickyHeader />
       <HeroSection />
       <BenefitsSection />
