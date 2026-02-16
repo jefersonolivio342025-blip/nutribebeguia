@@ -12,7 +12,7 @@ import Footer from "@/components/Footer";
 import SocialProofNotification from "@/components/SocialProofNotification";
 import StickyHeader from "@/components/StickyHeader";
 
-// Resolve o erro de tipo do Facebook Pixel no TS
+// Definição global para evitar erros de TypeScript com o Pixel do Facebook
 declare global {
   interface Window {
     fbq: any;
@@ -26,7 +26,7 @@ const Index = () => {
 
     const params = new URLSearchParams(window.location.search);
 
-    // Lógica de Persistência de UTMs
+    // 1. Lógica de Persistência de UTMs (Memória do navegador)
     const source = params.get("utm_source") || localStorage.getItem("nb_source") || "direto";
     const campaign = params.get("utm_campaign") || localStorage.getItem("nb_campaign") || "organico";
     const content = params.get("utm_content") || localStorage.getItem("nb_content") || "sem_criativo";
@@ -35,7 +35,7 @@ const Index = () => {
     if (params.get("utm_campaign")) localStorage.setItem("nb_campaign", params.get("utm_campaign")!);
     if (params.get("utm_content")) localStorage.setItem("nb_content", params.get("utm_content")!);
 
-    // Função de rastreio para o Dashboard
+    // 2. Função de rastreio para o seu Dashboard
     async function trackEvent(val: string, metadata = {}) {
       try {
         await fetch(SB_URL, {
@@ -59,13 +59,14 @@ const Index = () => {
           }),
         });
       } catch (e) {
-        console.warn("Falha no rastreio.");
+        console.warn("Rastreio falhou, mas a navegação continua.");
       }
     }
 
+    // Registra a visita inicial
     trackEvent("visita");
 
-    // Captura cliques em links de checkout e WhatsApp
+    // 3. Lógica de clique profissional (Checkout, WhatsApp e Pixel)
     const handleGlobalClick = (e: MouseEvent) => {
       const el = (e.target as HTMLElement).closest("a");
       if (!el) return;
@@ -74,19 +75,22 @@ const Index = () => {
       const isCheckout = href.includes("kiwify.com.br") || href.includes("hotmart.com") || href.includes("wa.me");
 
       if (isCheckout) {
+        // Pausa o redirecionamento para garantir que o rastreio seja processado
         e.preventDefault();
 
-        // Dispara InitiateCheckout no Facebook
+        // Dispara o Pixel do Facebook
         try {
           if (typeof window.fbq === "function") {
             window.fbq("track", "InitiateCheckout");
           }
-        } catch (err) {}
+        } catch (err) {
+          console.warn("FB Pixel não disponível");
+        }
 
-        // Envia dado para o Supabase
+        // Registra o clique no Dashboard
         trackEvent("clique", { target: href.includes("wa.me") ? "whatsapp" : "checkout" });
 
-        // Prepara URL com UTMs para a plataforma de pagamento
+        // Prepara a URL final com UTMs carimbadas
         let finalUrl = href;
         if (href.startsWith("http")) {
           try {
@@ -95,10 +99,12 @@ const Index = () => {
             url.searchParams.set("utm_campaign", campaign);
             url.searchParams.set("utm_content", content);
             finalUrl = url.toString();
-          } catch (err) {}
+          } catch (err) {
+            console.error("Erro ao injetar UTMs no link");
+          }
         }
 
-        // Delay de segurança para o tracking disparar antes de sair
+        // Redireciona após 500ms (tempo para o fetch e pixel dispararem)
         setTimeout(() => {
           window.location.href = finalUrl;
         }, 500);
@@ -127,5 +133,5 @@ const Index = () => {
   );
 };
 
-// Exportação obrigatória para resolver o erro TS1192
+// ESSA LINHA RESOLVE O ERRO TS1192 NO APP.TSX
 export default Index;
