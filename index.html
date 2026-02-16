@@ -33,7 +33,6 @@
         const SB_URL = "https://jdpycowlojjccbqmoaxj.supabase.co";
         const SB_KEY = "sb_publishable_1m1xv0ewxsSwRaaCztCPLQ_JZzd5nnu";
 
-        // 1. CAPTURA DE PARÂMETROS COM MEMÓRIA
         const getParams = () => {
           const params = new URLSearchParams(window.location.search);
           const source = params.get('utm_source') || localStorage.getItem('utm_source') || 'Direto';
@@ -46,7 +45,6 @@
           return { source, content, campaign };
         };
 
-        // 2. FUNÇÃO CENTRAL DE RASTREIO
         async function trackNutri(type, metadata = {}) {
           try {
             const p = getParams();
@@ -73,7 +71,45 @@
           } catch (e) { console.warn('Erro Tracker:', e); }
         }
 
-        // 3. TESTE A/B E ESCASSEZ
+        // --- RASTREADOR DE SCROLL ---
+        let maxScroll = 0;
+        window.addEventListener('scroll', () => {
+          const scrollPercent = Math.round((window.scrollY + window.innerHeight) / document.documentElement.scrollHeight * 100);
+          if (scrollPercent > maxScroll) {
+            maxScroll = scrollPercent;
+          }
+        });
+
+        // Envia o scroll máximo quando a pessoa sai da página
+        window.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'hidden' && maxScroll > 20) {
+            trackNutri('scroll_depth', { percent: maxScroll });
+          }
+        });
+
+        // --- ESCASSEZ DINÂMICA ---
+        function runEscassez() {
+          const toast = document.getElementById('nutri-toast');
+          const countEl = document.getElementById('online-count');
+          let currentCount = Math.floor(Math.random() * (22 - 14 + 1)) + 14;
+
+          setTimeout(() => {
+            countEl.innerText = currentCount;
+            toast.style.display = 'flex';
+
+            const oscillation = setInterval(() => {
+              const change = Math.floor(Math.random() * 3) - 1;
+              currentCount += change;
+              countEl.innerText = currentCount;
+            }, 3000);
+
+            setTimeout(() => {
+              toast.style.display = 'none';
+              clearInterval(oscillation);
+            }, 10000);
+          }, 4000);
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
           const headlines = [
             "Livre-se do medo do engasgo e garanta a segurança do seu bebê.",
@@ -92,7 +128,6 @@
           }, 100);
         });
 
-        // 4. MONITORAMENTO DE CLIQUES E CHECKOUT
         document.addEventListener('click', async (e) => {
           const target = e.target.closest('a') || e.target.closest('button');
           if (!target) return;
@@ -103,9 +138,7 @@
           trackNutri('clique', { destino: isCheckout ? 'checkout' : 'interno' });
 
           if (isCheckout) {
-            e.preventDefault(); // Pausa para garantir o rastro
-
-            // Dispara InitiateCheckout no Pixel
+            e.preventDefault();
             if (typeof fbq === 'function') fbq('track', 'InitiateCheckout');
 
             const p = getParams();
@@ -113,12 +146,14 @@
             url.searchParams.set('utm_source', p.source);
             url.searchParams.set('utm_content', p.content);
 
-            // Redireciona após 400ms
             setTimeout(() => { window.location.href = url.toString(); }, 400);
           }
         });
 
-        window.addEventListener('load', () => trackNutri('visita'));
+        window.addEventListener('load', () => {
+          trackNutri('visita');
+          runEscassez();
+        });
       })();
     </script>
 
