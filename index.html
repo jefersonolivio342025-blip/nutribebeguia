@@ -1,3 +1,20 @@
 <script>
-  console.log("Script carregou");
+  document.addEventListener("click", function(e){
+
+    var link = e.target.closest ? e.target.closest("a") : null;
+    if(!link) return;
+
+    var href = link.href || "";
+
+    if(href.indexOf("kiwify") !== -1 || href.indexOf("hotmart") !== -1){
+
+      e.preventDefault();
+
+      setTimeout(function(){
+        window.location.href = href;
+      },300);
+
+    }
+
+  });
 </script>
