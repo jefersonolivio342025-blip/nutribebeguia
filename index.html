@@ -1,28 +1,35 @@
 <script>
-  document.addEventListener("click", function(e){
+  (function() {
+    document.addEventListener("click", function(e) {
+      // 1. Busca o link (A) mais próximo do clique
+      var el = e.target.closest("a");
 
-    var el = e.target;
+      // Se não for um link, não faz nada e deixa o site funcionar normal
+      if (!el) return;
 
-    while (el && el !== document) {
+      var href = el.getAttribute("href") || "";
 
-      if (el.tagName === "A") {
+      // 2. Só intercepta se for link de pagamento (Checkout)
+      if (href.indexOf("kiwify") !== -1 || href.indexOf("hotmart") !== -1) {
 
-        var href = el.getAttribute("href") || "";
+        // Impede a saída imediata para dar tempo ao rastreio
+        e.preventDefault();
 
-        if (href.includes("kiwify") || href.includes("hotmart")) {
-
-          e.preventDefault();
-
-          setTimeout(function(){
-            window.location.href = href;
-          }, 300);
-
-          return;
+        // 3. Dispara o Facebook Pixel (se estiver instalado)
+        if (typeof fbq === "function") {
+          fbq('track', 'InitiateCheckout');
         }
+
+        // 4. Registra no seu Dashboard (via função trackNutri que você já tem)
+        if (typeof trackNutri === "function") {
+          trackNutri('clique', { destino: 'checkout_pelo_index' });
+        }
+
+        // 5. Redireciona após um pequeno delay de segurança
+        setTimeout(function() {
+          window.location.href = href;
+        }, 400);
       }
-
-      el = el.parentNode;
-    }
-
-  });
+    });
+  })();
 </script>
