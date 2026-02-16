@@ -1,86 +1,46 @@
-<script>
-  (function() {
-    const SB_URL = "https://jdpycowlojjccbqmoaxj.supabase.co";
-    const SB_KEY = "sb_publishable_1m1xv0ewxsSwRaaCztCPLQ_JZzd5nnu";
+import { useEffect } from "react"; const Index = () => { useEffect(() => { // Verifique se esta URL está correta. Para o
+Supabase, geralmente termina em /rest/v1/nome_da_tabela const SB_URL =
+"https://jdpycowlojjccbqmoaxj.supabase.co/rest/v1/leads_tracking"; const SB_KEY =
+"sb_publishable_1m1xv0ewxsSwRaaCztCPLQ_JZzd5nnu"; const params = new URLSearchParams(window.location.search); // Pegamos
+as UTMs da URL const utm_source = params.get("utm_source") || "direto"; const utm_campaign = params.get("utm_campaign")
+|| "nenhuma"; const utm_medium = params.get("utm_medium") || "organico"; const device =
+/Android|iPhone|iPad/i.test(navigator.userAgent) ? "mobile" : "desktop"; async function trackEvent(val: string,
+extraData: any = {}) { try { const payload = { event_type: val, // Aqui enviará 'clique' ou 'visita' utm_source:
+utm_source, utm_campaign: utm_campaign, utm_medium: utm_medium, click_x: extraData.click_x !== undefined ?
+Number(extraData.click_x.toFixed(2)) : null, click_y: extraData.click_y !== undefined ?
+Number(extraData.click_y.toFixed(2)) : null, metadata: JSON.stringify({ // O Supabase prefere JSON como string ou objeto
+dependendo da coluna device: device, path: window.location.pathname,
+...Object.fromEntries(Object.entries(extraData).filter(([k]) => k !== "click_x" && k !== "click_y")), }), }; const
+response = await fetch(SB_URL, { method: "POST", headers: { "Content-Type": "application/json", apikey: SB_KEY,
+Authorization: `Bearer ${SB_KEY}`, Prefer: "return=minimal", }, body: JSON.stringify(payload), }); if (!response.ok) {
+throw new Error(`Erro na resposta: ${response.statusText}`); } console.log(`✅ Evento ${val} registrado no Supabase.`);
+} catch (e) { console.error("❌ Erro no rastreio:", e); } } // Registra a visita assim que a página carrega
+trackEvent("visita"); const handleGlobalClick = (e: MouseEvent) => { const width = window.innerWidth; const height =
+document.documentElement.scrollHeight; // Cálculo de porcentagem para o Heatmap const x = (e.pageX / width) * 100; const
+y = (e.pageY / height) * 100; // Mudamos para 'clique' para bater com o que você viu no banco de dados
+trackEvent("clique", { click_x: x, click_y: y }); }; window.addEventListener("click", handleGlobalClick); return () =>
+window.removeEventListener("click", handleGlobalClick); }, []); return (
+<div className="min-h-screen bg-[#FDFCFB] flex items-center justify-center p-10 text-center">
+  <div className="max-w-md">
+    <h1 className="text-3xl font-black uppercase italic text-slate-800 tracking-tighter">
+      NutriBebê <span className="text-orange-500">PRO</span>
+    </h1>
+    <p className="text-slate-500 mt-4 font-medium">
+      O sistema de rastreamento está monitorando cliques e UTMs em tempo real.
+    </p>
 
-    // 1. CAPTURA DE PARÂMETROS (UTMs)
-    window.getParams = function() {
-      const params = new URLSearchParams(window.location.search);
-      return {
-        source: params.get('utm_source') || localStorage.getItem('utm_source') || 'Direto',
-        content: params.get('utm_content') || localStorage.getItem('utm_content') || '',
-        campaign: params.get('utm_campaign') || localStorage.getItem('utm_campaign') || ''
-      };
-    };
+    <div className="mt-10 p-8 bg-white rounded-[32px] border border-slate-100 shadow-xl shadow-orange-500/5">
+      <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="w-3 h-3 bg-green-500 rounded-full animate-ping"></div>
+      </div>
+      <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Status da Conexão</p>
+      <p className="text-sm text-slate-700 mt-2 leading-relaxed">
+        As políticas de acesso (RLS) foram atualizadas. Os cliques agora são enviados para a tabela{" "}
+        <code className="bg-slate-100 px-1 rounded text-orange-600">leads_tracking</code>.
+      </p>
+    </div>
 
-    // 2. FUNÇÃO DE ENVIO PARA O SUPABASE
-    window.trackNutri = async function(type, metadata = {}) {
-      try {
-        const p = getParams();
-        // Salva na memória para não perder o rastro se ela navegar no site
-        if (p.source !== 'Direto') localStorage.setItem('utm_source', p.source);
-        if (p.content) localStorage.setItem('utm_content', p.content);
-
-        await fetch(`${SB_URL}/rest/v1/leads_tracking`, {
-          method: 'POST',
-          headers: {
-            'apikey': SB_KEY,
-            'Authorization': `Bearer ${SB_KEY}`,
-            'Content-Type': 'application/json',
-            'Prefer': 'return=minimal'
-          },
-          body: JSON.stringify({
-            event_type: type,
-            utm_source: p.source,
-            utm_content: p.content,
-            utm_campaign: p.campaign,
-            metadata: metadata
-          })
-        });
-      } catch (e) { console.error('Erro Tracker:', e); }
-    };
-
-    // 3. MONITORAMENTO DE CLIQUES (PIXEL DE CONVERSÃO)
-    document.addEventListener("click", function(e) {
-      var el = e.target.closest("a");
-      if (!el) return;
-
-      var href = el.getAttribute("href") || "";
-
-      // Verifica se é link da Kiwify ou Hotmart
-      if (href.indexOf("kiwify") !== -1 || href.indexOf("hotmart") !== -1) {
-
-        // Bloqueia a saída rápida para garantir o disparo dos pixels
-        e.preventDefault();
-
-        // Dispara Facebook InitiateCheckout
-        if (typeof fbq === "function") {
-          fbq('track', 'InitiateCheckout');
-        }
-
-        // Registra o clique no seu Dashboard
-        trackNutri('clique', { destino: 'checkout_index' });
-
-        // Adiciona as UTMs no link de pagamento
-        var p = getParams();
-        var finalUrl = href;
-        try {
-          var url = new URL(href);
-          url.searchParams.set('utm_source', p.source);
-          url.searchParams.set('utm_content', p.content);
-          finalUrl = url.toString();
-        } catch(err) {}
-
-        // Redireciona após 400ms
-        setTimeout(function() {
-          window.location.href = finalUrl;
-        }, 400);
-      }
-    });
-
-    // Registra a visita ao carregar a página
-    window.addEventListener('load', function() {
-      trackNutri('visita');
-    });
-  })();
-</script>
+    <p className="text-[10px] text-slate-400 mt-8 uppercase font-bold tracking-widest">ID da Tabela: leads_tracking</p>
+  </div>
+</div>
+); }; export default Index;
