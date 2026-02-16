@@ -9,7 +9,7 @@
     <title>NutriBebê - Guia de Introdução Alimentar Segura para Bebês</title>
     <meta
       name="description"
-      content="Descubra o método validado por nutricionistas que ensina os cortes corretos e texturas seguras para o seu bebê. 50 receitas nutritivas e lista de alimentos proibidos."
+      content="Descubra o método validado por nutricionistas que ensina os cortes corretos e texturas seguras para o seu bebê."
     />
 
     <style>
@@ -33,21 +33,23 @@
         const SB_URL = "https://jdpycowlojjccbqmoaxj.supabase.co";
         const SB_KEY = "sb_publishable_1m1xv0ewxsSwRaaCztCPLQ_JZzd5nnu";
 
+        // 1. CAPTURA DE PARÂMETROS COM MEMÓRIA
         const getParams = () => {
           const params = new URLSearchParams(window.location.search);
-          return {
-            source: params.get('utm_source') || localStorage.getItem('utm_source') || 'Direto',
-            content: params.get('utm_content') || localStorage.getItem('utm_content') || '',
-            campaign: params.get('utm_campaign') || localStorage.getItem('utm_campaign') || ''
-          };
+          const source = params.get('utm_source') || localStorage.getItem('utm_source') || 'Direto';
+          const content = params.get('utm_content') || localStorage.getItem('utm_content') || '';
+          const campaign = params.get('utm_campaign') || localStorage.getItem('utm_campaign') || '';
+
+          if (params.get('utm_source')) localStorage.setItem('utm_source', params.get('utm_source'));
+          if (params.get('utm_content')) localStorage.setItem('utm_content', params.get('utm_content'));
+
+          return { source, content, campaign };
         };
 
+        // 2. FUNÇÃO CENTRAL DE RASTREIO
         async function trackNutri(type, metadata = {}) {
           try {
             const p = getParams();
-            if (p.source !== 'Direto') localStorage.setItem('utm_source', p.source);
-            if (p.content) localStorage.setItem('utm_content', p.content);
-
             await fetch(`${SB_URL}/rest/v1/leads_tracking`, {
               method: 'POST',
               headers: {
@@ -61,14 +63,18 @@
                 utm_source: p.source,
                 utm_content: p.content,
                 utm_campaign: p.campaign,
-                metadata: metadata
+                metadata: {
+                  ...metadata,
+                  path: window.location.pathname,
+                  device: /Android|iPhone/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
+                }
               })
             });
-          } catch (e) { console.error('Erro NutriBebê Tracker:', e); }
+          } catch (e) { console.warn('Erro Tracker:', e); }
         }
 
-        // --- FUNÇÃO TESTE A/B DE HEADLINES ---
-        async function runABTest() {
+        // 3. TESTE A/B E ESCASSEZ
+        window.addEventListener('DOMContentLoaded', () => {
           const headlines = [
             "Livre-se do medo do engasgo e garanta a segurança do seu bebê.",
             "Prepare receitas saudáveis para o seu bebê em menos de 15 minutos.",
@@ -76,63 +82,48 @@
           ];
           const selected = headlines[Math.floor(Math.random() * headlines.length)];
 
-          // Espera o DOM carregar para trocar o H1
           const interval = setInterval(() => {
             const h1 = document.querySelector('h1');
             if (h1) {
               h1.innerText = selected;
               clearInterval(interval);
+              trackNutri('view_headline', { texto: selected });
             }
           }, 100);
-
-          trackNutri('view_headline', { texto: selected });
-        }
-
-        // --- FUNÇÃO WIDGET DE ESCASSEZ ---
-        async function runEscassez() {
-          const fifteenMins = new Date(Date.now() - 15 * 60000).toISOString();
-          try {
-            const res = await fetch(`${SB_URL}/rest/v1/leads_tracking?event_type=eq.visita&created_at=gte.${fifteenMins}&select=count`, {
-              headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
-            });
-            const data = await res.json();
-            const count = (data[0]?.count || 0) + 3;
-
-            if (count > 2) {
-              const toast = document.getElementById('nutri-toast');
-              document.getElementById('online-count').innerText = count;
-              toast.style.display = 'flex';
-              setTimeout(() => { toast.style.display = 'none'; }, 8000);
-            }
-          } catch (e) {}
-        }
-
-        window.addEventListener('load', () => {
-          trackNutri('visita');
-          runABTest();
-          setTimeout(runEscassez, 3000);
         });
 
-        document.addEventListener('click', (e) => {
+        // 4. MONITORAMENTO DE CLIQUES E CHECKOUT
+        document.addEventListener('click', async (e) => {
           const target = e.target.closest('a') || e.target.closest('button');
-          if (target) {
-            trackNutri('clique');
+          if (!target) return;
+
+          const href = target.href || "";
+          const isCheckout = href.includes('kiwify') || href.includes('hotmart');
+
+          trackNutri('clique', { destino: isCheckout ? 'checkout' : 'interno' });
+
+          if (isCheckout) {
+            e.preventDefault(); // Pausa para garantir o rastro
+
+            // Dispara InitiateCheckout no Pixel
+            if (typeof fbq === 'function') fbq('track', 'InitiateCheckout');
+
             const p = getParams();
-            const href = target.href || "";
-            if (href.includes('kiwify') || href.includes('hotmart')) {
-              const url = new URL(href);
-              url.searchParams.set('utm_source', p.source);
-              url.searchParams.set('utm_content', p.content);
-              target.href = url.toString();
-            }
+            const url = new URL(href);
+            url.searchParams.set('utm_source', p.source);
+            url.searchParams.set('utm_content', p.content);
+
+            // Redireciona após 400ms
+            setTimeout(() => { window.location.href = url.toString(); }, 400);
           }
         });
+
+        window.addEventListener('load', () => trackNutri('visita'));
       })();
     </script>
 
     <script>
-      !function(f,b,e,v,n,t,s)
-      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
       n.callMethod.apply(n,arguments):n.queue.push(arguments)};
       if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
       n.queue=[];t=b.createElement(e);t.async=!0;
@@ -148,18 +139,9 @@
     <div id="nutri-toast">
       <div class="dot-online animate-pulse-green"></div>
       <span style="font-size: 13px; font-weight: bold; color: #334155;">
-        <span id="online-count"></span> mães lendo agora
+        <span id="online-count">12</span> mães lendo agora
       </span>
     </div>
-
-    <noscript>
-      <img
-        height="1"
-        width="1"
-        style="display:none"
-        src="https://www.facebook.com/tr?id=3077997939046690&ev=PageView&noscript=1"
-      />
-    </noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
