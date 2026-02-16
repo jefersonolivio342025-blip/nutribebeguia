@@ -1,9 +1,9 @@
 document.addEventListener('click', (e) => { const target = e.target.closest('a') || e.target.closest('button'); if
-(target) { const href = target.href || ""; // Identifica se o clique foi em um link da Kiwify, Hotmart ou botão com
-classe específica const isCheckoutBtn = href.includes('kiwify') || href.includes('hotmart') ||
-target.classList.contains('btn-compra'); if (isCheckoutBtn) { // 1. Registra o evento no seu Dashboard (Supabase)
-trackNutri('clique', { destino: 'checkout_externo' }); // 2. DISPARA O EVENTO PARA O FACEBOOK ADS if (typeof fbq ===
-'function') { fbq('track', 'InitiateCheckout'); } // 3. Anexa as UTMs dinamicamente ao link antes de redirecionar try {
-const p = getParams(); const url = new URL(href); url.searchParams.set('utm_source', p.source);
-url.searchParams.set('utm_content', p.content); target.href = url.toString(); } catch (err) { console.error("Erro ao
-formatar URL de checkout:", err); } } } });
+(target) { // Pega o href se for um link, ou uma string vazia se for apenas um botão const href =
+target.getAttribute('href') || ""; // Verifica se é um link de checkout const isCheckoutBtn = href.includes('kiwify') ||
+href.includes('hotmart') || target.classList.contains('btn-compra'); if (isCheckoutBtn) { // 1. Registra no seu
+Dashboard trackNutri('clique', { destino: 'checkout_externo' }); // 2. Dispara o Pixel do Facebook if (typeof fbq ===
+'function') { fbq('track', 'InitiateCheckout'); } // 3. Adiciona UTMs apenas se for um link externo válido if
+(href.startsWith('http')) { try { const p = getParams(); const url = new URL(href); url.searchParams.set('utm_source',
+p.source); url.searchParams.set('utm_content', p.content); target.href = url.toString(); } catch (err) {
+console.warn("Link de checkout não é uma URL completa, pulando anexo de UTM."); } } } } });
