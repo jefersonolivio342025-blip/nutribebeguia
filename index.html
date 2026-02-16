@@ -1,19 +1,27 @@
 <script>
   document.addEventListener("click", function(e){
 
-    var link = e.target.closest ? e.target.closest("a") : null;
-    if(!link) return;
+    var el = e.target;
 
-    var href = link.hreaf || "";
+    while (el && el !== document) {
 
-    if(href.indexOf("kiwify") !== -1 || href.indexOf("hotmart") !== -1){
+      if (el.tagName === "A") {
 
-      e.preventDefault();
+        var href = el.getAttribute("href") || "";
 
-      setTimeout(function(){
-        window.location.href = href;
-      },300);
+        if (href.includes("kiwify") || href.includes("hotmart")) {
 
+          e.preventDefault();
+
+          setTimeout(function(){
+            window.location.href = href;
+          }, 300);
+
+          return;
+        }
+      }
+
+      el = el.parentNode;
     }
 
   });
