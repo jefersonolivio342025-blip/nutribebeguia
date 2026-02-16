@@ -1,9 +1,9 @@
-document.addEventListener('click', (e) => { const target = e.target.closest('a') || e.target.closest('button'); if
-(target) { // Pega o href se for um link, ou uma string vazia se for apenas um botão const href =
-target.getAttribute('href') || ""; // Verifica se é um link de checkout const isCheckoutBtn = href.includes('kiwify') ||
-href.includes('hotmart') || target.classList.contains('btn-compra'); if (isCheckoutBtn) { // 1. Registra no seu
-Dashboard trackNutri('clique', { destino: 'checkout_externo' }); // 2. Dispara o Pixel do Facebook if (typeof fbq ===
-'function') { fbq('track', 'InitiateCheckout'); } // 3. Adiciona UTMs apenas se for um link externo válido if
-(href.startsWith('http')) { try { const p = getParams(); const url = new URL(href); url.searchParams.set('utm_source',
-p.source); url.searchParams.set('utm_content', p.content); target.href = url.toString(); } catch (err) {
-console.warn("Link de checkout não é uma URL completa, pulando anexo de UTM."); } } } } });
+document.addEventListener('click', function(e) { var target = e.target.closest('a') || e.target.closest('button'); if
+(target) { // Busca o atributo href de forma segura var href = target.getAttribute('href') || ""; // Verifica se e um
+link de checkout (Kiwify ou Hotmart) var isCheckoutBtn = href.indexOf('kiwify') !== -1 || href.indexOf('hotmart') !== -1
+|| target.classList.contains('btn-compra'); if (isCheckoutBtn) { // 1. Registra o clique no seu Dashboard do Supabase if
+(typeof trackNutri === 'function') { trackNutri('clique', { destino: 'checkout_externo' }); } // 2. Dispara o evento de
+InitiateCheckout no Facebook if (typeof fbq === 'function') { fbq('track', 'InitiateCheckout'); } // 3. Tenta anexar as
+UTMs se for um link externo (http) if (href.indexOf('http') === 0) { try { var p = getParams(); var url = new URL(href);
+url.searchParams.set('utm_source', p.source); url.searchParams.set('utm_content', p.content); target.href =
+url.toString(); } catch (err) { console.warn("Nao foi possivel anexar UTMs ao link."); } } } } });
