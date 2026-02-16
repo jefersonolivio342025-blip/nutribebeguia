@@ -57,19 +57,18 @@
         };
 
         async function trackNutri(type, metadata = {}) {
-          // FILTRO DE AMBIENTE: Ignora testes no Lovable ou Localhost
           if (window.location.hostname.includes("lovable.app") || window.location.hostname === "localhost") {
-            console.log("Teste detectado: rastro não enviado ao banco.");
             return;
           }
-
-          // FILTRO DE QUALIDADE: Só registra visita após 2 segundos
           if (type === 'visita') {
             await new Promise(resolve => setTimeout(resolve, 2000));
           }
 
           try {
             const p = getParams();
+            const currentEmail = localStorage.getItem('lead_email') || '';
+            const currentWA = localStorage.getItem('lead_whatsapp') || '';
+
             await fetch(`${SB_URL}/rest/v1/leads_tracking`, {
               method: 'POST',
               headers: {
@@ -85,6 +84,8 @@
                 utm_campaign: p.campaign,
                 metadata: {
                   ...metadata,
+                  email: currentEmail,
+                  whatsapp: currentWA,
                   path: window.location.pathname,
                   device: /Android|iPhone/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
                 }
@@ -93,15 +94,21 @@
           } catch (e) { console.warn('Erro Tracker:', e); }
         }
 
-        // CAPTURA DE E-MAIL (Lead Generation)
+        // CAPTURA DE CONTATOS (E-mail e WhatsApp)
         document.addEventListener('blur', async (e) => {
+          // Captura E-mail
           if (e.target.type === 'email' && e.target.value.includes('@')) {
-            const emailCapturado = e.target.value;
-            trackNutri('lead_email_capturado', {
-              email: emailCapturado,
-              etapa: 'preenchimento_formulario'
-            });
-            localStorage.setItem('lead_email', emailCapturado);
+            const email = e.target.value;
+            localStorage.setItem('lead_email', email);
+            trackNutri('lead_email_capturado', { email: email });
+          }
+
+          // Captura WhatsApp (Campos tel ou que contenham 'phone'/'whats' no ID/Name)
+          const isPhone = e.target.type === 'tel' || e.target.id.includes('whats') || e.target.name.includes('phone');
+          if (isPhone && e.target.value.length >= 8) {
+            const wa = e.target.value.replace(/\D/g, '');
+            localStorage.setItem('lead_whatsapp', wa);
+            trackNutri('lead_whatsapp_capturado', { whatsapp: wa });
           }
         }, true);
 
@@ -166,8 +173,9 @@
           if (!target || target.id === 'accept-cookies-btn') return;
           const href = target.href || "";
           const isCheckout = href.includes('kiwify') || href.includes('hotmart');
-          trackNutri('clique', { destino: isCheckout ? 'checkout' : 'interno' });
+
           if (isCheckout) {
+            trackNutri('clique', { destino: 'checkout' });
             e.preventDefault();
             if (typeof fbq === 'function') fbq('track', 'InitiateCheckout');
             const p = getParams();
