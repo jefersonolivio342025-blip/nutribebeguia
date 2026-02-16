@@ -12,7 +12,7 @@ import Footer from "@/components/Footer";
 import SocialProofNotification from "@/components/SocialProofNotification";
 import StickyHeader from "@/components/StickyHeader";
 
-// Garante que o TypeScript reconheça o Pixel do Facebook
+// Define o tipo do Pixel do Facebook para o TypeScript
 declare global {
   interface Window {
     fbq: any;
@@ -26,7 +26,7 @@ const Index = () => {
 
     const params = new URLSearchParams(window.location.search);
 
-    // Captura e persistência de UTMs
+    // Persistência de UTMs no LocalStorage
     const source = params.get("utm_source") || localStorage.getItem("nb_source") || "direto";
     const campaign = params.get("utm_campaign") || localStorage.getItem("nb_campaign") || "organico";
     const content = params.get("utm_content") || localStorage.getItem("nb_content") || "sem_criativo";
@@ -35,7 +35,7 @@ const Index = () => {
     if (params.get("utm_campaign")) localStorage.setItem("nb_campaign", params.get("utm_campaign")!);
     if (params.get("utm_content")) localStorage.setItem("nb_content", params.get("utm_content")!);
 
-    // Função de rastreio para o seu Dashboard
+    // Função para registrar eventos no Supabase
     async function trackEvent(val: string, metadata = {}) {
       try {
         await fetch(SB_URL, {
@@ -59,13 +59,13 @@ const Index = () => {
           }),
         });
       } catch (e) {
-        console.warn("Rastreio falhou, mas a experiência continua.");
+        console.warn("Falha no rastreio.");
       }
     }
 
     trackEvent("visita");
 
-    // Lógica de clique profissional para Checkout e WhatsApp
+    // Captura cliques em links de Checkout e WhatsApp
     const handleGlobalClick = (e: MouseEvent) => {
       const el = (e.target as HTMLElement).closest("a");
       if (!el) return;
@@ -74,17 +74,19 @@ const Index = () => {
       const isCheckout = href.includes("kiwify.com.br") || href.includes("hotmart.com") || href.includes("wa.me");
 
       if (isCheckout) {
-        // Pausa o redirecionamento para processar o pixel e o banco
         e.preventDefault();
 
+        // Dispara Pixel do Facebook
         try {
           if (typeof window.fbq === "function") {
             window.fbq("track", "InitiateCheckout");
           }
         } catch (err) {}
 
+        // Dashboard Supabase
         trackEvent("clique", { target: href.includes("wa.me") ? "whatsapp" : "checkout" });
 
+        // Adiciona UTMs ao link final
         let finalUrl = href;
         if (href.startsWith("http")) {
           try {
@@ -96,7 +98,7 @@ const Index = () => {
           } catch (err) {}
         }
 
-        // Redireciona após 500ms (tempo para o fetch completar)
+        // Redireciona com atraso para garantir o envio dos dados
         setTimeout(() => {
           window.location.href = finalUrl;
         }, 500);
@@ -125,13 +127,5 @@ const Index = () => {
   );
 };
 
-// ESSA LINHA É O QUE RESOLVE O ERRO TS1192 NO APP.TSX
-export default Index;
-// ... todo o seu código anterior (imports, useEffect, return) ...
-
-const Index = () => {
-  return <div>{/* seu conteúdo */}</div>;
-};
-
-// ADICIONE ESTA LINHA EXATAMENTE ASSIM:
+// Exportação ÚNICA para corrigir os erros TS1192 e TS2528
 export default Index;
