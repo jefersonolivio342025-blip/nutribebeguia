@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import HeroSection from "@/components/HeroSection";
 import BenefitsSection from "@/components/BenefitsSection";
-import TransformationSection from "@/components/TransformationSection";
+import TransformationSection from "in@/components/TransformationSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import TargetAudienceSection from "@/components/TargetAudienceSection";
 import FAQSection from "@/components/FAQSection";
