@@ -69,7 +69,7 @@
             const currentEmail = localStorage.getItem('lead_email') || '';
             const currentWA = localStorage.getItem('lead_whatsapp') || '';
 
-            await fetch(`${SB_URL}/rest/v1/leads_tracking`, {
+            return await fetch(`${SB_URL}/rest/v1/leads_tracking`, {
               method: 'POST',
               headers: {
                 'apikey': SB_KEY,
@@ -96,14 +96,12 @@
 
         // CAPTURA DE CONTATOS (E-mail e WhatsApp)
         document.addEventListener('blur', async (e) => {
-          // Captura E-mail
           if (e.target.type === 'email' && e.target.value.includes('@')) {
             const email = e.target.value;
             localStorage.setItem('lead_email', email);
             trackNutri('lead_email_capturado', { email: email });
           }
 
-          // Captura WhatsApp (Campos tel ou que contenham 'phone'/'whats' no ID/Name)
           const isPhone = e.target.type === 'tel' || e.target.id.includes('whats') || e.target.name.includes('phone');
           if (isPhone && e.target.value.length >= 8) {
             const wa = e.target.value.replace(/\D/g, '');
@@ -141,15 +139,15 @@
           const countEl = document.getElementById('online-count');
           let currentCount = Math.floor(Math.random() * (22 - 14 + 1)) + 14;
           setTimeout(() => {
-            countEl.innerText = currentCount;
-            toast.style.display = 'flex';
+            if(countEl) countEl.innerText = currentCount;
+            if(toast) toast.style.display = 'flex';
             const oscillation = setInterval(() => {
               const change = Math.floor(Math.random() * 3) - 1;
               currentCount += change;
-              countEl.innerText = currentCount;
+              if(countEl) countEl.innerText = currentCount;
             }, 3000);
             setTimeout(() => {
-              toast.style.display = 'none';
+              if(toast) toast.style.display = 'none';
               clearInterval(oscillation);
             }, 10000);
           }, 4000);
@@ -168,21 +166,29 @@
           }, 100);
         });
 
+        // RASTREADOR DE CLIQUE BLINDADO (CORRIGIDO)
         document.addEventListener('click', async (e) => {
           const target = e.target.closest('a') || e.target.closest('button');
           if (!target || target.id === 'accept-cookies-btn') return;
+
           const href = target.href || "";
           const isCheckout = href.includes('kiwify') || href.includes('hotmart');
 
           if (isCheckout) {
-            trackNutri('clique', { destino: 'checkout' });
-            e.preventDefault();
+            e.preventDefault(); // Pausa o navegador para dar tempo de salvar
+
+            // Registra o checkout no Supabase e aguarda a resposta
+            await trackNutri('clique', { destino: 'checkout' });
+
             if (typeof fbq === 'function') fbq('track', 'InitiateCheckout');
+
             const p = getParams();
             const url = new URL(href);
             url.searchParams.set('utm_source', p.source);
             url.searchParams.set('utm_content', p.content);
-            setTimeout(() => { window.location.href = url.toString(); }, 400);
+
+            // Só redireciona após o rastro ser concluído
+            window.location.href = url.toString();
           }
         });
 
