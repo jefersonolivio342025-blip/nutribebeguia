@@ -3,10 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
-    <meta name="theme-color" content="#556B2F" />
     <link rel="icon" href="/favicon.ico" />
-
-    <title>NutriBebê - Guia de Introdução Alimentar Segura para Bebês</title>
+    <title>NutriBebê - Introdução Alimentar Segura</title>
 
     <script>
       !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -34,10 +32,7 @@
       id="nutri-toast"
       style="display: none; position: fixed; bottom: 20px; left: 20px; background: white; padding: 12px 18px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 9999; align-items: center; gap: 10px;"
     >
-      <div
-        class="dot-online animate-pulse-green"
-        style="width: 8px; height: 8px; background: #10b981; border-radius: 50%;"
-      ></div>
+      <div style="width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></div>
       <span style="font-size: 13px; font-weight: bold; color: #334155; font-family: sans-serif;">
         <span id="online-count">12</span> m&atilde;es lendo agora
       </span>
@@ -47,7 +42,55 @@
     <script type="module" src="/src/main.tsx"></script>
 
     <script>
-      // ... (Insira aqui o script de trackNutri que conversamos antes)
+      (function() {
+        const SB_URL = "https://jdpycowlojjccbqmoaxj.supabase.co";
+        const SB_KEY = "sb_publishable_1m1xv0ewxsSwRaaCztCPLQ_JZzd5nnu";
+
+        async function trackNutri(type, metadata = {}) {
+          if (window.location.hostname.includes("lovable.app")) return;
+          try {
+            const params = new URLSearchParams(window.location.search);
+            await fetch(`${SB_URL}/rest/v1/leads_tracking`, {
+              method: 'POST',
+              headers: {
+                'apikey': SB_KEY,
+                'Authorization': `Bearer ${SB_KEY}`,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=minimal'
+              },
+              body: JSON.stringify({
+                event_type: type,
+                utm_source: params.get('utm_source') || 'Direto',
+                utm_campaign: params.get('utm_campaign') || '',
+                metadata: { ...metadata, path: window.location.pathname }
+              })
+            });
+          } catch (e) { console.warn('Erro no rastreio:', e); }
+        }
+
+        // Registrar visita ao carregar
+        window.addEventListener('load', () => {
+          trackNutri('visita');
+          document.getElementById('nutri-toast').style.display = 'flex';
+        });
+
+        // Registrar clique no botão de compra (Checkout)
+        document.addEventListener('click', async (e) => {
+          const target = e.target.closest('a');
+          if (target && (target.href.includes('kiwify') || target.href.includes('hotmart'))) {
+            e.preventDefault();
+
+            // Dispara InitiateCheckout no Facebook
+            if (typeof fbq === 'function') fbq('track', 'InitiateCheckout');
+
+            // Salva no seu Dashboard
+            await trackNutri('clique', { destino: 'checkout' });
+
+            // Redireciona para a Kiwify
+            window.location.href = target.href;
+          }
+        });
+      })();
     </script>
   </body>
 </html>
