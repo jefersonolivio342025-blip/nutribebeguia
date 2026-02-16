@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import HeroSection from "@/components/HeroSection";
 import BenefitsSection from "@/components/BenefitsSection";
-import TransformationSection from "in@/components/TransformationSection";
+import TransformationSection from "@/components/TransformationSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import TargetAudienceSection from "@/components/TargetAudienceSection";
 import FAQSection from "@/components/FAQSection";
@@ -12,6 +12,12 @@ import Footer from "@/components/Footer";
 import SocialProofNotification from "@/components/SocialProofNotification";
 import StickyHeader from "@/components/StickyHeader";
 
+declare global {
+  interface Window {
+    fbq: any;
+  }
+}
+
 const Index = () => {
   useEffect(() => {
     const SB_URL = "https://jdpycowlojjccbqmoaxj.supabase.co/rest/v1/leads_tracking";
@@ -19,18 +25,17 @@ const Index = () => {
 
     const params = new URLSearchParams(window.location.search);
 
-    // 1. LÓGICA DE MEMÓRIA (PERSISTÊNCIA) - Incluindo Criativo (utm_content)
+    // 1. PERSISTÊNCIA DE UTMs
     const source = params.get("utm_source") || localStorage.getItem("nb_source") || "direto";
     const campaign = params.get("utm_campaign") || localStorage.getItem("nb_campaign") || "organico";
     const content = params.get("utm_content") || localStorage.getItem("nb_content") || "sem_criativo";
 
-    // Se vierem novos parâmetros na URL, atualiza a memória do navegador
     if (params.get("utm_source")) localStorage.setItem("nb_source", params.get("utm_source")!);
     if (params.get("utm_campaign")) localStorage.setItem("nb_campaign", params.get("utm_campaign")!);
     if (params.get("utm_content")) localStorage.setItem("nb_content", params.get("utm_content")!);
 
-    // 2. FUNÇÃO PARA ENVIAR EVENTOS AO BANCO (DASHBOARD)
-    async function trackEvent(val: string) {
+    // 2. FUNÇÃO DE RASTREIO (DASHBOARD)
+    async function trackEvent(val: string, metadata = {}) {
       try {
         await fetch(SB_URL, {
           method: "POST",
@@ -44,8 +49,9 @@ const Index = () => {
             event_type: val,
             utm_source: source,
             utm_campaign: campaign,
-            utm_content: content, // Agora enviando o Criativo
+            utm_content: content,
             metadata: {
+              ...metadata,
               device: /Android|iPhone/i.test(navigator.userAgent) ? "mobile" : "desktop",
               path: window.location.pathname,
             },
@@ -56,47 +62,49 @@ const Index = () => {
       }
     }
 
-    // Registra a visita inicial
+    // Registra a visita (uma única vez ao carregar)
     trackEvent("visita");
 
-    // 3. FUNÇÃO PARA CARIMBAR OS BOTÕES (CHECKOUT/ZAP)
-    const carimbarBotoes = () => {
-      const links = document.querySelectorAll("a");
-      links.forEach((link) => {
-        if (link.href.includes("wa.me") || link.href.includes("kiwify.com.br")) {
-          try {
-            const url = new URL(link.href);
-            url.searchParams.set("utm_source", source);
-            url.searchParams.set("utm_campaign", campaign);
-            url.searchParams.set("utm_content", content); // Passando o criativo para a Kiwify
-            link.href = url.toString();
-          } catch (e) {
-            const connector = link.href.includes("?") ? "&" : "?";
-            link.href += `${connector}utm_source=${source}&utm_campaign=${campaign}&utm_content=${content}`;
-          }
-        }
-      });
-    };
+    // 3. LÓGICA DE CLIQUE BLINDADO (CHECKOUT & PIXEL)
+    const handleGlobalClick = async (e: MouseEvent) => {
+      const el = (e.target as HTMLElement).closest("a");
+      if (!el) return;
 
-    // 4. MONITORAR CLIQUES DE CONVERSÃO
-    const handleGlobalClick = (e: MouseEvent) => {
-      const el = (e.target as HTMLElement).closest("a, button");
-      if (el) {
-        const text = el.textContent?.toLowerCase() || "";
-        const href = (el as HTMLAnchorElement).href || "";
+      const href = el.href || "";
+      const isCheckout = href.includes("kiwify.com.br") || href.includes("wa.me");
 
-        // Identifica clique de intenção de compra
-        if (text.includes("comprar") || text.includes("acesso") || href.includes("kiwify") || href.includes("wa.me")) {
-          trackEvent("clique");
+      if (isCheckout) {
+        // Bloqueia o redirecionamento imediato para processar o rastreio
+        e.preventDefault();
+
+        // Dispara Facebook Pixel
+        if (typeof window.fbq === "function") {
+          window.fbq("track", "InitiateCheckout");
         }
+
+        // Registra no Dashboard
+        trackEvent("clique", { target: href.includes("wa.me") ? "whatsapp" : "kiwify" });
+
+        // Aplica UTMs no link final
+        let finalUrl = href;
+        try {
+          const url = new URL(href);
+          url.searchParams.set("utm_source", source);
+          url.searchParams.set("utm_campaign", campaign);
+          url.searchParams.set("utm_content", content);
+          finalUrl = url.toString();
+        } catch (err) {
+          console.warn("Erro ao formatar link de saída.");
+        }
+
+        // Redireciona após 500ms
+        setTimeout(() => {
+          window.location.href = finalUrl;
+        }, 500);
       }
     };
 
-    // Execução
-    carimbarBotoes();
-    setTimeout(carimbarBotoes, 2000);
     window.addEventListener("click", handleGlobalClick);
-
     return () => window.removeEventListener("click", handleGlobalClick);
   }, []);
 
