@@ -57,20 +57,20 @@
         };
 
         async function trackNutri(type, metadata = {}) {
-          if (window.location.hostname.includes("lovable.app") || window.location.hostname === "localhost") {
-            return;
-          }
-          if (type === 'visita') {
-            await new Promise(resolve => setTimeout(resolve, 2000));
-          }
+          if (window.location.hostname.includes("lovable.app") || window.location.hostname === "localhost") return;
 
           try {
             const p = getParams();
             const currentEmail = localStorage.getItem('lead_email') || '';
             const currentWA = localStorage.getItem('lead_whatsapp') || '';
 
+            // Definimos um timeout para não travar a navegação da usuária
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 1500);
+
             return await fetch(`${SB_URL}/rest/v1/leads_tracking`, {
               method: 'POST',
+              signal: controller.signal,
               headers: {
                 'apikey': SB_KEY,
                 'Authorization': `Bearer ${SB_KEY}`,
@@ -90,94 +90,34 @@
                   device: /Android|iPhone/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
                 }
               })
-            });
-          } catch (e) { console.warn('Erro Tracker:', e); }
+            }).finally(() => clearTimeout(timeoutId));
+          } catch (e) { console.warn('Tracker Off:', e); }
         }
 
-        // CAPTURA DE CONTATOS (E-mail e WhatsApp)
+        // CAPTURA DE CONTATOS
         document.addEventListener('blur', async (e) => {
           if (e.target.type === 'email' && e.target.value.includes('@')) {
-            const email = e.target.value;
-            localStorage.setItem('lead_email', email);
-            trackNutri('lead_email_capturado', { email: email });
+            localStorage.setItem('lead_email', e.target.value);
+            trackNutri('lead_email', { email: e.target.value });
           }
-
           const isPhone = e.target.type === 'tel' || e.target.id.includes('whats') || e.target.name.includes('phone');
           if (isPhone && e.target.value.length >= 8) {
             const wa = e.target.value.replace(/\D/g, '');
             localStorage.setItem('lead_whatsapp', wa);
-            trackNutri('lead_whatsapp_capturado', { whatsapp: wa });
+            trackNutri('lead_whatsapp', { whatsapp: wa });
           }
         }, true);
 
-        window.acceptCookies = function() {
-          localStorage.setItem('nutri_cookie_consent', 'accepted');
-          document.getElementById('cookie-banner').style.display = 'none';
-          trackNutri('consentimento_cookies', { status: 'aceito' });
-        };
-
-        function checkConsent() {
-          if (!localStorage.getItem('nutri_cookie_consent')) {
-            document.getElementById('cookie-banner').style.display = 'block';
-          }
-        }
-
-        let maxScroll = 0;
-        window.addEventListener('scroll', () => {
-          const scrollPercent = Math.round((window.scrollY + window.innerHeight) / document.documentElement.scrollHeight * 100);
-          if (scrollPercent > maxScroll) maxScroll = scrollPercent;
-        });
-
-        window.addEventListener('visibilitychange', () => {
-          if (document.visibilityState === 'hidden' && maxScroll > 20) {
-            trackNutri('scroll_depth', { percent: maxScroll });
-          }
-        });
-
-        function runEscassez() {
-          const toast = document.getElementById('nutri-toast');
-          const countEl = document.getElementById('online-count');
-          let currentCount = Math.floor(Math.random() * (22 - 14 + 1)) + 14;
-          setTimeout(() => {
-            if(countEl) countEl.innerText = currentCount;
-            if(toast) toast.style.display = 'flex';
-            const oscillation = setInterval(() => {
-              const change = Math.floor(Math.random() * 3) - 1;
-              currentCount += change;
-              if(countEl) countEl.innerText = currentCount;
-            }, 3000);
-            setTimeout(() => {
-              if(toast) toast.style.display = 'none';
-              clearInterval(oscillation);
-            }, 10000);
-          }, 4000);
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-          const headlines = ["Livre-se do medo do engasgo...", "Prepare receitas saudáveis...", "O guia definitivo..."];
-          const selected = headlines[Math.floor(Math.random() * headlines.length)];
-          const interval = setInterval(() => {
-            const h1 = document.querySelector('h1');
-            if (h1) {
-              h1.innerText = selected;
-              clearInterval(interval);
-              trackNutri('view_headline', { texto: selected });
-            }
-          }, 100);
-        });
-
-        // RASTREADOR DE CLIQUE BLINDADO (CORRIGIDO)
+        // CHECKOUT SINCRONIZADO (AJUSTADO)
         document.addEventListener('click', async (e) => {
           const target = e.target.closest('a') || e.target.closest('button');
           if (!target || target.id === 'accept-cookies-btn') return;
 
           const href = target.href || "";
-          const isCheckout = href.includes('kiwify') || href.includes('hotmart');
+          if (href.includes('kiwify') || href.includes('hotmart')) {
+            e.preventDefault();
 
-          if (isCheckout) {
-            e.preventDefault(); // Pausa o navegador para dar tempo de salvar
-
-            // Registra o checkout no Supabase e aguarda a resposta
+            // Registra o clique e espera o banco (ou o timeout de 1.5s)
             await trackNutri('clique', { destino: 'checkout' });
 
             if (typeof fbq === 'function') fbq('track', 'InitiateCheckout');
@@ -187,15 +127,29 @@
             url.searchParams.set('utm_source', p.source);
             url.searchParams.set('utm_content', p.content);
 
-            // Só redireciona após o rastro ser concluído
             window.location.href = url.toString();
           }
         });
 
+        window.acceptCookies = function() {
+          localStorage.setItem('nutri_cookie_consent', 'accepted');
+          document.getElementById('cookie-banner').style.display = 'none';
+          trackNutri('consentimento_cookies', { status: 'aceito' });
+        };
+
         window.addEventListener('load', () => {
           trackNutri('visita');
-          runEscassez();
-          checkConsent();
+          if (!localStorage.getItem('nutri_cookie_consent')) {
+            document.getElementById('cookie-banner').style.display = 'block';
+          }
+          // Lógica de Escassez
+          const toast = document.getElementById('nutri-toast');
+          const countEl = document.getElementById('online-count');
+          let currentCount = Math.floor(Math.random() * (22 - 14 + 1)) + 14;
+          setTimeout(() => {
+            if(countEl) countEl.innerText = currentCount;
+            if(toast) toast.style.display = 'flex';
+          }, 4000);
         });
       })();
     </script>
@@ -225,7 +179,7 @@
         <h3 style="margin: 0; font-size: 16px; color: #1e293b;">Privacidade</h3>
       </div>
       <p style="margin: 0; font-size: 14px; color: #64748b; line-height: 1.5;">
-        Usamos cookies para melhorar sua experiência e entender como você interage com o nosso guia.
+        Usamos cookies para melhorar sua experiência.
       </p>
       <button id="accept-cookies-btn" onclick="acceptCookies()" class="btn-cookie">Aceitar e continuar</button>
     </div>
