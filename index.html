@@ -13,12 +13,23 @@
     />
 
     <style>
+      /* Estilos do Toast de Escassez */
       #nutri-toast {
         display: none; position: fixed; bottom: 20px; left: 20px;
         background: white; padding: 12px 18px; border-radius: 16px;
         box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid #f0f0f0;
         z-index: 9999; font-family: sans-serif; align-items: center; gap: 10px;
       }
+
+      /* Estilos do Banner de Cookies LGPD */
+      #cookie-banner {
+        display: none; position: fixed; bottom: 20px; right: 20px; left: 20px;
+        background: white; border: 1px solid #e2e8f0; border-radius: 20px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); z-index: 10000;
+        font-family: sans-serif; padding: 20px;
+      }
+      @media (min-width: 768px) { #cookie-banner { left: auto; max-width: 350px; } }
+
       .dot-online { width: 8px; height: 8px; background: #10b981; border-radius: 50%; }
       @keyframes pulse-green {
         0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
@@ -26,6 +37,13 @@
         100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
       }
       .animate-pulse-green { animation: pulse-green 2s infinite; }
+
+      .btn-cookie {
+        background: #1e293b; color: white; border: none; padding: 12px;
+        border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%;
+        margin-top: 15px; transition: background 0.3s;
+      }
+      .btn-cookie:hover { background: #334155; }
     </style>
 
     <script>
@@ -71,16 +89,26 @@
           } catch (e) { console.warn('Erro Tracker:', e); }
         }
 
+        // --- LÓGICA LGPD ---
+        window.acceptCookies = function() {
+          localStorage.setItem('nutri_cookie_consent', 'accepted');
+          document.getElementById('cookie-banner').style.display = 'none';
+          trackNutri('consentimento_cookies', { status: 'aceito' });
+        };
+
+        function checkConsent() {
+          if (!localStorage.getItem('nutri_cookie_consent')) {
+            document.getElementById('cookie-banner').style.display = 'block';
+          }
+        }
+
         // --- RASTREADOR DE SCROLL ---
         let maxScroll = 0;
         window.addEventListener('scroll', () => {
           const scrollPercent = Math.round((window.scrollY + window.innerHeight) / document.documentElement.scrollHeight * 100);
-          if (scrollPercent > maxScroll) {
-            maxScroll = scrollPercent;
-          }
+          if (scrollPercent > maxScroll) maxScroll = scrollPercent;
         });
 
-        // Envia o scroll máximo quando a pessoa sai da página
         window.addEventListener('visibilitychange', () => {
           if (document.visibilityState === 'hidden' && maxScroll > 20) {
             trackNutri('scroll_depth', { percent: maxScroll });
@@ -96,13 +124,11 @@
           setTimeout(() => {
             countEl.innerText = currentCount;
             toast.style.display = 'flex';
-
             const oscillation = setInterval(() => {
               const change = Math.floor(Math.random() * 3) - 1;
               currentCount += change;
               countEl.innerText = currentCount;
             }, 3000);
-
             setTimeout(() => {
               toast.style.display = 'none';
               clearInterval(oscillation);
@@ -111,13 +137,8 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-          const headlines = [
-            "Livre-se do medo do engasgo e garanta a segurança do seu bebê.",
-            "Prepare receitas saudáveis para o seu bebê em menos de 15 minutos.",
-            "O guia definitivo para uma introdução alimentar sem estresse."
-          ];
+          const headlines = ["Livre-se do medo do engasgo...", "Prepare receitas saudáveis...", "O guia definitivo..."];
           const selected = headlines[Math.floor(Math.random() * headlines.length)];
-
           const interval = setInterval(() => {
             const h1 = document.querySelector('h1');
             if (h1) {
@@ -130,22 +151,19 @@
 
         document.addEventListener('click', async (e) => {
           const target = e.target.closest('a') || e.target.closest('button');
-          if (!target) return;
+          if (!target || target.id === 'accept-cookies-btn') return;
 
           const href = target.href || "";
           const isCheckout = href.includes('kiwify') || href.includes('hotmart');
-
           trackNutri('clique', { destino: isCheckout ? 'checkout' : 'interno' });
 
           if (isCheckout) {
             e.preventDefault();
             if (typeof fbq === 'function') fbq('track', 'InitiateCheckout');
-
             const p = getParams();
             const url = new URL(href);
             url.searchParams.set('utm_source', p.source);
             url.searchParams.set('utm_content', p.content);
-
             setTimeout(() => { window.location.href = url.toString(); }, 400);
           }
         });
@@ -153,6 +171,7 @@
         window.addEventListener('load', () => {
           trackNutri('visita');
           runEscassez();
+          checkConsent();
         });
       })();
     </script>
@@ -177,6 +196,18 @@
         <span id="online-count">12</span> mães lendo agora
       </span>
     </div>
+
+    <div id="cookie-banner">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+        <span style="font-size: 20px;">🍪</span>
+        <h3 style="margin: 0; font-size: 16px; color: #1e293b;">Privacidade</h3>
+      </div>
+      <p style="margin: 0; font-size: 14px; color: #64748b; line-height: 1.5;">
+        Usamos cookies para melhorar sua experiência e entender como você interage com o nosso guia.
+      </p>
+      <button id="accept-cookies-btn" onclick="acceptCookies()" class="btn-cookie">Aceitar e continuar</button>
+    </div>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
