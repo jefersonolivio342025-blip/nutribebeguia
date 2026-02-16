@@ -64,7 +64,6 @@
             const currentEmail = localStorage.getItem('lead_email') || '';
             const currentWA = localStorage.getItem('lead_whatsapp') || '';
 
-            // Definimos um timeout para não travar a navegação da usuária
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 1500);
 
@@ -108,7 +107,7 @@
           }
         }, true);
 
-        // CHECKOUT SINCRONIZADO (AJUSTADO)
+        // CHECKOUT SINCRONIZADO E PIXEL FB
         document.addEventListener('click', async (e) => {
           const target = e.target.closest('a') || e.target.closest('button');
           if (!target || target.id === 'accept-cookies-btn') return;
@@ -117,11 +116,20 @@
           if (href.includes('kiwify') || href.includes('hotmart')) {
             e.preventDefault();
 
-            // Registra o clique e espera o banco (ou o timeout de 1.5s)
+            // 1. Dispara InitiateCheckout no Pixel do Facebook
+            if (typeof fbq === 'function') {
+              fbq('track', 'InitiateCheckout', {
+                content_name: 'Guia NutriBebê Pro',
+                content_category: 'E-book/App',
+                value: 47.00, // Ajuste para o valor do seu produto
+                currency: 'BRL'
+              });
+            }
+
+            // 2. Registra o clique no seu Dashboard
             await trackNutri('clique', { destino: 'checkout' });
 
-            if (typeof fbq === 'function') fbq('track', 'InitiateCheckout');
-
+            // 3. Prepara a URL e Redireciona
             const p = getParams();
             const url = new URL(href);
             url.searchParams.set('utm_source', p.source);
@@ -142,7 +150,6 @@
           if (!localStorage.getItem('nutri_cookie_consent')) {
             document.getElementById('cookie-banner').style.display = 'block';
           }
-          // Lógica de Escassez
           const toast = document.getElementById('nutri-toast');
           const countEl = document.getElementById('online-count');
           let currentCount = Math.floor(Math.random() * (22 - 14 + 1)) + 14;
@@ -165,6 +172,13 @@
       fbq('init', '3077997939046690');
       fbq('track', 'PageView');
     </script>
+    <noscript
+      ><img
+        height="1"
+        width="1"
+        style="display:none"
+        src="https://www.facebook.com/tr?id=3077997939046690&ev=PageView&noscript=1"
+    /></noscript>
   </head>
   <body>
     <div id="nutri-toast">
