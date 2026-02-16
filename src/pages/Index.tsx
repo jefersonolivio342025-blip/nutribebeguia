@@ -1,129 +1,88 @@
-import { useEffect } from "react";
-import HeroSection from "@/components/HeroSection";
-import BenefitsSection from "@/components/BenefitsSection";
-import TransformationSection from "@/components/TransformationSection";
-import TestimonialsSection from "@/components/TestimonialsSection";
-import TargetAudienceSection from "@/components/TargetAudienceSection";
-import FAQSection from "@/components/FAQSection";
-import OfferSection from "@/components/OfferSection";
-import GuaranteeSection from "@/components/GuaranteeSection";
-import WhatsAppButton from "@/components/WhatsAppButton";
-import Footer from "@/components/Footer";
-import SocialProofNotification from "@/components/SocialProofNotification";
-import StickyHeader from "@/components/StickyHeader";
+useEffect(() => {
+  const SB_URL = "https://jdpycowlojjccbqmoaxj.supabase.co/rest/v1/leads_tracking";
+  const SB_KEY = "sb_publishable_1m1xv0ewxsSwRaaCztCPLQ_JZzd5nnu";
 
-declare global {
-  interface Window {
-    fbq: any;
-  }
-}
+  const params = new URLSearchParams(window.location.search);
 
-const Index = () => {
-  useEffect(() => {
-    const SB_URL = "https://jdpycowlojjccbqmoaxj.supabase.co/rest/v1/leads_tracking";
-    const SB_KEY = "sb_publishable_1m1xv0ewxsSwRaaCztCPLQ_JZzd5nnu";
+  // 1. PERSISTÊNCIA DE UTMs
+  const source = params.get("utm_source") || localStorage.getItem("nb_source") || "direto";
+  const campaign = params.get("utm_campaign") || localStorage.getItem("nb_campaign") || "organico";
+  const content = params.get("utm_content") || localStorage.getItem("nb_content") || "sem_criativo";
 
-    const params = new URLSearchParams(window.location.search);
+  if (params.get("utm_source")) localStorage.setItem("nb_source", params.get("utm_source")!);
+  if (params.get("utm_campaign")) localStorage.setItem("nb_campaign", params.get("utm_campaign")!);
+  if (params.get("utm_content")) localStorage.setItem("nb_content", params.get("utm_content")!);
 
-    // 1. PERSISTÊNCIA DE UTMs
-    const source = params.get("utm_source") || localStorage.getItem("nb_source") || "direto";
-    const campaign = params.get("utm_campaign") || localStorage.getItem("nb_campaign") || "organico";
-    const content = params.get("utm_content") || localStorage.getItem("nb_content") || "sem_criativo";
-
-    if (params.get("utm_source")) localStorage.setItem("nb_source", params.get("utm_source")!);
-    if (params.get("utm_campaign")) localStorage.setItem("nb_campaign", params.get("utm_campaign")!);
-    if (params.get("utm_content")) localStorage.setItem("nb_content", params.get("utm_content")!);
-
-    // 2. FUNÇÃO DE RASTREIO (DASHBOARD)
-    async function trackEvent(val: string, metadata = {}) {
-      try {
-        await fetch(SB_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            apikey: SB_KEY,
-            Authorization: `Bearer ${SB_KEY}`,
-            Prefer: "return=minimal",
+  // 2. FUNÇÃO DE RASTREIO (DASHBOARD)
+  async function trackEvent(val: string, metadata = {}) {
+    try {
+      await fetch(SB_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: SB_KEY,
+          Authorization: `Bearer ${SB_KEY}`,
+          Prefer: "return=minimal",
+        },
+        body: JSON.stringify({
+          event_type: val,
+          utm_source: source,
+          utm_campaign: campaign,
+          utm_content: content,
+          metadata: {
+            ...metadata,
+            device: /Android|iPhone/i.test(navigator.userAgent) ? "mobile" : "desktop",
+            path: window.location.pathname,
           },
-          body: JSON.stringify({
-            event_type: val,
-            utm_source: source,
-            utm_campaign: campaign,
-            utm_content: content,
-            metadata: {
-              ...metadata,
-              device: /Android|iPhone/i.test(navigator.userAgent) ? "mobile" : "desktop",
-              path: window.location.pathname,
-            },
-          }),
-        });
-      } catch (e) {
-        console.error("Erro no rastreio:", e);
-      }
+        }),
+      });
+    } catch (e) {
+      console.warn("Rastreio Supabase falhou, mas o site continua funcionando.");
     }
+  }
 
-    // Registra a visita (uma única vez ao carregar)
-    trackEvent("visita");
+  trackEvent("visita");
 
-    // 3. LÓGICA DE CLIQUE BLINDADO (CHECKOUT & PIXEL)
-    const handleGlobalClick = async (e: MouseEvent) => {
-      const el = (e.target as HTMLElement).closest("a");
-      if (!el) return;
+  // 3. LÓGICA DE CLIQUE (PROTEÇÃO TOTAL)
+  const handleGlobalClick = (e: MouseEvent) => {
+    const el = (e.target as HTMLElement).closest("a");
+    if (!el) return;
 
-      const href = el.href || "";
-      const isCheckout = href.includes("kiwify.com.br") || href.includes("wa.me");
+    const href = el.href || "";
+    const isCheckout = href.includes("kiwify.com.br") || href.includes("hotmart.com") || href.includes("wa.me");
 
-      if (isCheckout) {
-        // Bloqueia o redirecionamento imediato para processar o rastreio
-        e.preventDefault();
+    if (isCheckout) {
+      e.preventDefault(); // Pausa para rastrear
 
-        // Dispara Facebook Pixel
+      // Facebook Pixel
+      try {
         if (typeof window.fbq === "function") {
           window.fbq("track", "InitiateCheckout");
         }
+      } catch (err) {}
 
-        // Registra no Dashboard
-        trackEvent("clique", { target: href.includes("wa.me") ? "whatsapp" : "kiwify" });
+      // Dashboard
+      trackEvent("clique", { target: href.includes("wa.me") ? "whatsapp" : "checkout" });
 
-        // Aplica UTMs no link final
-        let finalUrl = href;
+      // UTMs no Link
+      let finalUrl = href;
+      if (href.startsWith("http")) {
         try {
           const url = new URL(href);
           url.searchParams.set("utm_source", source);
           url.searchParams.set("utm_campaign", campaign);
           url.searchParams.set("utm_content", content);
           finalUrl = url.toString();
-        } catch (err) {
-          console.warn("Erro ao formatar link de saída.");
-        }
-
-        // Redireciona após 500ms
-        setTimeout(() => {
-          window.location.href = finalUrl;
-        }, 500);
+        } catch (err) {}
       }
-    };
 
-    window.addEventListener("click", handleGlobalClick);
-    return () => window.removeEventListener("click", handleGlobalClick);
-  }, []);
+      // Redireciona com segurança
+      setTimeout(() => {
+        window.location.href = finalUrl;
+      }, 500);
+    }
+  };
 
-  return (
-    <div className="min-h-screen">
-      <StickyHeader />
-      <HeroSection />
-      <BenefitsSection />
-      <TransformationSection />
-      <TestimonialsSection />
-      <TargetAudienceSection />
-      <FAQSection />
-      <OfferSection />
-      <GuaranteeSection />
-      <Footer />
-      <WhatsAppButton />
-      <SocialProofNotification />
-    </div>
-  );
-};
-
-export default Index;
+  window.addEventListener("click", handleGlobalClick);
+  return () => window.removeEventListener("click", handleGlobalClick);
+}, []);
