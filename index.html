@@ -1,35 +1,86 @@
 <script>
   (function() {
-    document.addEventListener("click", function(e) {
-      // 1. Busca o link (A) mais próximo do clique
-      var el = e.target.closest("a");
+    const SB_URL = "https://jdpycowlojjccbqmoaxj.supabase.co";
+    const SB_KEY = "sb_publishable_1m1xv0ewxsSwRaaCztCPLQ_JZzd5nnu";
 
-      // Se não for um link, não faz nada e deixa o site funcionar normal
+    // 1. CAPTURA DE PARÂMETROS (UTMs)
+    window.getParams = function() {
+      const params = new URLSearchParams(window.location.search);
+      return {
+        source: params.get('utm_source') || localStorage.getItem('utm_source') || 'Direto',
+        content: params.get('utm_content') || localStorage.getItem('utm_content') || '',
+        campaign: params.get('utm_campaign') || localStorage.getItem('utm_campaign') || ''
+      };
+    };
+
+    // 2. FUNÇÃO DE ENVIO PARA O SUPABASE
+    window.trackNutri = async function(type, metadata = {}) {
+      try {
+        const p = getParams();
+        // Salva na memória para não perder o rastro se ela navegar no site
+        if (p.source !== 'Direto') localStorage.setItem('utm_source', p.source);
+        if (p.content) localStorage.setItem('utm_content', p.content);
+
+        await fetch(`${SB_URL}/rest/v1/leads_tracking`, {
+          method: 'POST',
+          headers: {
+            'apikey': SB_KEY,
+            'Authorization': `Bearer ${SB_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify({
+            event_type: type,
+            utm_source: p.source,
+            utm_content: p.content,
+            utm_campaign: p.campaign,
+            metadata: metadata
+          })
+        });
+      } catch (e) { console.error('Erro Tracker:', e); }
+    };
+
+    // 3. MONITORAMENTO DE CLIQUES (PIXEL DE CONVERSÃO)
+    document.addEventListener("click", function(e) {
+      var el = e.target.closest("a");
       if (!el) return;
 
       var href = el.getAttribute("href") || "";
 
-      // 2. Só intercepta se for link de pagamento (Checkout)
+      // Verifica se é link da Kiwify ou Hotmart
       if (href.indexOf("kiwify") !== -1 || href.indexOf("hotmart") !== -1) {
 
-        // Impede a saída imediata para dar tempo ao rastreio
+        // Bloqueia a saída rápida para garantir o disparo dos pixels
         e.preventDefault();
 
-        // 3. Dispara o Facebook Pixel (se estiver instalado)
+        // Dispara Facebook InitiateCheckout
         if (typeof fbq === "function") {
           fbq('track', 'InitiateCheckout');
         }
 
-        // 4. Registra no seu Dashboard (via função trackNutri que você já tem)
-        if (typeof trackNutri === "function") {
-          trackNutri('clique', { destino: 'checkout_pelo_index' });
-        }
+        // Registra o clique no seu Dashboard
+        trackNutri('clique', { destino: 'checkout_index' });
 
-        // 5. Redireciona após um pequeno delay de segurança
+        // Adiciona as UTMs no link de pagamento
+        var p = getParams();
+        var finalUrl = href;
+        try {
+          var url = new URL(href);
+          url.searchParams.set('utm_source', p.source);
+          url.searchParams.set('utm_content', p.content);
+          finalUrl = url.toString();
+        } catch(err) {}
+
+        // Redireciona após 400ms
         setTimeout(function() {
-          window.location.href = href;
+          window.location.href = finalUrl;
         }, 400);
       }
+    });
+
+    // Registra a visita ao carregar a página
+    window.addEventListener('load', function() {
+      trackNutri('visita');
     });
   })();
 </script>
