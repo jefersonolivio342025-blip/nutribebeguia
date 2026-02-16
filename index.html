@@ -13,15 +13,12 @@
     />
 
     <style>
-      /* Estilos do Toast de Escassez */
       #nutri-toast {
         display: none; position: fixed; bottom: 20px; left: 20px;
         background: white; padding: 12px 18px; border-radius: 16px;
         box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid #f0f0f0;
         z-index: 9999; font-family: sans-serif; align-items: center; gap: 10px;
       }
-
-      /* Estilos do Banner de Cookies LGPD */
       #cookie-banner {
         display: none; position: fixed; bottom: 20px; right: 20px; left: 20px;
         background: white; border: 1px solid #e2e8f0; border-radius: 20px;
@@ -29,7 +26,6 @@
         font-family: sans-serif; padding: 20px;
       }
       @media (min-width: 768px) { #cookie-banner { left: auto; max-width: 350px; } }
-
       .dot-online { width: 8px; height: 8px; background: #10b981; border-radius: 50%; }
       @keyframes pulse-green {
         0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
@@ -37,7 +33,6 @@
         100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
       }
       .animate-pulse-green { animation: pulse-green 2s infinite; }
-
       .btn-cookie {
         background: #1e293b; color: white; border: none; padding: 12px;
         border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%;
@@ -56,14 +51,23 @@
           const source = params.get('utm_source') || localStorage.getItem('utm_source') || 'Direto';
           const content = params.get('utm_content') || localStorage.getItem('utm_content') || '';
           const campaign = params.get('utm_campaign') || localStorage.getItem('utm_campaign') || '';
-
           if (params.get('utm_source')) localStorage.setItem('utm_source', params.get('utm_source'));
           if (params.get('utm_content')) localStorage.setItem('utm_content', params.get('utm_content'));
-
           return { source, content, campaign };
         };
 
         async function trackNutri(type, metadata = {}) {
+          // FILTRO DE AMBIENTE: Ignora testes no Lovable ou Localhost
+          if (window.location.hostname.includes("lovable.app") || window.location.hostname === "localhost") {
+            console.log("Teste detectado: rastro não enviado ao banco.");
+            return;
+          }
+
+          // FILTRO DE QUALIDADE: Só registra visita após 2 segundos
+          if (type === 'visita') {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+          }
+
           try {
             const p = getParams();
             await fetch(`${SB_URL}/rest/v1/leads_tracking`, {
@@ -89,7 +93,18 @@
           } catch (e) { console.warn('Erro Tracker:', e); }
         }
 
-        // --- LÓGICA LGPD ---
+        // CAPTURA DE E-MAIL (Lead Generation)
+        document.addEventListener('blur', async (e) => {
+          if (e.target.type === 'email' && e.target.value.includes('@')) {
+            const emailCapturado = e.target.value;
+            trackNutri('lead_email_capturado', {
+              email: emailCapturado,
+              etapa: 'preenchimento_formulario'
+            });
+            localStorage.setItem('lead_email', emailCapturado);
+          }
+        }, true);
+
         window.acceptCookies = function() {
           localStorage.setItem('nutri_cookie_consent', 'accepted');
           document.getElementById('cookie-banner').style.display = 'none';
@@ -102,7 +117,6 @@
           }
         }
 
-        // --- RASTREADOR DE SCROLL ---
         let maxScroll = 0;
         window.addEventListener('scroll', () => {
           const scrollPercent = Math.round((window.scrollY + window.innerHeight) / document.documentElement.scrollHeight * 100);
@@ -115,12 +129,10 @@
           }
         });
 
-        // --- ESCASSEZ DINÂMICA ---
         function runEscassez() {
           const toast = document.getElementById('nutri-toast');
           const countEl = document.getElementById('online-count');
           let currentCount = Math.floor(Math.random() * (22 - 14 + 1)) + 14;
-
           setTimeout(() => {
             countEl.innerText = currentCount;
             toast.style.display = 'flex';
@@ -152,11 +164,9 @@
         document.addEventListener('click', async (e) => {
           const target = e.target.closest('a') || e.target.closest('button');
           if (!target || target.id === 'accept-cookies-btn') return;
-
           const href = target.href || "";
           const isCheckout = href.includes('kiwify') || href.includes('hotmart');
           trackNutri('clique', { destino: isCheckout ? 'checkout' : 'interno' });
-
           if (isCheckout) {
             e.preventDefault();
             if (typeof fbq === 'function') fbq('track', 'InitiateCheckout');
@@ -188,7 +198,6 @@
       fbq('track', 'PageView');
     </script>
   </head>
-
   <body>
     <div id="nutri-toast">
       <div class="dot-online animate-pulse-green"></div>
@@ -196,7 +205,6 @@
         <span id="online-count">12</span> mães lendo agora
       </span>
     </div>
-
     <div id="cookie-banner">
       <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
         <span style="font-size: 20px;">🍪</span>
@@ -207,7 +215,6 @@
       </p>
       <button id="accept-cookies-btn" onclick="acceptCookies()" class="btn-cookie">Aceitar e continuar</button>
     </div>
-
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
