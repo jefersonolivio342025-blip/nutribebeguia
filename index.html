@@ -1,13 +1,12 @@
-document.addEventListener('click', function(e) { // 1. Tenta achar o link ou botão mais próximo, mesmo que clique num
-ícone dentro dele var target = e.target.closest('a') || e.target.closest('button'); if (!target) return; var href =
-target.getAttribute('href') || ""; // 2. Verifica se é um link de checkout (Kiwify, Hotmart ou classe manual) var
-isCheckoutBtn = (href.indexOf('kiwify') !== -1) || (href.indexOf('hotmart') !== -1) || (target.classList &&
-target.classList.contains('btn-compra')); if (isCheckoutBtn) { // Para o redirecionamento imediato e.preventDefault();
-// 1. Registra no seu Dashboard if (typeof trackNutri === 'function') { try { trackNutri('clique', { destino:
-'checkout_externo' }); } catch(err) {} } // 2. Dispara o Facebook if (typeof fbq === 'function') { try { fbq('track',
-'InitiateCheckout'); } catch(err) {} } // 3. Prepara o link com UTMs (com proteção total contra erros) var finalUrl =
-href; if (href && href.indexOf('http') === 0) { try { var p = (typeof getParams === 'function') ? getParams() : {
+document.addEventListener('click', function(e) { // 1. Tenta achar o link ou botão mais próximo var target =
+e.target.closest('a') || e.target.closest('button'); if (!target) return; var href = target.getAttribute('href') || "";
+// 2. Verifica se é um link de checkout var isCheckoutBtn = (href.indexOf('kiwify') !== -1) || (href.indexOf('hotmart')
+!== -1) || (target.classList && target.classList.contains('btn-compra')); if (isCheckoutBtn) { // Impede
+redirecionamento imediato e.preventDefault(); // 1. Registra no seu Dashboard if (typeof trackNutri === 'function') {
+try { trackNutri('clique', { destino: 'checkout_externo' }); } catch (err) {} } // 2. Dispara o Facebook if (typeof fbq
+=== 'function') { try { fbq('track', 'InitiateCheckout'); } catch (err) {} } // 3. Prepara o link com UTMs var finalUrl
+= href; if (href && href.indexOf('http') === 0) { try { var p = (typeof getParams === 'function') ? getParams() : {
 source: 'Direto', content: '' }; var url = new URL(href); if (p.source) url.searchParams.set('utm_source', p.source); if
 (p.content) url.searchParams.set('utm_content', p.content); finalUrl = url.toString(); } catch (err) {
 console.warn("Erro ao processar UTMs, enviando para link original."); } } // 4. Redireciona após 500ms
-setTimeout(function() { window.location.href = finalUrl; }, 500); } });
+setTimeout(function() { window.location.href = finalUrl; }, 500); } }); // ← ISSO ESTAVA FALTANDO
