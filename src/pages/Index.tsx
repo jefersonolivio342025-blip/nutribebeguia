@@ -12,7 +12,7 @@ import Footer from "@/components/Footer";
 import SocialProofNotification from "@/components/SocialProofNotification";
 import StickyHeader from "@/components/StickyHeader";
 
-// Define o tipo do Pixel do Facebook para o TypeScript
+// Resolve o erro de tipo do Facebook Pixel no TS
 declare global {
   interface Window {
     fbq: any;
@@ -26,7 +26,7 @@ const Index = () => {
 
     const params = new URLSearchParams(window.location.search);
 
-    // Persistência de UTMs no LocalStorage
+    // Lógica de Persistência de UTMs
     const source = params.get("utm_source") || localStorage.getItem("nb_source") || "direto";
     const campaign = params.get("utm_campaign") || localStorage.getItem("nb_campaign") || "organico";
     const content = params.get("utm_content") || localStorage.getItem("nb_content") || "sem_criativo";
@@ -35,7 +35,7 @@ const Index = () => {
     if (params.get("utm_campaign")) localStorage.setItem("nb_campaign", params.get("utm_campaign")!);
     if (params.get("utm_content")) localStorage.setItem("nb_content", params.get("utm_content")!);
 
-    // Função para registrar eventos no Supabase
+    // Função de rastreio para o Dashboard
     async function trackEvent(val: string, metadata = {}) {
       try {
         await fetch(SB_URL, {
@@ -65,7 +65,7 @@ const Index = () => {
 
     trackEvent("visita");
 
-    // Captura cliques em links de Checkout e WhatsApp
+    // Captura cliques em links de checkout e WhatsApp
     const handleGlobalClick = (e: MouseEvent) => {
       const el = (e.target as HTMLElement).closest("a");
       if (!el) return;
@@ -76,17 +76,17 @@ const Index = () => {
       if (isCheckout) {
         e.preventDefault();
 
-        // Dispara Pixel do Facebook
+        // Dispara InitiateCheckout no Facebook
         try {
           if (typeof window.fbq === "function") {
             window.fbq("track", "InitiateCheckout");
           }
         } catch (err) {}
 
-        // Dashboard Supabase
+        // Envia dado para o Supabase
         trackEvent("clique", { target: href.includes("wa.me") ? "whatsapp" : "checkout" });
 
-        // Adiciona UTMs ao link final
+        // Prepara URL com UTMs para a plataforma de pagamento
         let finalUrl = href;
         if (href.startsWith("http")) {
           try {
@@ -98,7 +98,7 @@ const Index = () => {
           } catch (err) {}
         }
 
-        // Redireciona com atraso para garantir o envio dos dados
+        // Delay de segurança para o tracking disparar antes de sair
         setTimeout(() => {
           window.location.href = finalUrl;
         }, 500);
@@ -127,5 +127,5 @@ const Index = () => {
   );
 };
 
-// Exportação ÚNICA para corrigir os erros TS1192 e TS2528
+// Exportação obrigatória para resolver o erro TS1192
 export default Index;
