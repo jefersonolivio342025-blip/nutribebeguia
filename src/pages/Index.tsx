@@ -127,3 +127,11 @@ const Index = () => {
 
 // ESSA LINHA É O QUE RESOLVE O ERRO TS1192 NO APP.TSX
 export default Index;
+// ... todo o seu código anterior (imports, useEffect, return) ...
+
+const Index = () => {
+  return <div>{/* seu conteúdo */}</div>;
+};
+
+// ADICIONE ESTA LINHA EXATAMENTE ASSIM:
+export default Index;
