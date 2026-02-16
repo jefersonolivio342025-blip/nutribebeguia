@@ -1,124 +1,189 @@
-<script>
-  (function() {
-    const SB_URL = "https://jdpycowlojjccbqmoaxj.supabase.co";
-    const SB_KEY = "sb_publishable_1m1xv0ewxsSwRaaCztCPLQ_JZzd5nnu";
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <meta name="theme-color" content="#556B2F" />
+    <link rel="icon" href="/favicon.ico" />
 
-    const getParams = () => {
-      const params = new URLSearchParams(window.location.search);
-      const source = params.get('utm_source') || localStorage.getItem('utm_source') || 'Direto';
-      const content = params.get('utm_content') || localStorage.getItem('utm_content') || '';
-      const campaign = params.get('utm_campaign') || localStorage.getItem('utm_campaign') || '';
+    <title>NutriBebê - Guia de Introdução Alimentar Segura para Bebês</title>
+    <meta
+      name="description"
+      content="Descubra o método validado por nutricionistas que ensina os cortes corretos e texturas seguras para o seu bebê."
+    />
 
-      // Persistência das UTMs
-      if (params.get('utm_source')) localStorage.setItem('utm_source', params.get('utm_source'));
-      if (params.get('utm_content')) localStorage.setItem('utm_content', params.get('utm_content'));
-      if (params.get('utm_campaign')) localStorage.setItem('utm_campaign', params.get('utm_campaign'));
-
-      return { source, content, campaign };
-    };
-
-    async function trackNutri(type, metadata = {}) {
-      if (window.location.hostname.includes("lovable.app") || window.location.hostname === "localhost") return;
-
-      try {
-        const p = getParams();
-        // Busca contatos atualizados do localStorage
-        const currentEmail = localStorage.getItem('lead_email') || '';
-        const currentWA = localStorage.getItem('lead_whatsapp') || '';
-
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 2000); // Aumentado para 2s para maior estabilidade
-
-        return await fetch(`${SB_URL}/rest/v1/leads_tracking`, {
-          method: 'POST',
-          signal: controller.signal,
-          headers: {
-            'apikey': SB_KEY,
-            'Authorization': `Bearer ${SB_KEY}`,
-            'Content-Type': 'application/json',
-            'Prefer': 'return=minimal'
-          },
-          body: JSON.stringify({
-            event_type: type,
-            utm_source: p.source,
-            utm_content: p.content,
-            utm_campaign: p.campaign,
-            metadata: {
-              ...metadata,
-              email: currentEmail,
-              whatsapp: currentWA,
-              path: window.location.pathname,
-              device: /Android|iPhone/i.test(navigator.userAgent) ? 'mobile' : 'desktop',
-              url_completa: window.location.href
-            }
-          })
-        }).finally(() => clearTimeout(timeoutId));
-      } catch (e) { console.warn('Tracker Off:', e); }
-    }
-
-    // CAPTURA DE CONTATOS MELHORADA
-    document.addEventListener('input', (e) => {
-      const val = e.target.value;
-      if (e.target.type === 'email' && val.includes('@') && val.length > 5) {
-        localStorage.setItem('lead_email', val);
+    <style>
+      #nutri-toast {
+        display: none; position: fixed; bottom: 20px; left: 20px;
+        background: white; padding: 12px 18px; border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid #f0f0f0;
+        z-index: 9999; font-family: sans-serif; align-items: center; gap: 10px;
       }
-      const isPhone = e.target.type === 'tel' || e.target.id.includes('whats') || e.target.name.includes('phone');
-      if (isPhone && val.replace(/\D/g, '').length >= 10) {
-        localStorage.setItem('lead_whatsapp', val.replace(/\D/g, ''));
+      #cookie-banner {
+        display: none; position: fixed; bottom: 20px; right: 20px; left: 20px;
+        background: white; border: 1px solid #e2e8f0; border-radius: 20px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); z-index: 10000;
+        font-family: sans-serif; padding: 20px;
       }
-    });
-
-    document.addEventListener('blur', async (e) => {
-      const val = e.target.value;
-      if (e.target.type === 'email' && val.includes('@')) {
-        await trackNutri('lead_email', { email: val });
+      @media (min-width: 768px) { #cookie-banner { left: auto; max-width: 350px; } }
+      .dot-online { width: 8px; height: 8px; background: #10b981; border-radius: 50%; }
+      @keyframes pulse-green {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
       }
-      const isPhone = e.target.type === 'tel' || e.target.id.includes('whats') || e.target.name.includes('phone');
-      if (isPhone && val.length >= 8) {
-        await trackNutri('lead_whatsapp', { whatsapp: val.replace(/\D/g, '') });
+      .animate-pulse-green { animation: pulse-green 2s infinite; }
+      .btn-cookie {
+        background: #1e293b; color: white; border: none; padding: 12px;
+        border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%;
+        margin-top: 15px; transition: background 0.3s;
       }
-    }, true);
+      .btn-cookie:hover { background: #334155; }
+    </style>
 
-    // CHECKOUT SINCRONIZADO E BLINDADO
-    document.addEventListener('click', async (e) => {
-      const target = e.target.closest('a') || e.target.closest('button');
-      if (!target || target.id === 'accept-cookies-btn') return;
+    <script>
+      (function() {
+        const SB_URL = "https://jdpycowlojjccbqmoaxj.supabase.co";
+        const SB_KEY = "sb_publishable_1m1xv0ewxsSwRaaCztCPLQ_JZzd5nnu";
 
-      const href = target.href || "";
-      if (href.includes('kiwify') || href.includes('hotmart')) {
-        e.preventDefault();
+        const getParams = () => {
+          const params = new URLSearchParams(window.location.search);
+          const source = params.get('utm_source') || localStorage.getItem('utm_source') || 'Direto';
+          const content = params.get('utm_content') || localStorage.getItem('utm_content') || '';
+          const campaign = params.get('utm_campaign') || localStorage.getItem('utm_campaign') || '';
+          if (params.get('utm_source')) localStorage.setItem('utm_source', params.get('utm_source'));
+          if (params.get('utm_content')) localStorage.setItem('utm_content', params.get('utm_content'));
+          return { source, content, campaign };
+        };
 
-        // Garante o registro do checkout antes de sair da página
-        await trackNutri('clique', {
-          destino: 'checkout',
-          btn_texto: target.innerText?.substring(0, 30)
+        async function trackNutri(type, metadata = {}) {
+          if (window.location.hostname.includes("lovable.app") || window.location.hostname === "localhost") return;
+
+          try {
+            const p = getParams();
+            const currentEmail = localStorage.getItem('lead_email') || '';
+            const currentWA = localStorage.getItem('lead_whatsapp') || '';
+
+            // Definimos um timeout para não travar a navegação da usuária
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 1500);
+
+            return await fetch(`${SB_URL}/rest/v1/leads_tracking`, {
+              method: 'POST',
+              signal: controller.signal,
+              headers: {
+                'apikey': SB_KEY,
+                'Authorization': `Bearer ${SB_KEY}`,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=minimal'
+              },
+              body: JSON.stringify({
+                event_type: type,
+                utm_source: p.source,
+                utm_content: p.content,
+                utm_campaign: p.campaign,
+                metadata: {
+                  ...metadata,
+                  email: currentEmail,
+                  whatsapp: currentWA,
+                  path: window.location.pathname,
+                  device: /Android|iPhone/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
+                }
+              })
+            }).finally(() => clearTimeout(timeoutId));
+          } catch (e) { console.warn('Tracker Off:', e); }
+        }
+
+        // CAPTURA DE CONTATOS
+        document.addEventListener('blur', async (e) => {
+          if (e.target.type === 'email' && e.target.value.includes('@')) {
+            localStorage.setItem('lead_email', e.target.value);
+            trackNutri('lead_email', { email: e.target.value });
+          }
+          const isPhone = e.target.type === 'tel' || e.target.id.includes('whats') || e.target.name.includes('phone');
+          if (isPhone && e.target.value.length >= 8) {
+            const wa = e.target.value.replace(/\D/g, '');
+            localStorage.setItem('lead_whatsapp', wa);
+            trackNutri('lead_whatsapp', { whatsapp: wa });
+          }
+        }, true);
+
+        // CHECKOUT SINCRONIZADO (AJUSTADO)
+        document.addEventListener('click', async (e) => {
+          const target = e.target.closest('a') || e.target.closest('button');
+          if (!target || target.id === 'accept-cookies-btn') return;
+
+          const href = target.href || "";
+          if (href.includes('kiwify') || href.includes('hotmart')) {
+            e.preventDefault();
+
+            // Registra o clique e espera o banco (ou o timeout de 1.5s)
+            await trackNutri('clique', { destino: 'checkout' });
+
+            if (typeof fbq === 'function') fbq('track', 'InitiateCheckout');
+
+            const p = getParams();
+            const url = new URL(href);
+            url.searchParams.set('utm_source', p.source);
+            url.searchParams.set('utm_content', p.content);
+
+            window.location.href = url.toString();
+          }
         });
 
-        if (typeof fbq === 'function') fbq('track', 'InitiateCheckout');
+        window.acceptCookies = function() {
+          localStorage.setItem('nutri_cookie_consent', 'accepted');
+          document.getElementById('cookie-banner').style.display = 'none';
+          trackNutri('consentimento_cookies', { status: 'aceito' });
+        };
 
-        const p = getParams();
-        const url = new URL(href);
-        // Anexa UTMs dinamicamente para a Kiwify
-        url.searchParams.set('utm_source', p.source);
-        url.searchParams.set('utm_content', p.content);
-        url.searchParams.set('utm_campaign', p.campaign);
+        window.addEventListener('load', () => {
+          trackNutri('visita');
+          if (!localStorage.getItem('nutri_cookie_consent')) {
+            document.getElementById('cookie-banner').style.display = 'block';
+          }
+          // Lógica de Escassez
+          const toast = document.getElementById('nutri-toast');
+          const countEl = document.getElementById('online-count');
+          let currentCount = Math.floor(Math.random() * (22 - 14 + 1)) + 14;
+          setTimeout(() => {
+            if(countEl) countEl.innerText = currentCount;
+            if(toast) toast.style.display = 'flex';
+          }, 4000);
+        });
+      })();
+    </script>
 
-        window.location.href = url.toString();
-      }
-    });
-
-    window.acceptCookies = function() {
-      localStorage.setItem('nutri_cookie_consent', 'accepted');
-      document.getElementById('cookie-banner').style.display = 'none';
-      trackNutri('consentimento_cookies', { status: 'aceito' });
-    };
-
-    window.addEventListener('load', () => {
-      trackNutri('visita');
-      if (!localStorage.getItem('nutri_cookie_consent')) {
-        const banner = document.getElementById('cookie-banner');
-        if(banner) banner.style.display = 'block';
-      }
-    });
-  })();
-</script>
+    <script>
+      !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', '3077997939046690');
+      fbq('track', 'PageView');
+    </script>
+  </head>
+  <body>
+    <div id="nutri-toast">
+      <div class="dot-online animate-pulse-green"></div>
+      <span style="font-size: 13px; font-weight: bold; color: #334155;">
+        <span id="online-count">12</span> mães lendo agora
+      </span>
+    </div>
+    <div id="cookie-banner">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+        <span style="font-size: 20px;">🍪</span>
+        <h3 style="margin: 0; font-size: 16px; color: #1e293b;">Privacidade</h3>
+      </div>
+      <p style="margin: 0; font-size: 14px; color: #64748b; line-height: 1.5;">
+        Usamos cookies para melhorar sua experiência.
+      </p>
+      <button id="accept-cookies-btn" onclick="acceptCookies()" class="btn-cookie">Aceitar e continuar</button>
+    </div>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
