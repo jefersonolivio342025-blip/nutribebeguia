@@ -1,38 +1,29 @@
 import { useEffect } from "react";
+import HeroSection from "@/components/HeroSection";
+import BenefitsSection from "@/components/BenefitsSection";
+import TransformationSection from "@/components/TransformationSection";
+import TestimonialsSection from "@/components/TestimonialsSection";
+import TargetAudienceSection from "@/components/TargetAudienceSection";
+import FAQSection from "@/components/FAQSection";
+import OfferSection from "@/components/OfferSection";
+import GuaranteeSection from "@/components/GuaranteeSection";
+import WhatsAppButton from "@/components/WhatsAppButton";
+import Footer from "@/components/Footer";
+import SocialProofNotification from "@/components/SocialProofNotification";
+import StickyHeader from "@/components/StickyHeader";
 
 const Index = () => {
   useEffect(() => {
-    // Verifique se esta URL está correta. Para o Supabase, geralmente termina em /rest/v1/nome_da_tabela
     const SB_URL = "https://jdpycowlojjccbqmoaxj.supabase.co/rest/v1/leads_tracking";
     const SB_KEY = "sb_publishable_1m1xv0ewxsSwRaaCztCPLQ_JZzd5nnu";
 
     const params = new URLSearchParams(window.location.search);
-
-    // Pegamos as UTMs da URL
     const utm_source = params.get("utm_source") || "direto";
     const utm_campaign = params.get("utm_campaign") || "nenhuma";
-    const utm_medium = params.get("utm_medium") || "organico";
-
-    const device = /Android|iPhone|iPad/i.test(navigator.userAgent) ? "mobile" : "desktop";
 
     async function trackEvent(val: string, extraData: any = {}) {
       try {
-        const payload = {
-          event_type: val, // Aqui enviará 'clique' ou 'visita'
-          utm_source: utm_source,
-          utm_campaign: utm_campaign,
-          utm_medium: utm_medium,
-          click_x: extraData.click_x !== undefined ? Number(extraData.click_x.toFixed(2)) : null,
-          click_y: extraData.click_y !== undefined ? Number(extraData.click_y.toFixed(2)) : null,
-          metadata: JSON.stringify({
-            // O Supabase prefere JSON como string ou objeto dependendo da coluna
-            device: device,
-            path: window.location.pathname,
-            ...Object.fromEntries(Object.entries(extraData).filter(([k]) => k !== "click_x" && k !== "click_y")),
-          }),
-        };
-
-        const response = await fetch(SB_URL, {
+        await fetch(SB_URL, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -40,32 +31,29 @@ const Index = () => {
             Authorization: `Bearer ${SB_KEY}`,
             Prefer: "return=minimal",
           },
-          body: JSON.stringify(payload),
+          body: JSON.stringify({
+            event_type: val,
+            utm_source: utm_source,
+            utm_campaign: utm_campaign,
+            metadata: JSON.stringify({
+              device: /Android|iPhone/i.test(navigator.userAgent) ? "mobile" : "desktop",
+              path: window.location.pathname,
+              ...extraData,
+            }),
+          }),
         });
-
-        if (!response.ok) {
-          throw new Error(`Erro na resposta: ${response.statusText}`);
-        }
-
-        console.log(`✅ Evento ${val} registrado no Supabase.`);
       } catch (e) {
-        console.error("❌ Erro no rastreio:", e);
+        console.error("Erro no rastreio:", e);
       }
     }
 
-    // Registra a visita assim que a página carrega
+    // Registra a visita sem mudar o visual do site
     trackEvent("visita");
 
     const handleGlobalClick = (e: MouseEvent) => {
-      const width = window.innerWidth;
-      const height = document.documentElement.scrollHeight;
-
-      // Cálculo de porcentagem para o Heatmap
-      const x = (e.pageX / width) * 100;
-      const y = (e.pageY / height) * 100;
-
-      // Mudamos para 'clique' para bater com o que você viu no banco de dados
-      trackEvent("clique", { click_x: x, click_y: y });
+      const x = (e.pageX / window.innerWidth) * 100;
+      const y = (e.pageY / document.documentElement.scrollHeight) * 100;
+      trackEvent("clique", { click_x: x.toFixed(2), click_y: y.toFixed(2) });
     };
 
     window.addEventListener("click", handleGlobalClick);
@@ -73,30 +61,19 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#FDFCFB] flex items-center justify-center p-10 text-center">
-      <div className="max-w-md">
-        <h1 className="text-3xl font-black uppercase italic text-slate-800 tracking-tighter">
-          NutriBebê <span className="text-orange-500">PRO</span>
-        </h1>
-        <p className="text-slate-500 mt-4 font-medium">
-          O sistema de rastreamento está monitorando cliques e UTMs em tempo real.
-        </p>
-
-        <div className="mt-10 p-8 bg-white rounded-[32px] border border-slate-100 shadow-xl shadow-orange-500/5">
-          <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <div className="w-3 h-3 bg-green-500 rounded-full animate-ping"></div>
-          </div>
-          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Status da Conexão</p>
-          <p className="text-sm text-slate-700 mt-2 leading-relaxed">
-            As políticas de acesso (RLS) foram atualizadas. Os cliques agora são enviados para a tabela{" "}
-            <code className="bg-slate-100 px-1 rounded text-orange-600">leads_tracking</code>.
-          </p>
-        </div>
-
-        <p className="text-[10px] text-slate-400 mt-8 uppercase font-bold tracking-widest">
-          ID da Tabela: leads_tracking
-        </p>
-      </div>
+    <div className="min-h-screen bg-white">
+      <StickyHeader />
+      <HeroSection />
+      <BenefitsSection />
+      <TransformationSection />
+      <TestimonialsSection />
+      <TargetAudienceSection />
+      <FAQSection />
+      <OfferSection />
+      <GuaranteeSection />
+      <Footer />
+      <WhatsAppButton />
+      <SocialProofNotification />
     </div>
   );
 };
