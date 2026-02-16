@@ -1,4 +1,4 @@
-import { useEffect } from "react"; // CORRIGE ERRO TS2304 (Faltava o import do useEffect)
+import { useEffect } from "react";
 import HeroSection from "@/components/HeroSection";
 import BenefitsSection from "@/components/BenefitsSection";
 import TransformationSection from "@/components/TransformationSection";
@@ -12,7 +12,7 @@ import Footer from "@/components/Footer";
 import SocialProofNotification from "@/components/SocialProofNotification";
 import StickyHeader from "@/components/StickyHeader";
 
-// CORRIGE ERRO TS2339 (Define que o fbq existe no window)
+// Garante que o TypeScript reconheça o Pixel do Facebook
 declare global {
   interface Window {
     fbq: any;
@@ -26,6 +26,7 @@ const Index = () => {
 
     const params = new URLSearchParams(window.location.search);
 
+    // Captura e persistência de UTMs
     const source = params.get("utm_source") || localStorage.getItem("nb_source") || "direto";
     const campaign = params.get("utm_campaign") || localStorage.getItem("nb_campaign") || "organico";
     const content = params.get("utm_content") || localStorage.getItem("nb_content") || "sem_criativo";
@@ -34,6 +35,7 @@ const Index = () => {
     if (params.get("utm_campaign")) localStorage.setItem("nb_campaign", params.get("utm_campaign")!);
     if (params.get("utm_content")) localStorage.setItem("nb_content", params.get("utm_content")!);
 
+    // Função de rastreio para o seu Dashboard
     async function trackEvent(val: string, metadata = {}) {
       try {
         await fetch(SB_URL, {
@@ -57,12 +59,13 @@ const Index = () => {
           }),
         });
       } catch (e) {
-        console.warn("Rastreio falhou.");
+        console.warn("Rastreio falhou, mas a experiência continua.");
       }
     }
 
     trackEvent("visita");
 
+    // Lógica de clique profissional para Checkout e WhatsApp
     const handleGlobalClick = (e: MouseEvent) => {
       const el = (e.target as HTMLElement).closest("a");
       if (!el) return;
@@ -71,6 +74,7 @@ const Index = () => {
       const isCheckout = href.includes("kiwify.com.br") || href.includes("hotmart.com") || href.includes("wa.me");
 
       if (isCheckout) {
+        // Pausa o redirecionamento para processar o pixel e o banco
         e.preventDefault();
 
         try {
@@ -92,6 +96,7 @@ const Index = () => {
           } catch (err) {}
         }
 
+        // Redireciona após 500ms (tempo para o fetch completar)
         setTimeout(() => {
           window.location.href = finalUrl;
         }, 500);
@@ -120,5 +125,5 @@ const Index = () => {
   );
 };
 
-// CORRIGE ERRO TS1192 (Garante que o componente seja exportado como padrão)
+// ESSA LINHA É O QUE RESOLVE O ERRO TS1192 NO APP.TSX
 export default Index;
