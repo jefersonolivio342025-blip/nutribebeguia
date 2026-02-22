@@ -95,7 +95,8 @@ export const OfferSection = () => {
 
             <button
               onClick={() => window.open("https://pay.kiwify.com.br/vrYjxFv", "_blank")}
-              className="w-full bg-primary text-primary-foreground font-black py-5 px-10 rounded-2xl shadow-xl hover:scale-105 transition-transform text-xl"
+              className="w-full text-white font-black py-5 px-10 rounded-2xl hover:scale-105 transition-transform text-xl"
+              style={{ background: 'var(--gradient-cta)', boxShadow: 'var(--shadow-cta)' }}
             >
               QUERO O APP AGORA
             </button>

@@ -93,7 +93,8 @@ const BonusSection = () => {
               href="https://pay.kiwify.com.br/vrYjxFv"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block w-full max-w-md bg-primary text-primary-foreground font-black py-5 px-10 rounded-2xl shadow-xl hover:scale-105 transition-transform text-xl"
+              className="inline-block w-full max-w-md text-white font-black py-5 px-10 rounded-2xl hover:scale-105 transition-transform text-xl"
+              style={{ background: 'var(--gradient-cta)', boxShadow: 'var(--shadow-cta)' }}
             >
               QUERO O APP + BÔNUS AGORA
             </a>
