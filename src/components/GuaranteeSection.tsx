@@ -30,7 +30,8 @@ export const GuaranteeSection = () => {
           </h3>
           <button
             onClick={() => window.open("https://pay.kiwify.com.br/vrYjxFv", "_blank")}
-            className="w-full max-w-md bg-primary text-white font-black py-5 px-8 rounded-2xl shadow-xl hover:scale-105 transition-transform text-lg"
+            className="w-full max-w-md text-white font-black py-5 px-8 rounded-2xl hover:scale-105 transition-transform text-lg"
+            style={{ background: 'var(--gradient-cta)', boxShadow: 'var(--shadow-cta)' }}
           >
             QUERO O APP POR R$ 29,90
           </button>

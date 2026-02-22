@@ -36,7 +36,7 @@ const StickyHeader = () => {
 
         <button
           onClick={handleCTAClick}
-          className="btn-cta px-4 py-2 sm:px-6 sm:py-2.5 text-sm sm:text-base whitespace-nowrap"
+          className="btn-cta px-4 py-2 sm:px-6 sm:py-2.5 text-sm sm:text-base whitespace-nowrap text-white"
         >
           Comprar por R$ 29,90
         </button>

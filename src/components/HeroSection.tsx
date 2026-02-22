@@ -17,7 +17,8 @@ export const Hero = () => {
               <div className="flex flex-col sm:flex-row gap-4">
                 <button
                   onClick={() => window.open("https://pay.kiwify.com.br/vrYjxFv", "_blank")}
-                  className="inline-flex items-center justify-center px-8 py-4 text-white bg-primary font-bold rounded-xl shadow-lg hover:scale-105 transition-transform"
+                   className="inline-flex items-center justify-center px-8 py-4 text-white font-bold rounded-xl shadow-lg hover:scale-105 transition-transform"
+                   style={{ background: 'var(--gradient-cta)', boxShadow: 'var(--shadow-cta)' }}
                 >
                   QUERO O APP AGORA
                   <ArrowRight className="ml-2 w-5 h-5" />
