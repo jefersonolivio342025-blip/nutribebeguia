@@ -71,7 +71,15 @@
         // Registrar visita ao carregar
         window.addEventListener('load', () => {
           trackNutri('visita');
-          document.getElementById('nutri-toast').style.display = 'flex';
+          var toast = document.getElementById('nutri-toast');
+          toast.style.display = 'flex';
+          var countEl = document.getElementById('online-count');
+          setInterval(function() {
+            var current = parseInt(countEl.textContent, 10);
+            var change = Math.random() < 0.5 ? -1 : 1;
+            var next = Math.min(25, Math.max(5, current + change));
+            countEl.textContent = next;
+          }, 4000);
         });
 
         // Registrar clique no botão de compra (Checkout)
