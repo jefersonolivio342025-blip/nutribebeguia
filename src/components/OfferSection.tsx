@@ -1,9 +1,15 @@
 import { useState, useEffect } from "react";
 import { Progress } from "@/components/ui/progress";
-import { Clock } from "lucide-react";
+import { Clock, Check, ArrowRight } from "lucide-react";
 import heroBaby from "@/assets/hero-baby.jpg";
 
 const CYCLE_SECONDS = 2 * 3600 + 47 * 60 + 33;
+
+const includes = [
+  "Acesso imediato ao app completo",
+  "Atualizações inclusas para sempre",
+  "Garantia incondicional de 7 dias",
+];
 
 export const OfferSection = () => {
   const [s, setS] = useState(847);
@@ -72,33 +78,30 @@ export const OfferSection = () => {
           </div>
 
           <div className="w-full lg:w-1/2 text-center lg:text-left">
-            <h2 className="text-4xl font-black mb-4 text-foreground">
-              App <span className="text-primary">NutriBebê Pro</span>
+            <h2 className="text-3xl md:text-4xl font-black mb-2 text-foreground">
+              Comece hoje por apenas
             </h2>
-
-            <div className="mb-8 space-y-3 text-sm font-semibold text-muted-foreground">
-              <p className="flex items-center gap-2 justify-center lg:justify-start">
-                ✅ Guia Visual de Cortes Seguros
-              </p>
-              <p className="flex items-center gap-2 justify-center lg:justify-start">
-                ✅ Cardápios e Receitas Exclusivas
-              </p>
-              <p className="flex items-center gap-2 justify-center lg:justify-start">
-                ✅ Acesso Vitalício (Sem Mensalidade)
-              </p>
-            </div>
-
-            <div className="mb-8">
+            <div className="mb-6">
               <span className="line-through text-muted-foreground italic text-lg font-medium">R$ 97,00</span>
               <div className="text-6xl font-black text-primary">R$ 29,90</div>
             </div>
 
+            <ul className="mb-8 space-y-3">
+              {includes.map((item, i) => (
+                <li key={i} className="flex items-center gap-2 text-sm font-semibold text-muted-foreground justify-center lg:justify-start">
+                  <Check className="w-4 h-4 text-primary flex-shrink-0" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+
             <button
               onClick={() => window.open("https://pay.kiwify.com.br/vrYjxFv", "_blank")}
-              className="w-full text-white font-black py-5 px-10 rounded-2xl hover:scale-105 transition-transform text-xl"
-              style={{ background: 'var(--gradient-cta)', boxShadow: 'var(--shadow-cta)' }}
+              className="w-full text-white font-black py-5 px-10 rounded-2xl hover:scale-105 transition-transform text-xl inline-flex items-center justify-center gap-2"
+              style={{ background: "var(--gradient-cta)", boxShadow: "var(--shadow-cta)" }}
             >
-              QUERO O APP AGORA
+              QUERO PROTEGER MEU BEBÊ AGORA
+              <ArrowRight className="w-5 h-5" />
             </button>
           </div>
         </div>
