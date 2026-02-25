@@ -128,9 +128,18 @@ const Index = () => {
     setTimeout(carimbarBotoes, 2000);
     window.addEventListener("click", handleGlobalClick);
 
+    // 6. LEAD QUALIFICADO - 30s na página
+    const leadTimer = setTimeout(() => {
+      if (typeof window !== "undefined" && (window as any).fbq) {
+        (window as any).fbq("trackCustom", "LeadQualificado");
+      }
+      trackEvent("lead_qualificado");
+    }, 30000);
+
     return () => {
       window.removeEventListener("click", handleGlobalClick);
       window.removeEventListener("scroll", handleScroll);
+      clearTimeout(leadTimer);
     };
   }, []);
 
