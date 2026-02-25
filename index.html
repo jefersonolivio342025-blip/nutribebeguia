@@ -28,16 +28,6 @@
       />
     </noscript>
 
-    <div
-      id="nutri-toast"
-      style="display: none; position: fixed; bottom: 20px; right: 20px; background: white; padding: 12px 18px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 9999; align-items: center; gap: 10px;"
-    >
-      <div style="width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></div>
-      <span style="font-size: 13px; font-weight: bold; color: #334155; font-family: sans-serif;">
-        <span id="online-count">12</span> m&#227;es lendo agora
-      </span>
-    </div>
-
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
 
@@ -71,15 +61,6 @@
         // Registrar visita ao carregar
         window.addEventListener('load', () => {
           trackNutri('visita');
-          var toast = document.getElementById('nutri-toast');
-          toast.style.display = 'flex';
-          var countEl = document.getElementById('online-count');
-          setInterval(function() {
-            var current = parseInt(countEl.textContent, 10);
-            var change = Math.random() < 0.5 ? -1 : 1;
-            var next = Math.min(25, Math.max(5, current + change));
-            countEl.textContent = next;
-          }, 4000);
         });
 
         // Registrar clique no botão de compra (Checkout)
