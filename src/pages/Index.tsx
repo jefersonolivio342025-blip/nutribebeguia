@@ -20,7 +20,7 @@ const Index = () => {
 
     const params = new URLSearchParams(window.location.search);
 
-    // 1. LÓGICA DE MEMÓRIA (PERSISTÊNCIA) - Incluindo Criativo (utm_content)
+    // 1. PERSISTÊNCIA DE UTMs
     const source = params.get("utm_source") || localStorage.getItem("nb_source") || "direto";
     const campaign = params.get("utm_campaign") || localStorage.getItem("nb_campaign") || "organico";
     const content = params.get("utm_content") || localStorage.getItem("nb_content") || "sem_criativo";
@@ -55,8 +55,36 @@ const Index = () => {
       }
     }
 
+    // 2. META PIXEL - PageView com dados extras
+    if (typeof window !== "undefined" && (window as any).fbq) {
+      (window as any).fbq("track", "PageView", {
+        page_path: window.location.pathname,
+        page_title: document.title,
+      });
+    }
+
     trackEvent("visita");
 
+    // 3. SCROLL ENGAGEMENT - ViewContent ao atingir 50%
+    let viewContentFired = false;
+    const handleScroll = () => {
+      if (viewContentFired) return;
+      const scrollPercent = (window.scrollY + window.innerHeight) / document.documentElement.scrollHeight;
+      if (scrollPercent >= 0.5) {
+        viewContentFired = true;
+        if (typeof window !== "undefined" && (window as any).fbq) {
+          (window as any).fbq("track", "ViewContent", {
+            value: 29.90,
+            currency: "BRL",
+            content_name: "NutriBebê Pro",
+          });
+        }
+        trackEvent("scroll_50");
+      }
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    // 4. CARIMBAR UTMs NOS LINKS
     const carimbarBotoes = () => {
       const links = document.querySelectorAll("a");
       links.forEach((link) => {
@@ -75,13 +103,19 @@ const Index = () => {
       });
     };
 
+    // 5. CLICK HANDLER - InitiateCheckout com valor
     const handleGlobalClick = (e: MouseEvent) => {
       const el = (e.target as HTMLElement).closest("a, button");
       if (el) {
         const text = el.textContent?.toLowerCase() || "";
         const href = (el as HTMLAnchorElement).href || "";
-        if (text.includes("comprar") || text.includes("acesso") || text.includes("proteger") || text.includes("quero") || href.includes("kiwify") || href.includes("wa.me")) {
+        const isCheckout = href.includes("kiwify") || text.includes("comprar") || text.includes("acesso") || text.includes("proteger") || text.includes("quero");
+
+        if (isCheckout) {
           trackEvent("clique");
+          if (typeof window !== "undefined" && (window as any).fbq) {
+            (window as any).fbq("track", "InitiateCheckout", { value: 29.90, currency: "BRL" });
+          }
         }
       }
     };
@@ -90,7 +124,10 @@ const Index = () => {
     setTimeout(carimbarBotoes, 2000);
     window.addEventListener("click", handleGlobalClick);
 
-    return () => window.removeEventListener("click", handleGlobalClick);
+    return () => {
+      window.removeEventListener("click", handleGlobalClick);
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   return (
