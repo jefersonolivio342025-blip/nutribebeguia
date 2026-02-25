@@ -7,11 +7,18 @@ const WhatsAppButton = () => {
   );
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
 
+  const handleClick = () => {
+    if (typeof window !== "undefined" && (window as any).fbq) {
+      (window as any).fbq("track", "Contact");
+    }
+  };
+
   return (
     <a
       href={whatsappUrl}
       target="_blank"
       rel="noopener noreferrer"
+      onClick={handleClick}
       className="floating-button bottom-6 right-6 bg-[#25D366] hover:bg-[#20BA5C]"
       aria-label="Contato via WhatsApp"
     >
