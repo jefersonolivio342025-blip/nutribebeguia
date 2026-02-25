@@ -114,7 +114,11 @@ const Index = () => {
         if (isCheckout) {
           trackEvent("clique");
           if (typeof window !== "undefined" && (window as any).fbq) {
-            (window as any).fbq("track", "InitiateCheckout", { value: 29.90, currency: "BRL" });
+            (window as any).fbq("trackCustom", "ClickToCheckout", { 
+              value: 29.90, 
+              currency: "BRL",
+              button_text: text 
+            });
           }
         }
       }
