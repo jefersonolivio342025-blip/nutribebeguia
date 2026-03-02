@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Progress } from "@/components/ui/progress";
 import { Clock, Check, ArrowRight } from "lucide-react";
 import heroBaby from "@/assets/hero-baby.jpg";
+import { openCheckout } from "@/lib/checkout";
 
 const CYCLE_SECONDS = 2 * 3600 + 47 * 60 + 33;
 
@@ -96,7 +97,7 @@ export const OfferSection = () => {
             </ul>
 
             <button
-              onClick={() => window.open("https://pay.kiwify.com.br/vrYjxFv", "_blank")}
+              onClick={openCheckout}
               className="w-full text-white font-black py-5 px-10 rounded-2xl hover:scale-105 transition-transform text-xl inline-flex items-center justify-center gap-2"
               style={{ background: "var(--gradient-cta)", boxShadow: "var(--shadow-cta)" }}
             >

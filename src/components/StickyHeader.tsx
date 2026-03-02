@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { openCheckout } from "@/lib/checkout";
 
 const StickyHeader = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -14,7 +15,7 @@ const StickyHeader = () => {
   }, []);
 
   const handleCTAClick = () => {
-    window.open("https://pay.kiwify.com.br/vrYjxFv", "_blank");
+    openCheckout();
   };
 
   return (

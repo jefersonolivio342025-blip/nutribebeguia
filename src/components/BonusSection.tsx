@@ -1,5 +1,6 @@
 import { Gift, Scissors, CalendarDays, BookOpen } from "lucide-react";
 import AnimatedSection from "./AnimatedSection";
+import { openCheckout } from "@/lib/checkout";
 
 const bonuses = [
   {
@@ -89,15 +90,13 @@ const BonusSection = () => {
             <p className="text-muted-foreground text-sm mb-6">
               Apenas para quem finalizar a inscrição agora!
             </p>
-            <a
-              href="https://pay.kiwify.com.br/vrYjxFv"
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              onClick={openCheckout}
               className="inline-block w-full max-w-md text-white font-black py-5 px-10 rounded-2xl hover:scale-105 transition-transform text-xl"
               style={{ background: 'var(--gradient-cta)', boxShadow: 'var(--shadow-cta)' }}
             >
               QUERO O APP + BÔNUS AGORA
-            </a>
+            </button>
           </div>
         </AnimatedSection>
       </div>

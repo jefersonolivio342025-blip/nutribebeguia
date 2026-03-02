@@ -1,5 +1,6 @@
 import { ArrowRight, Check } from "lucide-react";
 import heroBaby from "@/assets/hero-baby.jpg";
+import { openCheckout } from "@/lib/checkout";
 
 const bullets = [
   "Cortes seguros por idade",
@@ -29,7 +30,7 @@ export const Hero = () => {
               </p>
 
               <button
-                onClick={() => window.open("https://pay.kiwify.com.br/vrYjxFv", "_blank")}
+                onClick={openCheckout}
                 className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-4 text-white font-bold rounded-xl hover:scale-105 transition-transform text-lg"
                 style={{ background: "var(--gradient-cta)", boxShadow: "var(--shadow-cta)" }}
               >
