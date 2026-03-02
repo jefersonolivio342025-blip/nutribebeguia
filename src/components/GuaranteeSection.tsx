@@ -1,4 +1,5 @@
 import { ShieldCheck, Clock, CheckCircle2, ArrowRight } from "lucide-react";
+import { openCheckout } from "@/lib/checkout";
 
 export const GuaranteeSection = () => {
   return (
@@ -34,7 +35,7 @@ export const GuaranteeSection = () => {
             Pronta para começar a introdução alimentar com segurança?
           </h3>
           <button
-            onClick={() => window.open("https://pay.kiwify.com.br/vrYjxFv", "_blank")}
+            onClick={openCheckout}
             className="w-full max-w-md text-white font-black py-5 px-8 rounded-2xl hover:scale-105 transition-transform text-lg inline-flex items-center justify-center gap-2 mx-auto"
             style={{ background: "var(--gradient-cta)", boxShadow: "var(--shadow-cta)" }}
           >

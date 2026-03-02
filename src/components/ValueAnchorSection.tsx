@@ -1,5 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import AnimatedSection from "./AnimatedSection";
+import { openCheckout } from "@/lib/checkout";
 
 const ValueAnchorSection = () => {
   return (
@@ -41,7 +42,7 @@ const ValueAnchorSection = () => {
               🍕 Menos que uma pizza.
             </p>
             <button
-              onClick={() => window.open("https://pay.kiwify.com.br/vrYjxFv", "_blank")}
+              onClick={openCheckout}
               className="inline-flex items-center justify-center px-8 py-4 text-white font-bold rounded-xl hover:scale-105 transition-transform text-lg"
               style={{ background: "var(--gradient-cta)", boxShadow: "var(--shadow-cta)" }}
             >
