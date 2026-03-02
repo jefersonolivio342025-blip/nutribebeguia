@@ -20,14 +20,22 @@ const Index = () => {
 
     const params = new URLSearchParams(window.location.search);
 
-    // 1. PERSISTÊNCIA DE UTMs
-    const source = params.get("utm_source") || localStorage.getItem("nb_source") || "direto";
-    const campaign = params.get("utm_campaign") || localStorage.getItem("nb_campaign") || "organico";
-    const content = params.get("utm_content") || localStorage.getItem("nb_content") || "sem_criativo";
+    // 1. CAPTURA GLOBAL + PERSISTÊNCIA (sessionStorage + localStorage)
+    const utmKeys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "src"];
+    const savedParams: Record<string, string> = {};
 
-    if (params.get("utm_source")) localStorage.setItem("nb_source", params.get("utm_source")!);
-    if (params.get("utm_campaign")) localStorage.setItem("nb_campaign", params.get("utm_campaign")!);
-    if (params.get("utm_content")) localStorage.setItem("nb_content", params.get("utm_content")!);
+    utmKeys.forEach((key) => {
+      const val = params.get(key);
+      if (val) {
+        sessionStorage.setItem(`nb_${key}`, val);
+        localStorage.setItem(`nb_${key}`, val);
+      }
+      savedParams[key] = sessionStorage.getItem(`nb_${key}`) || localStorage.getItem(`nb_${key}`) || "";
+    });
+
+    const source = savedParams["utm_source"] || "direto";
+    const campaign = savedParams["utm_campaign"] || "organico";
+    const content = savedParams["utm_content"] || "sem_criativo";
 
     async function trackEvent(val: string) {
       try {
@@ -88,16 +96,25 @@ const Index = () => {
     const carimbarBotoes = () => {
       const links = document.querySelectorAll("a");
       links.forEach((link) => {
-        if (link.href.includes("wa.me") || link.href.includes("kiwify.com.br")) {
+        if (link.href.includes("pay.kiwify.com.br") || link.href.includes("kiwify.com.br") || link.href.includes("wa.me")) {
           try {
             const url = new URL(link.href);
-            url.searchParams.set("utm_source", source);
-            url.searchParams.set("utm_campaign", campaign);
-            url.searchParams.set("utm_content", content);
+            utmKeys.forEach((key) => {
+              const val = savedParams[key];
+              if (val) {
+                url.searchParams.set(key, val);
+              }
+            });
             link.href = url.toString();
           } catch (e) {
-            const connector = link.href.includes("?") ? "&" : "?";
-            link.href += `${connector}utm_source=${source}&utm_campaign=${campaign}&utm_content=${content}`;
+            const cleanParams = utmKeys
+              .filter((key) => savedParams[key])
+              .map((key) => `${key}=${encodeURIComponent(savedParams[key])}`)
+              .join("&");
+            if (cleanParams) {
+              const connector = link.href.includes("?") ? "&" : "?";
+              link.href += `${connector}${cleanParams}`;
+            }
           }
         }
       });
