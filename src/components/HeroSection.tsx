@@ -20,13 +20,12 @@ export const Hero = () => {
                 👶 +2.500 mães já confiam no NutriBebê
               </span>
               <h1 className="text-4xl lg:text-5xl font-black mb-5 text-foreground leading-tight">
-                Seu bebê vai começar a comer e você{" "}
-                <span className="text-primary">morre de medo de engasgo?</span>
+                Transforma a introdução alimentar no momento mais{" "}
+                <span className="text-primary">alegre e seguro</span> do teu dia! 🥕✨
               </h1>
               <p className="text-lg text-muted-foreground mb-8 font-medium leading-relaxed">
-                Saiba exatamente o que colocar no prato do seu bebê com{" "}
-                <strong className="text-foreground">segurança e confiança</strong>
-                , mesmo que nunca tenha feito introdução alimentar antes.
+                Descobre como ter a confiança para ver o teu bebé a explorar novos sabores com um sorriso no rosto,{" "}
+                <strong className="text-foreground">sem o stress e o receio constante do engasgo</strong>.
               </p>
 
               <button
@@ -34,7 +33,7 @@ export const Hero = () => {
                 className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-4 text-white font-bold rounded-xl hover:scale-105 transition-transform text-lg"
                 style={{ background: "var(--gradient-cta)", boxShadow: "var(--shadow-cta)" }}
               >
-                QUERO INTRODUZIR SEM MEDO
+                QUERO O MEU BEBÊ COMENDO ASSIM
                 <ArrowRight className="ml-2 w-5 h-5" />
               </button>
 
