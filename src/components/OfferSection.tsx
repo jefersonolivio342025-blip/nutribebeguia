@@ -101,7 +101,7 @@ export const OfferSection = () => {
               className="w-full text-white font-black py-5 px-10 rounded-2xl hover:scale-105 transition-transform text-xl inline-flex items-center justify-center gap-2"
               style={{ background: "var(--gradient-cta)", boxShadow: "var(--shadow-cta)" }}
             >
-              QUERO PROTEGER MEU BEBÊ AGORA
+              QUERO O MEU BEBÊ COMENDO ASSIM
               <ArrowRight className="w-5 h-5" />
             </button>
           </div>
