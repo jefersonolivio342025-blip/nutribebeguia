@@ -20,12 +20,12 @@ export const Hero = () => {
                 👶 +2.500 mães já confiam no NutriBebê
               </span>
               <h1 className="text-4xl lg:text-5xl font-black mb-5 text-foreground leading-tight">
-                Transforma a introdução alimentar no momento mais{" "}
-                <span className="text-primary">alegre e seguro</span> do teu dia! 🥕✨
+                Introdução alimentar segura, leve e cheia de{" "}
+                <span className="text-primary">sorrisos</span>. 👶💛
               </h1>
               <p className="text-lg text-muted-foreground mb-8 font-medium leading-relaxed">
-                Descobre como ter a confiança para ver o teu bebé a explorar novos sabores com um sorriso no rosto,{" "}
-                <strong className="text-foreground">sem o stress e o receio constante do engasgo</strong>.
+                Tudo o que você precisa para guiar o seu bebê nesta nova fase com{" "}
+                <strong className="text-foreground">confiança total, sem medos e sem complicações</strong>.
               </p>
 
               <button
