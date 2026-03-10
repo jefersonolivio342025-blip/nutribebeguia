@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { Progress } from "@/components/ui/progress";
-import { Clock, Check, ArrowRight } from "lucide-react";
-import heroBaby from "@/assets/hero-baby.jpg";
+import { Clock, Check, ArrowRight, Smartphone } from "lucide-react";
 import { openCheckout } from "@/lib/checkout";
 
 const CYCLE_SECONDS = 2 * 3600 + 47 * 60 + 33;
 
 const includes = [
-  "Acesso imediato ao app completo",
+  "Acesso imediato ao aplicativo completo",
+  "Cardápios prontos para cada fase",
+  "Receitas organizadas por idade",
   "Atualizações inclusas para sempre",
   "Garantia incondicional de 7 dias",
 ];
@@ -46,7 +47,7 @@ export const OfferSection = () => {
         {/* Urgency bar */}
         <div className="text-center mb-4">
           <p className="text-sm font-bold mb-2 text-foreground">
-            🔥 {s} ativos. Restam {1000 - s} vagas!
+            🔥 {s} mães já acessaram. Restam {1000 - s} vagas!
           </p>
           <Progress value={(s / 1000) * 100} className="h-2 max-w-md mx-auto" />
         </div>
@@ -69,42 +70,36 @@ export const OfferSection = () => {
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row items-center gap-12">
-          <div className="w-full lg:w-1/2 flex justify-center">
-            <img
-              src={heroBaby}
-              alt="Bebê comendo de forma saudável"
-              className="rounded-[2.5rem] shadow-2xl border-[10px] border-white max-w-xs rotate-3 hover:rotate-0 transition-transform duration-500"
-            />
+        <div className="w-full text-center lg:text-left max-w-2xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-black mb-2 text-foreground text-center">
+            Comece hoje por apenas
+          </h2>
+          <div className="mb-2 text-center">
+            <span className="line-through text-muted-foreground italic text-lg font-medium">R$ 97,00</span>
+            <div className="text-6xl font-black text-primary">R$ 29,90</div>
           </div>
+          <p className="text-center text-foreground font-semibold mb-6">
+            <Smartphone className="w-4 h-4 inline mr-1" />
+            Acesso imediato ao aplicativo após a compra.
+          </p>
 
-          <div className="w-full lg:w-1/2 text-center lg:text-left">
-            <h2 className="text-3xl md:text-4xl font-black mb-2 text-foreground">
-              Comece hoje por apenas
-            </h2>
-            <div className="mb-6">
-              <span className="line-through text-muted-foreground italic text-lg font-medium">R$ 97,00</span>
-              <div className="text-6xl font-black text-primary">R$ 29,90</div>
-            </div>
+          <ul className="mb-8 space-y-3">
+            {includes.map((item, i) => (
+              <li key={i} className="flex items-center gap-2 text-sm font-semibold text-muted-foreground justify-center lg:justify-start">
+                <Check className="w-4 h-4 text-primary flex-shrink-0" />
+                {item}
+              </li>
+            ))}
+          </ul>
 
-            <ul className="mb-8 space-y-3">
-              {includes.map((item, i) => (
-                <li key={i} className="flex items-center gap-2 text-sm font-semibold text-muted-foreground justify-center lg:justify-start">
-                  <Check className="w-4 h-4 text-primary flex-shrink-0" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-
-            <button
-              onClick={openCheckout}
-              className="w-full text-white font-black py-5 px-10 rounded-2xl hover:scale-105 transition-transform text-xl inline-flex items-center justify-center gap-2"
-              style={{ background: "var(--gradient-cta)", boxShadow: "var(--shadow-cta)" }}
-            >
-              QUERO O MEU BEBÊ COMENDO ASSIM
-              <ArrowRight className="w-5 h-5" />
-            </button>
-          </div>
+          <button
+            onClick={openCheckout}
+            className="w-full max-w-md mx-auto text-white font-black py-5 px-10 rounded-2xl hover:scale-105 transition-transform text-xl flex items-center justify-center gap-2"
+            style={{ background: "var(--gradient-cta)", boxShadow: "var(--shadow-cta)" }}
+          >
+            Quero ver os cardápios do meu bebê
+            <ArrowRight className="w-5 h-5" />
+          </button>
         </div>
       </div>
     </section>

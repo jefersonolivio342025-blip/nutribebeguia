@@ -1,25 +1,25 @@
-import { Utensils, BookOpen, ShieldAlert, Lightbulb } from "lucide-react";
+import { Utensils, BookOpen, ShieldAlert, Smartphone } from "lucide-react";
 
 const solutions = [
   {
-    icon: Utensils,
-    title: "Guia Visual de Cortes Seguros",
-    desc: "Saiba exatamente como cortar cada alimento de acordo com a idade do seu bebê, com fotos e medidas.",
+    icon: Smartphone,
+    title: "Tudo dentro do aplicativo",
+    desc: "Cardápios, receitas e orientações na palma da sua mão, acessíveis a qualquer momento.",
   },
   {
     icon: BookOpen,
-    title: "Receitas Organizadas por Fase",
+    title: "Receitas organizadas por fase",
     desc: "Do primeiro purê aos sólidos: receitas simples, rápidas e nutritivas para cada etapa.",
   },
   {
     icon: ShieldAlert,
-    title: "Lista de Alimentos Proibidos",
-    desc: "Descubra o que não pode dar ao seu bebê antes de 1 ano e evite riscos desnecessários.",
+    title: "Alimentos seguros por idade",
+    desc: "Saiba o que oferecer e o que evitar em cada fase, reduzindo o risco de engasgos.",
   },
   {
-    icon: Lightbulb,
-    title: "Orientação Prática e Simples",
-    desc: "Sem termos complicados. Tudo explicado de forma clara, direto no app, na palma da sua mão.",
+    icon: Utensils,
+    title: "Planejamento prático de refeições",
+    desc: "Sem improvisar. Tenha um plano claro do que preparar todos os dias para o seu bebê.",
   },
 ];
 
@@ -32,10 +32,10 @@ const SolutionSection = () => {
             ✨ A Solução
           </span>
           <h2 className="text-2xl md:text-4xl font-black text-foreground mb-4">
-            Como o NutriBebê Pro te ajuda
+            Como o NutriBebê te ajuda
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Tudo o que você precisa para uma introdução alimentar tranquila, em um só lugar.
+            Um aplicativo completo para organizar a alimentação do seu bebê com segurança.
           </p>
         </div>
 
