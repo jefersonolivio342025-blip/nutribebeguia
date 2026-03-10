@@ -4,7 +4,7 @@ import { openCheckout } from "@/lib/checkout";
 const bonuses = [
   {
     icon: Scissors,
-    title: "Guia de Cortes Seguros (PDF)",
+    title: "Guia de Cortes Seguros",
     description: "Manual visual de como oferecer cada alimento com segurança para evitar engasgos.",
     value: "R$ 47,00",
   },
@@ -16,7 +16,7 @@ const bonuses = [
   },
   {
     icon: BookOpen,
-    title: "Livro Digital: 50 Receitas de 15 Min",
+    title: "50 Receitas Rápidas Extra",
     description: "Pratos nutritivos e ultra rápidos para mães que não têm tempo a perder.",
     value: "R$ 83,00",
   },
@@ -36,14 +36,14 @@ const BonusSection = () => {
             <span className="text-primary">de presente</span>
           </h2>
           <p className="text-muted-foreground max-w-xl mx-auto">
-            Ao garantir seu acesso ao App NutriBebê Pro hoje, você recebe
+            Ao garantir seu acesso ao aplicativo NutriBebê hoje, você recebe
             estes 3 bônus sem pagar nada a mais.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-12">
           {bonuses.map((bonus, index) => (
-            <div key={index} className="card-benefit flex flex-col items-center text-center h-full relative overflow-hidden">
+            <div key={index} className="bg-card rounded-2xl p-6 border border-border shadow-sm flex flex-col items-center text-center h-full relative overflow-hidden">
               <div className="absolute top-0 right-0 bg-destructive text-destructive-foreground text-xs font-bold px-3 py-1 rounded-bl-xl">
                 GRÁTIS
               </div>
@@ -60,17 +60,17 @@ const BonusSection = () => {
           ))}
         </div>
 
-        <div className="text-center bg-card rounded-3xl p-8 shadow-card max-w-2xl mx-auto">
+        <div className="text-center bg-card rounded-3xl p-8 shadow-sm border border-border max-w-2xl mx-auto">
           <p className="text-muted-foreground text-sm mb-1">Valor total dos bônus</p>
           <p className="text-2xl font-black text-foreground line-through mb-1">R$ 197,00</p>
           <p className="text-4xl font-black text-primary mb-4">GRÁTIS</p>
-          <p className="text-muted-foreground text-sm mb-6">Apenas para quem finalizar a inscrição agora!</p>
+          <p className="text-muted-foreground text-sm mb-6">Apenas para quem acessar o aplicativo agora!</p>
           <button
             onClick={openCheckout}
             className="inline-block w-full max-w-md text-white font-black py-5 px-10 rounded-2xl hover:scale-105 transition-transform text-xl"
-            style={{ background: 'var(--gradient-cta)', boxShadow: 'var(--shadow-cta)' }}
+            style={{ background: "var(--gradient-cta)", boxShadow: "var(--shadow-cta)" }}
           >
-            QUERO O MEU BEBÊ COMENDO ASSIM
+            Quero acessar o aplicativo agora
           </button>
         </div>
       </div>
