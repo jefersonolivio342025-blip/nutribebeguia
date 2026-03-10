@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="pt-BR">
   <head>
+    <meta name="facebook-domain-verification" content="undqyfschcmjs1dzkw6dqwawfji3k1" />
+    
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
     <link rel="icon" href="/favicon.ico" />
@@ -17,7 +19,7 @@
       fbq('init', '3077997939046690');
       fbq('track', 'PageView');
     </script>
-  </head>
+    </head>
   <body>
     <noscript>
       <img
@@ -29,7 +31,8 @@
     </noscript>
 
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+
+    <script type="module" src="/index.js"></script>
 
     <script>
       (function() {
@@ -58,25 +61,17 @@
           } catch (e) { console.warn('Erro no rastreio:', e); }
         }
 
-        // Registrar visita ao carregar
         window.addEventListener('load', () => {
           trackNutri('visita');
         });
 
-        // Registrar clique no botão de compra (Checkout)
         document.addEventListener('click', async (e) => {
           const target = e.target.closest('a');
           if (target && (target.href.includes('kiwify') || target.href.includes('hotmart'))) {
-            e.preventDefault();
-
             // Dispara InitiateCheckout no Facebook
             if (typeof fbq === 'function') fbq('track', 'InitiateCheckout');
-
-            // Salva no seu Dashboard
+            
             await trackNutri('clique', { destino: 'checkout' });
-
-            // Redireciona para a Kiwify
-            window.location.href = target.href;
           }
         });
       })();
