@@ -4,20 +4,20 @@ const steps = [
   {
     icon: CalendarDays,
     step: "1️⃣",
-    title: "Veja o cardápio do dia para o seu bebê",
-    desc: "Abra o app e veja imediatamente o que preparar para cada refeição do dia, de acordo com a fase do bebê.",
+    title: "Visualize o cardápio do dia personalizado",
+    desc: "Abra o app e veja imediatamente o que preparar para cada refeição, personalizado para a idade do seu bebê.",
   },
   {
     icon: BookOpen,
     step: "2️⃣",
-    title: "Acesse receitas simples e adequadas",
-    desc: "Receitas rápidas, nutritivas e organizadas por idade. Prontas em poucos minutos, sem complicação.",
+    title: "Acesse receitas seguras e testadas",
+    desc: "Receitas adequadas para cada fase — BLW ou papinhas — rápidas, nutritivas e sem complicação.",
   },
   {
     icon: CheckSquare,
     step: "3️⃣",
-    title: "Organize as refeições com praticidade",
-    desc: "Acompanhe o que o bebê já comeu, registre reações e tenha o controle total da alimentação.",
+    title: "Organize as refeições com segurança total",
+    desc: "Planeje a semana toda com praticidade, acompanhe o que o bebê já comeu e tenha controle total.",
   },
 ];
 

@@ -25,15 +25,15 @@ export const Hero = () => {
                 <span className="text-primary">introdução alimentar</span>.
               </h1>
               <p className="text-lg text-muted-foreground mb-6 font-medium leading-relaxed">
-                Cardápios prontos e receitas simples para bebês de 6 a 24 meses, ajudando mães a{" "}
-                <strong className="text-foreground">evitar erros comuns na alimentação</strong>.
+                Cardápios prontos e receitas simples para bebês de 6 a 24 meses.{" "}
+                <strong className="text-foreground">A ferramenta prática para mães evitarem erros comuns e inseguranças</strong>.
               </p>
 
               {/* Safety connection text */}
               <div className="bg-primary/5 border border-primary/15 rounded-2xl p-4 mb-6">
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Muitas mães ficam inseguras na introdução alimentar e têm medo de oferecer alimentos errados que podem causar engasgos ou dificuldade para o bebê.{" "}
-                  <strong className="text-foreground">O NutriBebê organiza as refeições e mostra opções adequadas para cada momento do bebê.</strong>
+                  Muitas mães sentem medo de oferecer alimentos errados que podem causar engasgos.{" "}
+                  <strong className="text-foreground">O NutriBebê organiza as refeições com texturas e cortes adequados para cada fase.</strong>
                 </p>
               </div>
 
@@ -42,7 +42,7 @@ export const Hero = () => {
                 className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-4 text-white font-bold rounded-xl hover:scale-105 transition-transform text-lg"
                 style={{ background: "var(--gradient-cta)", boxShadow: "var(--shadow-cta)" }}
               >
-                Quero acessar o aplicativo agora
+                Quero ver os cardápios do meu bebê
                 <ArrowRight className="ml-2 w-5 h-5" />
               </button>
 

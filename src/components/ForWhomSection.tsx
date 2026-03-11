@@ -1,10 +1,10 @@
 import { Check } from "lucide-react";
 
 const targets = [
-  "Mães de bebês de 6 a 24 meses",
-  "Quem está começando a introdução alimentar",
-  "Quem tem dúvidas sobre o que oferecer ao bebê",
-  "Quem quer mais praticidade nas refeições do bebê",
+  "Mães de bebês entre 6 e 24 meses",
+  "Quem está iniciando a introdução alimentar agora",
+  "Mães que trabalham fora e precisam de praticidade",
+  "Quem sente insegurança sobre o que o bebê pode ou não comer",
 ];
 
 const ForWhomSection = () => {

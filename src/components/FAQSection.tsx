@@ -29,7 +29,7 @@ const FAQSection = () => {
   ];
 
   return (
-    <section id="faq" className="bg-slate-50 py-16">
+    <section id="faq" className="bg-secondary py-16">
       <div className="container max-w-3xl mx-auto px-4">
         <div className="text-center mb-10">
           <h2 className="text-3xl font-black mb-2 text-foreground">
@@ -43,7 +43,7 @@ const FAQSection = () => {
             <AccordionItem
               key={i}
               value={`item-${i}`}
-              className="bg-white border rounded-xl px-4 shadow-sm overflow-hidden"
+              className="bg-card border rounded-xl px-4 shadow-sm overflow-hidden"
             >
               <AccordionTrigger className="text-left font-bold text-foreground hover:no-underline">
                 {f.q}
