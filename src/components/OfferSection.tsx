@@ -78,9 +78,10 @@ export const OfferSection = () => {
             <span className="line-through text-muted-foreground italic text-lg font-medium">R$ 97,00</span>
             <div className="text-6xl font-black text-primary">R$ 29,90</div>
           </div>
+          <p className="text-sm text-muted-foreground mb-1 text-center font-medium">Pagamento único</p>
           <p className="text-center text-foreground font-semibold mb-6">
             <Smartphone className="w-4 h-4 inline mr-1" />
-            Acesso imediato ao aplicativo após a compra.
+            Acesso imediato à plataforma logo após a confirmação do pagamento.
           </p>
 
           <ul className="mb-8 space-y-3">
