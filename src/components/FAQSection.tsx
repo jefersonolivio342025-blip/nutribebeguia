@@ -29,7 +29,7 @@ const FAQSection = () => {
   ];
 
   return (
-    <section id="faq" className="bg-slate-50 py-16">
+    <section id="faq" className="bg-secondary py-16">
       <div className="container max-w-3xl mx-auto px-4">
         <div className="text-center mb-10">
           <h2 className="text-3xl font-black mb-2 text-foreground">
