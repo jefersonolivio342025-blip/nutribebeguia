@@ -11,7 +11,7 @@ export const GuaranteeSection = () => {
             Teste por 7 dias. Sem risco nenhum.
           </h2>
           <p className="text-muted-foreground mb-4 text-lg leading-relaxed max-w-xl mx-auto">
-            Se você não ficar <strong>100% satisfeita</strong> com o aplicativo, devolvemos{" "}
+            Se você não ficar <strong>100% satisfeita</strong>, devolvemos{" "}
             <strong>todo o seu dinheiro</strong>. Sem perguntas, sem burocracia.
           </p>
           <p className="text-foreground font-semibold mb-8">
@@ -32,18 +32,18 @@ export const GuaranteeSection = () => {
 
         <div className="text-center">
           <h3 className="text-2xl font-black mb-6 text-foreground">
-            Pronta para organizar a alimentação do seu bebê?
+            Pronta para começar a introdução alimentar com segurança?
           </h3>
           <button
             onClick={openCheckout}
             className="w-full max-w-md text-white font-black py-5 px-8 rounded-2xl hover:scale-105 transition-transform text-lg inline-flex items-center justify-center gap-2 mx-auto"
             style={{ background: "var(--gradient-cta)", boxShadow: "var(--shadow-cta)" }}
           >
-            Quero acessar o aplicativo agora
+            QUERO PROTEGER MEU BEBÊ AGORA
             <ArrowRight className="w-5 h-5" />
           </button>
           <p className="mt-4 text-xs text-muted-foreground italic">
-            🔒 Compra segura · Acesso imediato ao app · Garantia de 7 dias
+            🔒 Compra segura · Acesso imediato · Garantia de 7 dias
           </p>
         </div>
       </div>

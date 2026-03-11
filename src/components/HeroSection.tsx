@@ -1,48 +1,40 @@
-import { ArrowRight, Check, Smartphone } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import heroBaby from "@/assets/hero-baby.jpg";
 import { openCheckout } from "@/lib/checkout";
 
 const bullets = [
-  "Cardápios prontos por idade",
-  "Receitas simples e nutritivas",
-  "Organização das refeições do dia",
-  "Tudo dentro do aplicativo",
+  "Cortes seguros por idade",
+  "Lista de alimentos permitidos e proibidos",
+  "Receitas nutritivas simples",
+  "Guia prático dentro do app",
 ];
 
 export const Hero = () => {
   return (
-    <section className="relative pt-20 pb-10 lg:pt-28 lg:pb-20 overflow-hidden">
+    <section className="relative pt-20 pb-16 lg:pt-32 lg:pb-24 overflow-hidden">
       <div className="container px-4 mx-auto">
         <div className="flex flex-wrap items-center -mx-4">
-          <div className="w-full lg:w-1/2 px-4 mb-10 lg:mb-0">
+          <div className="w-full lg:w-1/2 px-4 mb-12 lg:mb-0">
             <div className="max-w-lg lg:max-w-md mx-auto lg:mx-0">
-              <span className="inline-flex items-center gap-1.5 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-sm font-semibold mb-5">
-                <Smartphone className="w-4 h-4" />
-                +2.500 mães já usam o NutriBebê
+              <span className="inline-block bg-primary/10 text-primary px-4 py-1.5 rounded-full text-sm font-semibold mb-5">
+                👶 +2.500 mães já confiam no NutriBebê
               </span>
-              <h1 className="text-3xl lg:text-5xl font-black mb-5 text-foreground leading-tight">
-                Saiba exatamente o que oferecer ao seu bebê na{" "}
-                <span className="text-primary">introdução alimentar</span>.
+              <h1 className="text-4xl lg:text-5xl font-black mb-5 text-foreground leading-tight">
+                Seu bebê vai começar a comer e você{" "}
+                <span className="text-primary">morre de medo de engasgo?</span>
               </h1>
-              <p className="text-lg text-muted-foreground mb-6 font-medium leading-relaxed">
-                Cardápios prontos e receitas simples para bebês de 6 a 24 meses.{" "}
-                <strong className="text-foreground">A ferramenta prática para mães evitarem erros comuns e inseguranças</strong>.
+              <p className="text-lg text-muted-foreground mb-8 font-medium leading-relaxed">
+                Saiba exatamente o que colocar no prato do seu bebê com{" "}
+                <strong className="text-foreground">segurança e confiança</strong>
+                , mesmo que nunca tenha feito introdução alimentar antes.
               </p>
-
-              {/* Safety connection text */}
-              <div className="bg-primary/5 border border-primary/15 rounded-2xl p-4 mb-6">
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Muitas mães sentem medo de oferecer alimentos errados que podem causar engasgos.{" "}
-                  <strong className="text-foreground">O NutriBebê organiza as refeições com texturas e cortes adequados para cada fase.</strong>
-                </p>
-              </div>
 
               <button
                 onClick={openCheckout}
                 className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-4 text-white font-bold rounded-xl hover:scale-105 transition-transform text-lg"
                 style={{ background: "var(--gradient-cta)", boxShadow: "var(--shadow-cta)" }}
               >
-                Quero ver os cardápios do meu bebê
+                QUERO INTRODUZIR SEM MEDO
                 <ArrowRight className="ml-2 w-5 h-5" />
               </button>
 
@@ -61,7 +53,6 @@ export const Hero = () => {
               src={heroBaby}
               alt="Bebê comendo de forma saudável durante introdução alimentar"
               className="rounded-3xl shadow-xl max-w-sm w-full object-cover"
-              loading="eager"
             />
           </div>
         </div>

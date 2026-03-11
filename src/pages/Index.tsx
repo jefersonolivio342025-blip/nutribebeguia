@@ -2,10 +2,6 @@ import { useEffect } from "react";
 import HeroSection from "@/components/HeroSection";
 import PainSection from "@/components/PainSection";
 import SolutionSection from "@/components/SolutionSection";
-import HowItWorksSection from "@/components/HowItWorksSection";
-import AppPreviewSection from "@/components/AppPreviewSection";
-import BenefitsSection from "@/components/BenefitsSection";
-import ForWhomSection from "@/components/ForWhomSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import ValueAnchorSection from "@/components/ValueAnchorSection";
 import FAQSection from "@/components/FAQSection";
@@ -24,6 +20,7 @@ const Index = () => {
 
     const params = new URLSearchParams(window.location.search);
 
+    // 1. CAPTURA GLOBAL + PERSISTÊNCIA (sessionStorage + localStorage)
     const utmKeys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "src"];
     const savedParams: Record<string, string> = {};
 
@@ -66,6 +63,7 @@ const Index = () => {
       }
     }
 
+    // 2. META PIXEL - PageView com dados extras
     if (typeof window !== "undefined" && (window as any).fbq) {
       (window as any).fbq("track", "PageView", {
         page_path: window.location.pathname,
@@ -75,6 +73,7 @@ const Index = () => {
 
     trackEvent("visita");
 
+    // 3. SCROLL ENGAGEMENT - ViewContent ao atingir 50%
     let viewContentFired = false;
     const handleScroll = () => {
       if (viewContentFired) return;
@@ -85,7 +84,7 @@ const Index = () => {
           (window as any).fbq("track", "ViewContent", {
             value: 29.90,
             currency: "BRL",
-            content_name: "NutriBebê App",
+            content_name: "NutriBebê Pro",
           });
         }
         trackEvent("scroll_50");
@@ -93,6 +92,7 @@ const Index = () => {
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
 
+    // 4. CARIMBAR UTMs NOS LINKS
     const carimbarBotoes = () => {
       const links = document.querySelectorAll("a");
       links.forEach((link) => {
@@ -101,7 +101,9 @@ const Index = () => {
             const url = new URL(link.href);
             utmKeys.forEach((key) => {
               const val = savedParams[key];
-              if (val) url.searchParams.set(key, val);
+              if (val) {
+                url.searchParams.set(key, val);
+              }
             });
             link.href = url.toString();
           } catch (e) {
@@ -118,20 +120,21 @@ const Index = () => {
       });
     };
 
+    // 5. CLICK HANDLER - InitiateCheckout com valor
     const handleGlobalClick = (e: MouseEvent) => {
       const el = (e.target as HTMLElement).closest("a, button");
       if (el) {
         const text = el.textContent?.toLowerCase() || "";
         const href = (el as HTMLAnchorElement).href || "";
-        const isCheckout = href.includes("kiwify") || text.includes("comprar") || text.includes("acesso") || text.includes("acessar") || text.includes("quero") || text.includes("cardápios");
+        const isCheckout = href.includes("kiwify") || text.includes("comprar") || text.includes("acesso") || text.includes("proteger") || text.includes("quero");
 
         if (isCheckout) {
           trackEvent("clique");
           if (typeof window !== "undefined" && (window as any).fbq) {
-            (window as any).fbq("trackCustom", "ClickToCheckout", {
-              value: 29.90,
+            (window as any).fbq("trackCustom", "ClickToCheckout", { 
+              value: 29.90, 
               currency: "BRL",
-              button_text: text,
+              button_text: text 
             });
           }
         }
@@ -142,6 +145,7 @@ const Index = () => {
     setTimeout(carimbarBotoes, 2000);
     window.addEventListener("click", handleGlobalClick);
 
+    // 6. LEAD QUALIFICADO - 30s na página
     const leadTimer = setTimeout(() => {
       if (typeof window !== "undefined" && (window as any).fbq) {
         (window as any).fbq("trackCustom", "LeadQualificado");
@@ -162,10 +166,6 @@ const Index = () => {
       <HeroSection />
       <PainSection />
       <SolutionSection />
-      <HowItWorksSection />
-      <AppPreviewSection />
-      <BenefitsSection />
-      <ForWhomSection />
       <TestimonialsSection />
       <ValueAnchorSection />
       <OfferSection />
