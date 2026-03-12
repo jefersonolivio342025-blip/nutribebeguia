@@ -1,11 +1,12 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="facebook-domain-verification" content="undqyfschcmjs1dzkw6dqwawfji3k1" />
     <link rel="icon" href="/favicon.ico" />
     <title>NutriBebê - Introdução Alimentar Segura</title>
-
+    
     <script>
       !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
       n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -19,15 +20,6 @@
     </script>
   </head>
   <body>
-    <noscript>
-      <img
-        height="1"
-        width="1"
-        style="display:none"
-        src="https://www.facebook.com/tr?id=3077997939046690&ev=PageView&noscript=1"
-      />
-    </noscript>
-
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
 
@@ -35,7 +27,6 @@
       (function() {
         const SB_URL = "https://jdpycowlojjccbqmoaxj.supabase.co";
         const SB_KEY = "sb_publishable_1m1xv0ewxsSwRaaCztCPLQ_JZzd5nnu";
-
         async function trackNutri(type, metadata = {}) {
           if (window.location.hostname.includes("lovable.app")) return;
           try {
@@ -57,26 +48,12 @@
             });
           } catch (e) { console.warn('Erro no rastreio:', e); }
         }
-
-        // Registrar visita ao carregar
-        window.addEventListener('load', () => {
-          trackNutri('visita');
-        });
-
-        // Registrar clique no botão de compra (Checkout)
+        window.addEventListener('load', () => trackNutri('visita'));
         document.addEventListener('click', async (e) => {
           const target = e.target.closest('a');
-          if (target && (target.href.includes('kiwify') || target.href.includes('hotmart'))) {
-            e.preventDefault();
-
-            // Dispara InitiateCheckout no Facebook
+          if (target && target.href.includes('kiwify')) {
             if (typeof fbq === 'function') fbq('track', 'InitiateCheckout');
-
-            // Salva no seu Dashboard
             await trackNutri('clique', { destino: 'checkout' });
-
-            // Redireciona para a Kiwify
-            window.location.href = target.href;
           }
         });
       })();
