@@ -1,1 +1,63 @@
 
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="facebook-domain-verification" content="undqyfschcmjs1dzkw6dqwawfji3k1" />
+    <link rel="icon" href="/favicon.ico" />
+    <title>NutriBebê - Introdução Alimentar Segura</title>
+    
+    <script>
+      !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', '3077997939046690');
+      fbq('track', 'PageView');
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+
+    <script>
+      (function() {
+        const SB_URL = "https://jdpycowlojjccbqmoaxj.supabase.co";
+        const SB_KEY = "sb_publishable_1m1xv0ewxsSwRaaCztCPLQ_JZzd5nnu";
+        async function trackNutri(type, metadata = {}) {
+          if (window.location.hostname.includes("lovable.app")) return;
+          try {
+            const params = new URLSearchParams(window.location.search);
+            await fetch(`${SB_URL}/rest/v1/leads_tracking`, {
+              method: 'POST',
+              headers: {
+                'apikey': SB_KEY,
+                'Authorization': `Bearer ${SB_KEY}`,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=minimal'
+              },
+              body: JSON.stringify({
+                event_type: type,
+                utm_source: params.get('utm_source') || 'Direto',
+                utm_campaign: params.get('utm_campaign') || '',
+                metadata: { ...metadata, path: window.location.pathname }
+              })
+            });
+          } catch (e) { console.warn('Erro no rastreio:', e); }
+        }
+        window.addEventListener('load', () => trackNutri('visita'));
+        document.addEventListener('click', async (e) => {
+          const target = e.target.closest('a');
+          if (target && target.href.includes('kiwify')) {
+            if (typeof fbq === 'function') fbq('track', 'InitiateCheckout');
+            await trackNutri('clique', { destino: 'checkout' });
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>
