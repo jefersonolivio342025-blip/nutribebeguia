@@ -3,7 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Nova Metatag de Verificação do Facebook -->
     <meta name="facebook-domain-verification" content="v1i1rilwyc7dvhsv1051hrrux0vfz8" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <title>NutriBebê - Introdução Alimentar Segura</title>
@@ -16,32 +15,35 @@
       t.src=v;s=b.getElementsByTagName(e)[0];
       s.parentNode.insertBefore(t,s)}(window, document,'script',
       'https://connect.facebook.net/en_US/fbevents.js');
-      fbq('init', '3077997939046690');
+
+      // Tenta pegar o email da URL para melhorar o Match Quality (Ex: ?em=teste@gmail.com)
+      const urlParams = new URLSearchParams(window.location.search);
+      const userEmail = urlParams.get('em') || urlParams.get('email');
+
+      if (userEmail) {
+        fbq('init', '3077997939046690', { em: userEmail.toLowerCase().trim() });
+      } else {
+        fbq('init', '3077997939046690');
+      }
+      
       fbq('track', 'PageView');
     </script>
-    <meta property="og:title" content="NutriBebê - Introdução Alimentar Segura">
-    <meta name="twitter:title" content="NutriBebê - Introdução Alimentar Segura">
-    <meta name="description" content="nutribebe">
-    <meta property="og:description" content="nutribebe">
-    <meta name="twitter:description" content="nutribebe">
-    <meta property="og:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/f9fe8f6c-d76a-45d0-a65d-bbf71a85faff?Expires=1773291293&amp;GoogleAccessId=go-api-on-aws%40gpt-engineer-390607.iam.gserviceaccount.com&amp;Signature=McmW1%2BLXzrCZuDxuTsOoViKTcoqOkeZ8C2MthQL2HUONSvdZmM36Oeku3k6zODVqdotzvmuZs%2Bh2O0zCSM1hYw5o0Yw4vWRcWpILxJff8SH4g5BLYHc0%2Bc78dQ%2BX%2Buo6O2hcy5wkNq05mgZ8fZM5EhmlVtYcUrMcdZlDnXczd%2FmeU84y3OuXy%2FLSgm8bsMRlvQB6SLk6IyglyhI9hJQe7%2BUJR6wA3XcUJy1lti5Rx8U1g%2Byjh2AZm42WUBmYnchMQpHaHHhy9q0LIBMeyMnnscUxvWtEIQIKvLycrVckoyvdzzr4TqhK6K%2F2ZorSEA3ENCVx4X9KYaimfG%2BxoZ5aeg%3D%3D">
-    <meta name="twitter:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/f9fe8f6c-d76a-45d0-a65d-bbf71a85faff?Expires=1773291293&amp;GoogleAccessId=go-api-on-aws%40gpt-engineer-390607.iam.gserviceaccount.com&amp;Signature=McmW1%2BLXzrCZuDxuTsOoViKTcoqOkeZ8C2MthQL2HUONSvdZmM36Oeku3k6zODVqdotzvmuZs%2Bh2O0zCSM1hYw5o0Yw4vWRcWpILxJff8SH4g5BLYHc0%2Bc78dQ%2BX%2Buo6O2hcy5wkNq05mgZ8fZM5EhmlVtYcUrMcdZlDnXczd%2FmeU84y3OuXy%2FLSgm8bsMRlvQB6SLk6IyglyhI9hJQe7%2BUJR6wA3XcUJy1lti5Rx8U1g%2Byjh2AZm42WUBmYnchMQpHaHHhy9q0LIBMeyMnnscUxvWtEIQIKvLycrVckoyvdzzr4TqhK6K%2F2ZorSEA3ENCVx4X9KYaimfG%2BxoZ5aeg%3D%3D">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta property="og:type" content="website">
-  </head>
+    </head>
   <body>
     <div id="root"></div>
-    
-    <script type="module" src="src/main.tsx"></script>
+    <script type="module" src="/src/main.tsx"></script>
 
     <script>
       (function() {
         const SB_URL = "https://jdpycowlojjccbqmoaxj.supabase.co";
         const SB_KEY = "sb_publishable_1m1xv0ewxsSwRaaCztCPLQ_JZzd5nnu";
+
         async function trackNutri(type, metadata = {}) {
           if (window.location.hostname.includes("lovable.app")) return;
           try {
             const params = new URLSearchParams(window.location.search);
+            const email = params.get('email') || params.get('em') || '';
+
             await fetch(`${SB_URL}/rest/v1/leads_tracking`, {
               method: 'POST',
               headers: {
@@ -54,16 +56,32 @@
                 event_type: type,
                 utm_source: params.get('utm_source') || 'Direto',
                 utm_campaign: params.get('utm_campaign') || '',
-                metadata: { ...metadata, path: window.location.pathname }
+                metadata: { 
+                  ...metadata, 
+                  path: window.location.pathname,
+                  user_email: email // Guardando o email no Supabase para CAPI
+                }
               })
             });
           } catch (e) { console.warn('Erro no rastreio:', e); }
         }
+
         window.addEventListener('load', () => trackNutri('visita'));
+
         document.addEventListener('click', async (e) => {
           const target = e.target.closest('a');
           if (target && target.href.includes('kiwify')) {
-            if (typeof fbq === 'function') fbq('track', 'InitiateCheckout');
+            const params = new URLSearchParams(window.location.search);
+            const userEmail = params.get('email') || params.get('em');
+
+            // Envia o InitiateCheckout com o e-mail (se houver) para aumentar a nota
+            if (typeof fbq === 'function') {
+              if (userEmail) {
+                fbq('track', 'InitiateCheckout', { em: userEmail.toLowerCase().trim() });
+              } else {
+                fbq('track', 'InitiateCheckout');
+              }
+            }
             await trackNutri('clique', { destino: 'checkout' });
           }
         });
