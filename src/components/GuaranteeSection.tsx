@@ -3,29 +3,31 @@ import { openCheckout } from "@/lib/checkout";
 
 export const GuaranteeSection = () => {
   return (
-    <section className="bg-slate-50 py-16 border-t">
+    <section className="bg-secondary py-16 border-t">
       <div className="container px-4 max-w-4xl mx-auto">
-        <div className="bg-white border-2 border-primary/20 rounded-3xl p-8 text-center shadow-sm mb-16">
-          <ShieldCheck className="w-16 h-16 text-primary mx-auto mb-4" />
-          <h2 className="text-2xl font-black mb-4 text-foreground">
+        {/* Guarantee Box - Enhanced */}
+        <div className="bg-card border-2 border-primary/30 rounded-3xl p-8 md:p-10 text-center shadow-lg mb-16 relative overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary/40 via-primary to-primary/40" />
+          <ShieldCheck className="w-20 h-20 text-primary mx-auto mb-5" />
+          <h2 className="text-2xl md:text-3xl font-black mb-4 text-foreground">
             Teste por 7 dias. Sem risco nenhum.
           </h2>
-          <p className="text-muted-foreground mb-4 text-lg leading-relaxed max-w-xl mx-auto">
-            Se você não ficar <strong>100% satisfeita</strong>, devolvemos{" "}
-            <strong>todo o seu dinheiro</strong>. Sem perguntas, sem burocracia.
+          <p className="text-muted-foreground mb-2 text-lg leading-relaxed max-w-xl mx-auto">
+            Se você não ficar <strong className="text-foreground">100% satisfeita</strong> e segura na introdução alimentar, devolvemos{" "}
+            <strong className="text-foreground">todo o seu dinheiro na hora</strong>.
           </p>
-          <p className="text-foreground font-semibold mb-8">
+          <p className="text-foreground font-bold text-lg mb-8">
             O risco é todo nosso. A decisão é toda sua.
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm font-bold text-foreground">
-            <div className="flex items-center justify-center gap-2">
-              <CheckCircle2 className="text-primary w-5 h-5" /> Sem perguntas
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm font-bold text-foreground">
+            <div className="flex items-center justify-center gap-2 bg-primary/5 rounded-xl py-3 px-4">
+              <CheckCircle2 className="text-primary w-5 h-5 flex-shrink-0" /> Sem perguntas
             </div>
-            <div className="flex items-center justify-center gap-2">
-              <Clock className="text-primary w-5 h-5" /> Reembolso em 24h
+            <div className="flex items-center justify-center gap-2 bg-primary/5 rounded-xl py-3 px-4">
+              <Clock className="text-primary w-5 h-5 flex-shrink-0" /> Reembolso em 24h
             </div>
-            <div className="flex items-center justify-center gap-2">
-              <ShieldCheck className="text-primary w-5 h-5" /> Compra 100% Segura
+            <div className="flex items-center justify-center gap-2 bg-primary/5 rounded-xl py-3 px-4">
+              <ShieldCheck className="text-primary w-5 h-5 flex-shrink-0" /> Compra 100% Segura
             </div>
           </div>
         </div>
@@ -36,7 +38,7 @@ export const GuaranteeSection = () => {
           </h3>
           <button
             onClick={openCheckout}
-            className="w-full max-w-md text-white font-black py-5 px-8 rounded-2xl hover:scale-105 transition-transform text-lg inline-flex items-center justify-center gap-2 mx-auto"
+            className="animate-cta-pulse w-full max-w-md text-cta-foreground font-black py-5 px-8 rounded-2xl hover:scale-105 transition-transform text-lg inline-flex items-center justify-center gap-2 mx-auto"
             style={{ background: "var(--gradient-cta)", boxShadow: "var(--shadow-cta)" }}
           >
             QUERO PROTEGER MEU BEBÊ AGORA

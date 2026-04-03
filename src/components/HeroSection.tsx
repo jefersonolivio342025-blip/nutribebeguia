@@ -1,12 +1,11 @@
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight, Shield, Salad, Smartphone } from "lucide-react";
 import heroBaby from "@/assets/hero-baby.jpg";
 import { openCheckout } from "@/lib/checkout";
 
-const bullets = [
-  "Cortes seguros por idade",
-  "Lista de alimentos permitidos e proibidos",
-  "Receitas nutritivas simples",
-  "Guia prático dentro do app",
+const securityFeatures = [
+  { icon: Shield, label: "Método Seguro (BLW)" },
+  { icon: Salad, label: "Cardápios Nutritivos" },
+  { icon: Smartphone, label: "Acesso Offline" },
 ];
 
 export const Hero = () => {
@@ -16,36 +15,57 @@ export const Hero = () => {
         <div className="flex flex-wrap items-center -mx-4">
           <div className="w-full lg:w-1/2 px-4 mb-12 lg:mb-0">
             <div className="max-w-lg lg:max-w-md mx-auto lg:mx-0">
+              {/* Badge */}
               <span className="inline-block bg-primary/10 text-primary px-4 py-1.5 rounded-full text-sm font-semibold mb-5">
                 👶 +2.500 mães já confiam no NutriBebê
               </span>
-              <h1 className="text-4xl lg:text-5xl font-black mb-5 text-foreground leading-tight">
+
+              {/* Headline */}
+              <h1 className="text-4xl sm:text-5xl lg:text-[3.25rem] font-black mb-5 text-foreground leading-[1.15]">
                 Seu bebê vai começar a comer e você{" "}
                 <span className="text-primary">morre de medo de engasgo?</span>
               </h1>
-              <p className="text-lg text-muted-foreground mb-8 font-medium leading-relaxed">
+
+              <p className="text-lg text-muted-foreground mb-6 font-medium leading-relaxed">
                 Saiba exatamente o que colocar no prato do seu bebê com{" "}
                 <strong className="text-foreground">segurança e confiança</strong>
                 , mesmo que nunca tenha feito introdução alimentar antes.
               </p>
 
+              {/* Security Icons Grid */}
+              <div className="grid grid-cols-3 gap-3 mb-8">
+                {securityFeatures.map((feat, i) => (
+                  <div
+                    key={i}
+                    className="flex flex-col items-center gap-1.5 bg-card rounded-2xl p-3 text-center"
+                    style={{ boxShadow: "var(--shadow-soft)" }}
+                  >
+                    <feat.icon className="w-6 h-6 text-primary" />
+                    <span className="text-xs font-bold text-foreground leading-tight">
+                      {feat.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Pulsing CTA Button */}
               <button
                 onClick={openCheckout}
-                className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-4 text-white font-bold rounded-xl hover:scale-105 transition-transform text-lg"
+                className="animate-cta-pulse inline-flex items-center justify-center w-full sm:w-auto px-8 py-4 text-cta-foreground font-black rounded-xl hover:scale-105 transition-transform text-lg"
                 style={{ background: "var(--gradient-cta)", boxShadow: "var(--shadow-cta)" }}
               >
-                QUERO INTRODUZIR SEM MEDO
+                QUERO SEGURANÇA NA HORA DE COMER
                 <ArrowRight className="ml-2 w-5 h-5" />
               </button>
 
-              <ul className="mt-6 space-y-2.5">
-                {bullets.map((b, i) => (
-                  <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Check className="w-4 h-4 text-primary flex-shrink-0" />
-                    <span>{b}</span>
-                  </li>
-                ))}
-              </ul>
+              {/* Scarcity + Value */}
+              <p className="mt-4 text-sm text-foreground font-semibold">
+                🔥 Oferta válida apenas para os próximos 50 acessos{" "}
+                <span className="text-primary">(Acesso Vitalício)</span>
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground italic">
+                🔒 Compra segura · Acesso imediato · Garantia de 7 dias
+              </p>
             </div>
           </div>
           <div className="w-full lg:w-1/2 px-4 flex justify-center">
