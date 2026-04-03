@@ -158,6 +158,15 @@
     transform: scale(1.1);
     box-shadow: 0 10px 30px -5px hsl(142 70% 35% / 0.4);
   }
+
+  .animate-cta-pulse {
+    animation: cta-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes cta-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+  }
 }
 
 @layer utilities {

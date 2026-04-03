@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import HeroSection from "@/components/HeroSection";
 import PainSection from "@/components/PainSection";
 import SolutionSection from "@/components/SolutionSection";
+import AppPreviewSection from "@/components/AppPreviewSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import ValueAnchorSection from "@/components/ValueAnchorSection";
 import FAQSection from "@/components/FAQSection";
@@ -12,6 +13,7 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import Footer from "@/components/Footer";
 import SocialProofNotification from "@/components/SocialProofNotification";
 import StickyHeader from "@/components/StickyHeader";
+import MobileStickyBuy from "@/components/MobileStickyBuy";
 
 const Index = () => {
   useEffect(() => {
