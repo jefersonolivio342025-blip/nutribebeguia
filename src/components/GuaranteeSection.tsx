@@ -3,7 +3,7 @@ import { openCheckout } from "@/lib/checkout";
 
 export const GuaranteeSection = () => {
   return (
-    <section className="bg-slate-50 py-16 border-t">
+    <section className="bg-secondary py-16 border-t">
       <div className="container px-4 max-w-4xl mx-auto">
         {/* Guarantee Box - Enhanced */}
         <div className="bg-card border-2 border-primary/30 rounded-3xl p-8 md:p-10 text-center shadow-lg mb-16 relative overflow-hidden">
