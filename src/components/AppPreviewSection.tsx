@@ -2,35 +2,22 @@ import { useState } from "react";
 import { ChevronLeft, ChevronRight, Smartphone } from "lucide-react";
 import AnimatedSection from "./AnimatedSection";
 
+import screenCardapio from "@/assets/app-screen-cardapio.png";
+import screenPrato from "@/assets/app-screen-prato.png";
+import screenSemana from "@/assets/app-screen-semana.png";
+import screenLista from "@/assets/app-screen-lista.png";
+import screenVideos from "@/assets/app-screen-videos.png";
+import screenRotina from "@/assets/app-screen-rotina.png";
+import screenNutris from "@/assets/app-screen-nutris.png";
+
 const screens = [
-  {
-    title: "Cardápio do Dia",
-    description: "Saiba exatamente o que oferecer em cada refeição",
-    emoji: "🥗",
-    features: ["Café da manhã", "Almoço", "Lanche", "Jantar"],
-    color: "from-emerald-50 to-teal-50",
-  },
-  {
-    title: "Receitas por Idade",
-    description: "Receitas filtradas para a fase do seu bebê",
-    emoji: "👶",
-    features: ["6 a 8 meses", "9 a 12 meses", "12 a 24 meses"],
-    color: "from-orange-50 to-amber-50",
-  },
-  {
-    title: "Guia de Cortes",
-    description: "Como cortar cada alimento com segurança (BLW)",
-    emoji: "🔪",
-    features: ["Fotos ilustrativas", "Por tipo de alimento", "Dicas anti-engasgo"],
-    color: "from-blue-50 to-indigo-50",
-  },
-  {
-    title: "Lista de Compras",
-    description: "Monte a lista da semana em segundos",
-    emoji: "🛒",
-    features: ["Geração automática", "Por categoria", "Compartilhável"],
-    color: "from-pink-50 to-rose-50",
-  },
+  { title: "Cardápio do Dia", description: "Saiba exatamente o que oferecer em cada refeição", image: screenCardapio },
+  { title: "Monte o Prato", description: "Montador de prato saudável por grupo alimentar", image: screenPrato },
+  { title: "Calendário Semanal", description: "Planejamento completo da semana", image: screenSemana },
+  { title: "Lista de Compras", description: "Organize tudo o que o bebê precisa", image: screenLista },
+  { title: "Guia em Vídeo", description: "Vídeos práticos sobre cortes, receitas e mais", image: screenVideos },
+  { title: "Rotina Sem Caos", description: "Dicas reais para simplificar a introdução alimentar", image: screenRotina },
+  { title: "Encontrar Nutri", description: "Nutricionistas especializados perto de você", image: screenNutris },
 ];
 
 const AppPreviewSection = () => {
@@ -64,43 +51,18 @@ const AppPreviewSection = () => {
             {/* Phone frame */}
             <div className="relative bg-foreground rounded-[2.5rem] p-3 shadow-2xl">
               <div className="bg-card rounded-[2rem] overflow-hidden">
-                {/* Status bar */}
-                <div className="bg-foreground text-primary-foreground text-xs flex justify-between items-center px-6 py-2">
-                  <span>9:41</span>
-                  <div className="w-20 h-5 bg-foreground/80 rounded-full" />
-                  <span>100%</span>
-                </div>
-
-                {/* Screen content */}
-                <div className={`bg-gradient-to-b ${screen.color} p-6 min-h-[380px] flex flex-col`}>
-                  <div className="text-center mb-6">
-                    <span className="text-5xl mb-3 block">{screen.emoji}</span>
-                    <h3 className="text-xl font-black text-foreground">{screen.title}</h3>
-                    <p className="text-sm text-muted-foreground mt-1">{screen.description}</p>
-                  </div>
-
-                  <div className="space-y-3 flex-1">
-                    {screen.features.map((feat, i) => (
-                      <div
-                        key={i}
-                        className="bg-card/80 backdrop-blur-sm rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm"
-                      >
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm font-bold">
-                          {i + 1}
-                        </div>
-                        <span className="text-sm font-semibold text-foreground">{feat}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Bottom bar */}
-                <div className="bg-card border-t border-border px-6 py-3 flex justify-around">
-                  {["🏠", "📋", "🔍", "👤"].map((e, i) => (
-                    <span key={i} className="text-lg opacity-50">{e}</span>
-                  ))}
-                </div>
+                <img
+                  src={screen.image}
+                  alt={screen.title}
+                  className="w-full h-auto block"
+                />
               </div>
+            </div>
+
+            {/* Caption */}
+            <div className="text-center mt-4">
+              <h3 className="text-lg font-bold text-foreground">{screen.title}</h3>
+              <p className="text-sm text-muted-foreground">{screen.description}</p>
             </div>
 
             {/* Navigation buttons */}
