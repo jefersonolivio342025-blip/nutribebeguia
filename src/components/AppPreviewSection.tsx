@@ -47,10 +47,10 @@ const AppPreviewSection = () => {
         </AnimatedSection>
 
         <AnimatedSection animation="scale">
-          <div className="relative max-w-sm mx-auto">
-            {/* Phone frame */}
-            <div className="relative bg-foreground rounded-[2.5rem] p-3 shadow-2xl">
-              <div className="bg-card rounded-[2rem] overflow-hidden">
+          <div className="relative max-w-lg lg:max-w-xl mx-auto">
+            {/* Tablet frame */}
+            <div className="relative bg-foreground rounded-[1.5rem] p-2.5 shadow-2xl">
+              <div className="bg-card rounded-[1.2rem] overflow-hidden">
                 <img
                   src={screen.image}
                   alt={screen.title}
