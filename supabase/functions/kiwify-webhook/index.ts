@@ -21,9 +21,14 @@ Deno.serve(async (req) => {
     const product = body.Product || body.product || {};
     const orderStatus = body.order_status || body.OrderStatus || "";
 
-    // Capturar WhatsApp/telefone do comprador
-    const whatsappLead =
-      customer.mobile || customer.phone || customer.full_phone || "";
+    // Capturar WhatsApp/telefone do comprador - campo principal da Kiwify é customer_mobile
+    const rawMobile =
+      body.customer_mobile || body.Customer_mobile ||
+      customer.mobile || customer.phone || customer.full_phone ||
+      body.phone || body.mobile || "";
+    
+    // Limpar caracteres não numéricos (parênteses, traços, espaços)
+    const whatsappLead = rawMobile ? rawMobile.replace(/\D/g, "") : "";
 
     // Capturar UTMs que foram passadas no link de checkout
     const trackingParams = body.TrackingParameters || body.tracking_parameters || {};
