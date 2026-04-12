@@ -14,7 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      leads_tracking: {
+        Row: {
+          created_at: string
+          event_type: string | null
+          id: string
+          metadata: Json | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_source: string | null
+          whatsapp_lead: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type?: string | null
+          id?: string
+          metadata?: Json | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_source?: string | null
+          whatsapp_lead?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string | null
+          id?: string
+          metadata?: Json | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_source?: string | null
+          whatsapp_lead?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
