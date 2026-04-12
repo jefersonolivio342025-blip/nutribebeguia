@@ -14,12 +14,12 @@ Deno.serve(async (req) => {
     const body = await req.json();
     console.log("Kiwify webhook received:", JSON.stringify(body));
 
-    // A Kiwify envia dados na raiz ou em objetos. Vamos mapear tudo.
+    // Mapeamento de dados da Kiwify (Raiz ou Objetos)
     const customer = body.Customer || body.customer || {};
     const product = body.Product || body.product || {};
     const orderStatus = body.order_status || body.OrderStatus || "unknown";
 
-    // CAPTURA DO WHATSAPP (Ajustado para cobrir todas as possibilidades da Kiwify)
+    // CAPTURA DO WHATSAPP - Prioridade máxima para o campo padrão da Kiwify
     const rawMobile = 
       body.customer_mobile || 
       body.Customer_mobile || 
@@ -27,12 +27,13 @@ Deno.serve(async (req) => {
       customer.phone || 
       customer.full_phone || 
       body.mobile || 
+      body.phone ||
       "";
     
-    // Limpa tudo que não for número
+    // Limpeza de caracteres: Deixa apenas os números
     const whatsappValue = rawMobile.toString().replace(/\D/g, "");
 
-    // CAPTURA DE UTMs (Ajustado para pegar da raiz ou do objeto Tracking)
+    // CAPTURA DE UTMs
     const tracking = body.TrackingParameters || body.tracking_parameters || {};
     const utmSource = body.utm_source || tracking.utm_source || body.src || tracking.src || "";
     const utmCampaign = body.utm_campaign || tracking.utm_campaign || "";
@@ -43,19 +44,20 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // INSERÇÃO NO BANCO
+    // INSERÇÃO NO BANCO DE DADOS
+    // IMPORTANTE: Ajustado de 'whatsapp_lead' para 'WhatsApp' conforme seu print
     const { error } = await supabase.from("leads_tracking").insert({
       event_type: `kiwify_${orderStatus}`,
       utm_source: utmSource,
       utm_campaign: utmCampaign,
       utm_content: utmContent,
-      whatsapp_lead: whatsappValue || null, // NOME DA COLUNA NO BANCO
+      WhatsApp: whatsappValue || null, 
       metadata: {
         customer_name: customer.full_name || customer.name || body.customer_name || "",
         customer_email: customer.email || body.customer_email || "",
         product_name: product.product_name || product.name || "",
         order_id: body.order_id || body.OrderId || "",
-        raw_payload: body // Salva tudo para debug se precisar
+        raw_payload: body 
       },
     });
 
