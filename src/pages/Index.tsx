@@ -17,12 +17,9 @@ import MobileStickyBuy from "@/components/MobileStickyBuy";
 
 const Index = () => {
   useEffect(() => {
-    const SB_URL = "https://jdpycowlojjccbqmoaxj.supabase.co/rest/v1/leads_tracking";
-    const SB_KEY = "sb_publishable_1m1xv0ewxsSwRaaCztCPLQ_JZzd5nnu";
-
     const params = new URLSearchParams(window.location.search);
 
-    // 1. CAPTURA GLOBAL + PERSISTÊNCIA (sessionStorage + localStorage)
+    // 1. PERSISTÊNCIA DE UTMs (sessionStorage + localStorage)
     const utmKeys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "src"];
     const savedParams: Record<string, string> = {};
 
@@ -35,45 +32,13 @@ const Index = () => {
       savedParams[key] = sessionStorage.getItem(`nb_${key}`) || localStorage.getItem(`nb_${key}`) || "";
     });
 
-    const source = savedParams["utm_source"] || "direto";
-    const campaign = savedParams["utm_campaign"] || "organico";
-    const content = savedParams["utm_content"] || "sem_criativo";
-
-    async function trackEvent(val: string) {
-      try {
-        await fetch(SB_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            apikey: SB_KEY,
-            Authorization: `Bearer ${SB_KEY}`,
-            Prefer: "return=minimal",
-          },
-          body: JSON.stringify({
-            event_type: val,
-            utm_source: source,
-            utm_campaign: campaign,
-            utm_content: content,
-            metadata: {
-              device: /Android|iPhone/i.test(navigator.userAgent) ? "mobile" : "desktop",
-              path: window.location.pathname,
-            },
-          }),
-        });
-      } catch (e) {
-        console.error("Erro no rastreio:", e);
-      }
-    }
-
-    // 2. META PIXEL - PageView com dados extras
+    // 2. META PIXEL - PageView
     if (typeof window !== "undefined" && (window as any).fbq) {
       (window as any).fbq("track", "PageView", {
         page_path: window.location.pathname,
         page_title: document.title,
       });
     }
-
-    trackEvent("visita");
 
     // 3. SCROLL ENGAGEMENT - ViewContent ao atingir 50%
     let viewContentFired = false;
@@ -89,7 +54,6 @@ const Index = () => {
             content_name: "NutriBebê Pro",
           });
         }
-        trackEvent("scroll_50");
       }
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -122,7 +86,7 @@ const Index = () => {
       });
     };
 
-    // 5. CLICK HANDLER - InitiateCheckout com valor
+    // 5. CLICK HANDLER - Pixel ClickToCheckout (sem enviar ao Supabase)
     const handleGlobalClick = (e: MouseEvent) => {
       const el = (e.target as HTMLElement).closest("a, button");
       if (el) {
@@ -130,15 +94,12 @@ const Index = () => {
         const href = (el as HTMLAnchorElement).href || "";
         const isCheckout = href.includes("kiwify") || text.includes("comprar") || text.includes("acesso") || text.includes("proteger") || text.includes("quero");
 
-        if (isCheckout) {
-          trackEvent("clique");
-          if (typeof window !== "undefined" && (window as any).fbq) {
-            (window as any).fbq("trackCustom", "ClickToCheckout", { 
-              value: 29.90, 
-              currency: "BRL",
-              button_text: text 
-            });
-          }
+        if (isCheckout && typeof window !== "undefined" && (window as any).fbq) {
+          (window as any).fbq("trackCustom", "ClickToCheckout", { 
+            value: 29.90, 
+            currency: "BRL",
+            button_text: text 
+          });
         }
       }
     };
@@ -147,12 +108,11 @@ const Index = () => {
     setTimeout(carimbarBotoes, 2000);
     window.addEventListener("click", handleGlobalClick);
 
-    // 6. LEAD QUALIFICADO - 30s na página
+    // 6. LEAD QUALIFICADO - 30s na página (apenas Pixel)
     const leadTimer = setTimeout(() => {
       if (typeof window !== "undefined" && (window as any).fbq) {
         (window as any).fbq("trackCustom", "LeadQualificado");
       }
-      trackEvent("lead_qualificado");
     }, 30000);
 
     return () => {

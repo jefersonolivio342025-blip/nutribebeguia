@@ -1,10 +1,6 @@
-import { useEffect, useState } from "react";
-import { BookOpen, Scissors, CalendarDays, Baby, Heart, ChefHat, Users } from "lucide-react";
+import { useState } from "react";
+import { BookOpen, Scissors, CalendarDays, Baby, Heart, ChefHat } from "lucide-react";
 import { Link } from "react-router-dom";
-
-// Mantenha as configurações do seu Supabase aqui
-const SB_URL = "https://jdpycowlojjccbqmoaxj.supabase.co";
-const SB_KEY = "sb_publishable_1m1xv0ewxsSwRaaCztCPLQ_JZzd5nnu";
 
 const quickLinks = [
   { to: "/app/receitas", icon: ChefHat, label: "Receitas do Dia", color: "bg-app-mint-light text-app-mint-dark" },
