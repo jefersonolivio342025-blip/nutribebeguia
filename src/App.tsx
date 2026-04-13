@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import AppLayout from "./components/app/AppLayout";
+import LeadsCRM from "./pages/app/LeadsCRM";
 import Dashboard from "./pages/app/Dashboard";
 import Recipes from "./pages/app/Recipes";
 import RecipeDetail from "./pages/app/RecipeDetail";
@@ -30,6 +31,7 @@ const App = () => (
             <Route path="cortes" element={<CutGuide />} />
             <Route path="cronograma" element={<FoodSchedule />} />
             <Route path="perfil" element={<Profile />} />
+            <Route path="leads" element={<LeadsCRM />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

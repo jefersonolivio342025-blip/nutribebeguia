@@ -35,7 +35,7 @@ Deno.serve(async (req) => {
     await supabase.from("leads_tracking").insert({
       event_type: `kiwify_${order.order_status}`,
       utm_source: order.TrackingParameters?.utm_source || "",
-      WhatsApp: cleanPhone || null,
+      whatsapp_lead: cleanPhone || null,
       metadata: {
         customer_name: customer.full_name || "",
         customer_email: email || "",
@@ -85,8 +85,9 @@ Deno.serve(async (req) => {
     }
 
     return new Response(JSON.stringify({ success: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
-  } catch (err) {
-    console.error("Erro no Webhook:", err.message);
-    return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: corsHeaders });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    console.error("Erro no Webhook:", message);
+    return new Response(JSON.stringify({ error: message }), { status: 500, headers: corsHeaders });
   }
 });
