@@ -35,7 +35,7 @@ Deno.serve(async (req) => {
     await supabase.from("leads_tracking").insert({
       event_type: `kiwify_${order.order_status}`,
       utm_source: order.TrackingParameters?.utm_source || "",
-      WhatsApp: cleanPhone || null,
+      whatsapp_lead: cleanPhone || null,
       metadata: {
         customer_name: customer.full_name || "",
         customer_email: email || "",
