@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { BookOpen, Scissors, CalendarDays, Baby, Heart, ChefHat } from "lucide-react";
 import { Link } from "react-router-dom";
 
